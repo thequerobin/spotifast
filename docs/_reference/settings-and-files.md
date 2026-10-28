@@ -23,6 +23,7 @@ Spotifast follows each platform's conventions. On Linux:
 | Proxy password | System credential store | Clear the password and apply the manual proxy settings |
 | Legacy proxy password | `~/.local/state/spotifast/proxy_password` | Removed after protected migration |
 | Last session | `~/.local/state/spotifast/session.json` | Yes |
+| Playlist generation jobs | `~/.local/state/spotifast/playlist-generations/` | Deleting loses recovery and history; see [generation](/playlist-generation/) |
 | Play history | `~/.local/state/spotifast/history.json` | Yes |
 | Audio cache | `~/.cache/spotifast/audio/` | Always |
 | Artwork cache | `~/.cache/spotifast/art/` | Always |

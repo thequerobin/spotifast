@@ -345,6 +345,8 @@ impl NetActivity {
 
 tokio::task_local! {
     static UNSEEN: ();
+    static GENERATION: ();
+    static GENERATION_SENT: Arc<std::sync::atomic::AtomicBool>;
 }
 
 /// Runs requests nothing on screen waits for without showing them as
@@ -353,6 +355,22 @@ tokio::task_local! {
 /// the "Waiting for Spotify" spinner up over an app that is ready to use.
 pub async fn unseen<F: std::future::Future>(future: F) -> F::Output {
     UNSEEN.scope((), future).await
+}
+
+/// Generation jobs persist waits and retry decisions outside the transport.
+pub async fn generation_request<F: std::future::Future>(future: F) -> F::Output {
+    GENERATION.scope((), future).await
+}
+
+/// Reports whether a mutation reached the transport, so a deliberate pause
+/// before dispatch can safely clear its local intent.
+pub async fn generation_job_request<F: std::future::Future>(
+    future: F,
+    sent: Arc<std::sync::atomic::AtomicBool>,
+) -> F::Output {
+    GENERATION_SENT
+        .scope(sent, generation_request(future))
+        .await
 }
 
 /// Decrements the in-flight count even if the request future is dropped.
@@ -392,6 +410,11 @@ pub struct ApiClient {
 }
 
 impl ApiClient {
+    #[cfg(test)]
+    pub(crate) fn test_transport(base_url: String) -> Self {
+        tests::client_with_token(Some(base_url), "generation-test-only")
+    }
+
     /// Give one authorized source independent foreground and background request budgets.
     pub fn new(
         http: impl Into<Http>,
@@ -564,6 +587,7 @@ impl ApiClient {
 
         let mut attempt = 0;
         let queue_write = method == Method::POST && path == "/me/player/queue";
+        let generation = GENERATION.try_with(|_| ()).is_ok();
         loop {
             attempt = u32::saturating_add(attempt, 1);
             let permit = self
@@ -573,7 +597,21 @@ impl ApiClient {
                 .map_err(|_| ApiError::NotSignedIn)?;
             // After the permit: a 429 answered while this request queued has
             // extended the cooldown, and sending now would only earn another.
-            self.wait_for_cooldown().await;
+            if generation {
+                let wait = self
+                    .cooldown_until
+                    .lock()
+                    .await
+                    .saturating_duration_since(Instant::now());
+                if !wait.is_zero() {
+                    return Err(ApiError::Status {
+                        status: 429,
+                        message: wait.as_secs().saturating_add(1).to_string(),
+                    });
+                }
+            } else {
+                self.wait_for_cooldown().await;
+            }
             let token = provider.access_token().await?;
             let mut request = self
                 .http
@@ -591,8 +629,14 @@ impl ApiClient {
             } else if matches!(method, Method::PUT | Method::POST | Method::DELETE) {
                 request = request.header(reqwest::header::CONTENT_LENGTH, "0");
             }
+            if method != Method::GET {
+                let _ = GENERATION_SENT.try_with(|sent| sent.store(true, Ordering::SeqCst));
+            }
             let response = request.send().await?;
             let status = response.status();
+            if status.is_client_error() && status != StatusCode::REQUEST_TIMEOUT {
+                let _ = GENERATION_SENT.try_with(|sent| sent.store(false, Ordering::SeqCst));
+            }
 
             if status == StatusCode::UNAUTHORIZED && attempt == 1 {
                 drop(permit);
@@ -607,13 +651,13 @@ impl ApiClient {
                     .and_then(|value| value.parse::<u64>().ok())
                     .map_or(Duration::from_secs(1), Duration::from_secs);
                 let text = response.text().await.unwrap_or_default();
-                if is_quota_exhausted(&text) {
+                if is_quota_exhausted(&text) && !generation {
                     return Err(ApiError::QuotaExhausted);
                 }
                 // A rejected queue append is safe to retry. Keep its place
                 // in the write lock and honor the full server-requested wait.
                 // Other requests retain their existing bounded retry policy.
-                let wait = if queue_write {
+                let wait = if queue_write || generation {
                     wait
                 } else {
                     wait.min(MAX_RETRY_AFTER)
@@ -627,6 +671,12 @@ impl ApiClient {
                 );
                 drop(permit);
                 self.extend_cooldown(wait).await;
+                if generation {
+                    return Err(ApiError::Status {
+                        status: 429,
+                        message: wait.as_secs().to_string(),
+                    });
+                }
                 if !queue_write && attempt > RATE_LIMIT_RETRIES {
                     return Err(ApiError::RateLimited);
                 }
@@ -885,6 +935,20 @@ impl ApiClient {
             &[("limit", limit.to_string()), ("offset", offset.to_string())],
         )
         .await
+    }
+
+    /// Confirm both the header and current library membership before restoring
+    /// a persisted generation. History must not resurrect an unfollowed list.
+    pub async fn generated_playlist(&self, id: &str) -> Result<Playlist> {
+        let playlist = self.playlist(id).await?;
+        let saved = self.contains(&[format!("spotify:playlist:{id}")]).await?;
+        if saved != [true] {
+            return Err(ApiError::Status {
+                status: 404,
+                message: "Generated playlist is no longer in the library".into(),
+            });
+        }
+        Ok(playlist)
     }
 
     pub async fn playlist(&self, id: &str) -> Result<Playlist> {
@@ -1643,7 +1707,40 @@ mod tests {
         let _ = std::fs::remove_dir_all(root);
     }
 
-    fn client_with_token(base_url: Option<String>, access_token: &str) -> ApiClient {
+    #[tokio::test]
+    async fn generated_playlist_sync_confirms_membership_before_restoring_a_playlist() {
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+        for saved in [true, false] {
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let client = client_with_token(
+                Some(format!("http://{}", listener.local_addr().unwrap())),
+                "test-only",
+            );
+            let server = tokio::spawn(async move {
+                for (path, body) in [
+                    ("GET /playlists/generated", "{\"id\":\"generated\",\"uri\":\"spotify:playlist:generated\",\"owner\":{\"id\":\"alice\"}}".to_owned()),
+                    ("GET /me/library/contains?", format!("[{saved}]")),
+                ] {
+                    let (mut socket, _) = listener.accept().await.unwrap();
+                    let mut buffer = [0; 4096];
+                    let count = socket.read(&mut buffer).await.unwrap();
+                    assert!(count > 0);
+                    assert!(String::from_utf8_lossy(&buffer[..count]).starts_with(path));
+                    let response = format!("HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}", body.len());
+                    socket.write_all(response.as_bytes()).await.unwrap();
+                }
+            });
+            let result = client.generated_playlist("generated").await;
+            if saved {
+                assert_eq!(result.unwrap().id, "generated");
+            } else {
+                assert_eq!(result.unwrap_err().status(), Some(404));
+            }
+            server.await.unwrap();
+        }
+    }
+
+    pub(super) fn client_with_token(base_url: Option<String>, access_token: &str) -> ApiClient {
         let http = reqwest::Client::builder().no_proxy().build().unwrap();
         let mut client = ApiClient::new(
             http.clone(),

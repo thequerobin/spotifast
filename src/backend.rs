@@ -207,6 +207,12 @@ pub enum ApiRequest {
         track_uri: String,
         hidden: bool,
     },
+    GeneratedPlaylist {
+        account: String,
+        job_id: String,
+        id: String,
+        completed: bool,
+    },
     MyPlaylists {
         offset: u32,
         generation: u64,
@@ -408,6 +414,7 @@ impl ApiRequest {
                 | Self::NewReleaseTracks { .. }
                 | Self::HiddenSongs { .. }
                 | Self::MyPlaylists { .. }
+                | Self::GeneratedPlaylist { .. }
                 | Self::PlaylistSample { .. }
                 | Self::Contains { .. }
         )
@@ -470,6 +477,13 @@ pub enum ApiResponse {
         track_uri: String,
         hidden: bool,
         result: ApiResult<()>,
+    },
+    GeneratedPlaylist {
+        account: String,
+        job_id: String,
+        id: String,
+        completed: bool,
+        result: ApiResult<Playlist>,
     },
     MyPlaylists {
         offset: u32,
@@ -1157,6 +1171,7 @@ pub use fastframe_shell::Waker;
 
 /// The interface's handle to the runtime.
 pub struct Backend {
+    pub generation: crate::playlist_generation::jobs::Handle,
     commands: mpsc::UnboundedSender<Command>,
     events: std::sync::mpsc::Receiver<Event>,
     art: ArtLoader,
@@ -1227,6 +1242,8 @@ impl Backend {
         let art = ArtLoader::new(http.clone(), runtime.handle().clone(), dirs.art_cache_dir());
         let activity = Arc::new(NetActivity::default());
 
+        let (generation, generation_requests) = crate::playlist_generation::jobs::Handle::channel();
+        let worker_generation = generation.clone();
         let worker_activity = Arc::clone(&activity);
         let worker_art = art.clone();
         let worker_commands = command_tx.clone();
@@ -1245,6 +1262,13 @@ impl Backend {
                         worker_commands,
                         waker,
                     );
+                    tokio::spawn(crate::playlist_generation::jobs::run(
+                        worker.api.clone(),
+                        worker.dirs.state.join("playlist-generations"),
+                        worker_generation,
+                        generation_requests,
+                        worker.waker.clone(),
+                    ));
                     if restore_sign_in {
                         worker.restore_session();
                     }
@@ -1256,6 +1280,7 @@ impl Backend {
             .expect("unable to start the backend thread");
 
         Self {
+            generation,
             commands: command_tx,
             events: event_rx,
             art,
@@ -4896,7 +4921,9 @@ fn operation_for(api: &ApiGateway, request: &ApiRequest) -> Operation {
             }
         }
         ApiRequest::MyPlaylists { .. } => Operation::PlaylistLibrary,
-        ApiRequest::CreatePlaylist { .. } => Operation::PlaylistCreation,
+        ApiRequest::CreatePlaylist { .. } | ApiRequest::GeneratedPlaylist { .. } => {
+            Operation::PlaylistCreation
+        }
         ApiRequest::MadeForYou { .. } | ApiRequest::SearchPlaylists { .. } => {
             Operation::PlaylistSearch
         }
@@ -4958,7 +4985,11 @@ fn observe_playlists(api: &ApiGateway, response: &ApiResponse) {
             result: Ok(playlist),
             ..
         }
-        | ApiResponse::PlaylistCreated(Ok(playlist)) => api.observe_playlist(playlist),
+        | ApiResponse::PlaylistCreated(Ok(playlist))
+        | ApiResponse::GeneratedPlaylist {
+            result: Ok(playlist),
+            ..
+        } => api.observe_playlist(playlist),
         ApiResponse::Search {
             result: Ok(results),
             ..
@@ -5465,6 +5496,18 @@ async fn handle(
         | ApiRequest::NewReleaseTracks { .. }
         | ApiRequest::HiddenSongs { .. }
         | ApiRequest::SetHiddenInPlaylist { .. } => unreachable!("handled before Web API routing"),
+        ApiRequest::GeneratedPlaylist {
+            account,
+            job_id,
+            id,
+            completed,
+        } => ApiResponse::GeneratedPlaylist {
+            result: routed!(generated_playlist(&id)),
+            account,
+            job_id,
+            id,
+            completed,
+        },
         ApiRequest::MyPlaylists { offset, generation } => ApiResponse::MyPlaylists {
             offset,
             generation,

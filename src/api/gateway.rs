@@ -196,6 +196,19 @@ pub struct ApiGateway {
 }
 
 impl ApiGateway {
+    #[cfg(test)]
+    pub(crate) fn generation_test(client: ApiClient, account: &str) -> Self {
+        let gateway = Self::new(reqwest::Client::new(), Arc::new(NetActivity::default()));
+        *gateway.personal.client.write().unwrap() = Arc::new(client);
+        gateway.set_state(
+            ApiSource::Personal,
+            SessionState::Ready {
+                account: AccountId::new(account),
+            },
+        );
+        gateway
+    }
+
     pub fn new(http: impl Into<crate::http::Http>, activity: Arc<NetActivity>) -> Self {
         let http = http.into();
         Self {

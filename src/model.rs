@@ -1244,6 +1244,7 @@ pub enum Action {
     },
     ShowDialog(Dialog),
     CloseDialog,
+    Generation(crate::playlist_generation::jobs::Request),
     CreatePlaylist {
         name: String,
         public: bool,

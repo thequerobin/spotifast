@@ -700,7 +700,9 @@ pub struct App {
     /// A requested start whose effect on the manual queue is already applied.
     /// Context loads keep it; explicit skips consume their rows immediately.
     queue_start_pending: Option<Target>,
+    generated_playlist_reads: HashMap<String, (String, bool, Option<Instant>)>,
     pub playlist_busy: bool,
+    pub generation_draft: crate::ui::playlist_generation::Draft,
     pub quit_requested: bool,
     /// Wheel step, Linux touchpad scale and glide, and the axis a gesture
     /// holds, for the window on screen.
@@ -1268,7 +1270,9 @@ impl App {
             last_now_playing_uri: None,
             last_now_playing_sequence: 0,
             queue_start_pending: None,
+            generated_playlist_reads: HashMap::new(),
             playlist_busy: false,
+            generation_draft: Default::default(),
             quit_requested: false,
             scrolling: fastframe_scroll::Scrolling::default(),
             autoscroll: crate::autoscroll::Autoscroll::default(),
@@ -2454,6 +2458,54 @@ impl App {
     fn handle_events(&mut self) {
         let events = self.backend.poll();
         self.handle_backend_events(events);
+        if !self.offline && self.user_id().is_some() {
+            self.sync_generated_playlist_views(self.backend.generation.snapshot().jobs);
+        }
+    }
+
+    /// Reconcile generated playlists through their real Web API headers. This
+    /// also discovers completed jobs on restart, without repeating creation.
+    fn sync_generated_playlist_views(
+        &mut self,
+        jobs: Vec<crate::playlist_generation::jobs::View>,
+    ) -> usize {
+        let mut requested = 0;
+        for job in jobs {
+            if self.user_id() != Some(job.account.as_str()) {
+                continue;
+            }
+            let Some(id) = job.playlist_id else {
+                continue;
+            };
+            let uri = format!("spotify:playlist:{id}");
+            if self
+                .library
+                .playlists_edits
+                .iter()
+                .any(|edit| edit.uri == uri && edit.added.is_none())
+            {
+                continue;
+            }
+            let completed = job.state == crate::playlist_generation::jobs::State::Completed;
+            if let Some((previous_id, previous_completed, retry_at)) =
+                self.generated_playlist_reads.get(&job.id)
+                && previous_id == &id
+                && *previous_completed == completed
+                && retry_at.is_none_or(|at| at > Instant::now())
+            {
+                continue;
+            }
+            self.generated_playlist_reads
+                .insert(job.id.clone(), (id.clone(), completed, None));
+            self.backend.api(ApiRequest::GeneratedPlaylist {
+                account: job.account,
+                job_id: job.id,
+                id,
+                completed,
+            });
+            requested += 1;
+        }
+        requested
     }
 
     fn handle_backend_events(&mut self, events: Vec<Event>) {
@@ -3027,6 +3079,7 @@ impl App {
 
     /// Clears account data while preserving request serials that reject late answers.
     fn reset_data(&mut self) {
+        self.generated_playlist_reads.clear();
         self.pending_remote_volume = None;
         self.local_transfer_sequence = None;
         self.queue_start_pending = None;
@@ -7335,9 +7388,24 @@ impl App {
                         library.playlists_loading_since = None;
                         // This load was asked for after these changes were
                         // confirmed, so its list tells of them itself.
-                        library
-                            .playlists_edits
-                            .retain(|edit| edit.settled_by.is_none_or(|by| by > generation));
+                        let generated: std::collections::HashSet<_> = self
+                            .generated_playlist_reads
+                            .values()
+                            .map(|(id, _, _)| format!("spotify:playlist:{id}"))
+                            .collect();
+                        let listed: std::collections::HashSet<_> = library
+                            .playlists
+                            .get()
+                            .into_iter()
+                            .flatten()
+                            .map(|playlist| playlist.uri.clone())
+                            .collect();
+                        library.playlists_edits.retain(|edit| {
+                            edit.settled_by.is_none_or(|by| by > generation)
+                                || (edit.added.is_some()
+                                    && generated.contains(&edit.uri)
+                                    && !listed.contains(&edit.uri))
+                        });
                         // Load folder order after all playlists arrive.
                         self.read_rootlist();
                     }
@@ -7613,6 +7681,80 @@ impl App {
                     page.contributors.extend(adders.iter().cloned());
                 }
                 self.request_user_names(adders);
+            }
+            ApiResponse::GeneratedPlaylist {
+                account,
+                job_id,
+                id,
+                completed,
+                result,
+            } => {
+                if self.user_id() != Some(account.as_str())
+                    || self
+                        .generated_playlist_reads
+                        .get(&job_id)
+                        .is_none_or(|(expected, done, _)| expected != &id || *done != completed)
+                {
+                    return;
+                }
+                match result {
+                    Ok(playlist)
+                        if playlist.id == id
+                            && playlist.owner.id.as_deref() == Some(account.as_str())
+                            && playlist.uri == format!("spotify:playlist:{id}") =>
+                    {
+                        let uri = playlist.uri.clone();
+                        // Keep an explicit removal made while this read was in flight.
+                        if self
+                            .library
+                            .playlists_edits
+                            .iter()
+                            .any(|edit| edit.uri == uri && edit.added.is_none())
+                        {
+                            return;
+                        }
+                        if let Some(listed) = self
+                            .library
+                            .playlists
+                            .get_mut()
+                            .and_then(|list| list.iter_mut().find(|listed| listed.id == id))
+                        {
+                            *listed = playlist.clone();
+                        }
+                        if self.library.playlists.get().is_none() {
+                            self.library.playlists = Loadable::Loaded(Vec::new());
+                        }
+                        self.edit_playlists(PlaylistEdit {
+                            uri: uri.clone(),
+                            added: Some(playlist),
+                            settled_by: Some(self.library.playlists_generation + 1),
+                        });
+                        self.saved.insert(uri, true);
+                        self.store_library_cache();
+                        // Refresh any open page after the last insertion batch.
+                        if completed && self.playlist_pages.contains_key(&id) {
+                            self.reload(Page::Playlist(id));
+                        }
+                    }
+                    Err(error)
+                        if error.is_network()
+                            || error
+                                .status()
+                                .is_some_and(|status| status == 429 || status >= 500)
+                            || matches!(
+                                error,
+                                crate::api::ApiError::RateLimited
+                                    | crate::api::ApiError::QuotaExhausted
+                            ) =>
+                    {
+                        if let Some((_, _, retry_at)) =
+                            self.generated_playlist_reads.get_mut(&job_id)
+                        {
+                            *retry_at = Some(Instant::now() + Duration::from_secs(60));
+                        }
+                    }
+                    _ => {}
+                }
             }
             ApiResponse::PlaylistCreated(result) => {
                 self.playlist_busy = false;
@@ -11461,6 +11603,9 @@ impl App {
                 banner.dismissals = banner.dismissals.saturating_add(1);
                 self.settings_dirty = true;
             }
+            Action::Generation(request) => {
+                self.backend.generation.send(request);
+            }
             Action::CreatePlaylist {
                 name,
                 public,
@@ -12779,6 +12924,12 @@ impl App {
     /// hidden, minimised or occluded window but still runs its logic, so
     /// a hidden window keeps polling and keeps media controls current.
     fn schedule_next_pass(&self, ctx: &egui::Context) {
+        for (_, _, retry_at) in self.generated_playlist_reads.values() {
+            if let Some(at) = retry_at {
+                ctx.request_repaint_after(at.saturating_duration_since(Instant::now()));
+            }
+        }
+
         if let Some(due) = self.next_pass() {
             ctx.request_repaint_after(due);
         }
@@ -15322,6 +15473,146 @@ mod tests {
         );
         app.handle_auth(AuthStatus::SignedOut);
         assert_eq!(app.device_history, Default::default());
+    }
+
+    fn generated_job() -> crate::playlist_generation::jobs::Job {
+        let mut job = crate::playlist_generation::jobs::Job::new(
+            "alice".into(),
+            "mcans".into(),
+            Default::default(),
+            "MCANS - Todas".into(),
+            false,
+        )
+        .unwrap();
+        job.playlist_id = Some("generated".into());
+        job.state = crate::playlist_generation::jobs::State::Completed;
+        job
+    }
+
+    fn generated_response(job: &crate::playlist_generation::jobs::Job) -> ApiResponse {
+        ApiResponse::GeneratedPlaylist {
+            account: job.account.clone(),
+            job_id: job.id.clone(),
+            id: "generated".into(),
+            completed: true,
+            result: Ok(Playlist {
+                id: "generated".into(),
+                uri: "spotify:playlist:generated".into(),
+                name: job.name.clone(),
+                owner: crate::api::models::Owner {
+                    id: Some("alice".into()),
+                    ..Default::default()
+                },
+                ..Default::default()
+            }),
+        }
+    }
+
+    #[test]
+    fn generated_playlist_sync_restores_completed_jobs_without_recreating_them() {
+        let mut app = listener_app();
+        let mut job = generated_job();
+        assert_eq!(app.sync_generated_playlist_views(vec![job.view()]), 1);
+        assert_eq!(app.sync_generated_playlist_views(vec![job.view()]), 0);
+        job.account = "someone-else".into();
+        assert_eq!(app.sync_generated_playlist_views(vec![job.view()]), 0);
+        job.account = "alice".into();
+        app.generated_playlist_reads.clear();
+        job.state = crate::playlist_generation::jobs::State::Running;
+        assert_eq!(app.sync_generated_playlist_views(vec![job.view()]), 1);
+        job.added.insert("spotify:track:song".into());
+        assert_eq!(
+            app.sync_generated_playlist_views(vec![job.view()]),
+            0,
+            "no extra header request per insertion batch"
+        );
+        job.state = crate::playlist_generation::jobs::State::Completed;
+        assert_eq!(app.sync_generated_playlist_views(vec![job.view()]), 1);
+    }
+
+    #[test]
+    fn generated_playlist_sync_updates_library_and_cache_without_disturbing_manual_creation() {
+        let mut app = listener_app();
+        app.receive_account_caches("alice", 7, cached_playlists(&["old"]), None);
+        app.load_playlists();
+        let old_generation = app.library.playlists_generation;
+        app.playlist_busy = true;
+        app.dialog = Some(Dialog::CreatePlaylist {
+            name: "manual".into(),
+            public: false,
+            add_uris: vec!["spotify:track:selected".into()],
+        });
+        let current_page = app.page().clone();
+        let job = generated_job();
+        app.sync_generated_playlist_views(vec![job.view()]);
+        app.handle_api(generated_response(&job));
+        assert_eq!(listed_playlists(&app), playlist_ids(&["generated", "old"]));
+        assert_eq!(app.saved.get("spotify:playlist:generated"), Some(&true));
+        assert!(app.playlist_busy);
+        assert!(
+            matches!(&app.dialog, Some(Dialog::CreatePlaylist { name, .. }) if name == "manual")
+        );
+        assert_eq!(app.page(), &current_page);
+        app.handle_api(ApiResponse::MyPlaylists {
+            offset: 0,
+            generation: old_generation,
+            result: Ok(playlist_page(&["old"], 0, 1)),
+        });
+        assert_eq!(
+            listed_playlists(&app),
+            playlist_ids(&["generated", "old"]),
+            "an earlier library read must not hide the generated playlist"
+        );
+        assert!(
+            stored_playlists(&app)
+                .iter()
+                .any(|(_, ids)| ids.contains(&"generated".to_owned()))
+        );
+        app.handle_api(generated_response(&job));
+        assert_eq!(listed_playlists(&app), playlist_ids(&["generated", "old"]));
+        app.load_playlists();
+        app.handle_api(ApiResponse::MyPlaylists {
+            offset: 0,
+            generation: app.library.playlists_generation,
+            result: Ok(playlist_page(&["old"], 0, 1)),
+        });
+        assert_eq!(
+            listed_playlists(&app),
+            playlist_ids(&["generated", "old"]),
+            "even a newer list may lag behind the verified header"
+        );
+    }
+
+    #[test]
+    fn generated_playlist_sync_ignores_other_accounts_and_retries_temporary_read_failures() {
+        let mut app = listener_app();
+        let job = generated_job();
+        app.sync_generated_playlist_views(vec![job.view()]);
+        app.handle_api(ApiResponse::GeneratedPlaylist {
+            account: "other".into(),
+            job_id: job.id.clone(),
+            id: "generated".into(),
+            completed: true,
+            result: Err(crate::api::ApiError::Network("offline".into())),
+        });
+        assert!(app.generated_playlist_reads[&job.id].2.is_none());
+        app.handle_api(ApiResponse::GeneratedPlaylist {
+            account: "alice".into(),
+            job_id: job.id.clone(),
+            id: "generated".into(),
+            completed: true,
+            result: Err(crate::api::ApiError::Network("offline".into())),
+        });
+        assert!(app.generated_playlist_reads[&job.id].2.is_some());
+        assert_eq!(app.sync_generated_playlist_views(vec![job.view()]), 0);
+        app.generated_playlist_reads.get_mut(&job.id).unwrap().2 = Some(Instant::now());
+        assert_eq!(app.sync_generated_playlist_views(vec![job.view()]), 1);
+        app.handle_api(generated_response(&job));
+        assert_eq!(
+            listed_playlists(&app),
+            playlist_ids(&["generated"]),
+            "also show a verified playlist when the library has not loaded yet"
+        );
     }
 
     fn listener_app() -> App {

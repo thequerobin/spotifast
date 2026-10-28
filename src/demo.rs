@@ -1381,6 +1381,15 @@ pub fn apply_flags(app: &mut App, page: Option<&str>, show: Option<&str>) {
                     cover: Default::default(),
                 });
             }
+            "generation" => {
+                app.generation_draft.kind = "mcans".into();
+                app.generation_draft.period.start = "2025".into();
+                app.dialog = Some(Dialog::CreatePlaylist {
+                    name: String::new(),
+                    public: false,
+                    add_uris: Vec::new(),
+                });
+            }
             "create" => {
                 app.dialog = Some(Dialog::CreatePlaylist {
                     name: "Autumn drives".into(),

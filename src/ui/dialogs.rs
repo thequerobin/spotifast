@@ -55,7 +55,17 @@ pub fn show(app: &mut App, ctx: &egui::Context) {
                         }
                     });
                 }
-                Dialog::CreatePlaylist { .. } => create_playlist(app, ui),
+                Dialog::CreatePlaylist { .. } => {
+                    let has_history = app.backend.generation.snapshot().jobs.iter()
+                        .any(|job| Some(job.account.as_str()) == app.user_id());
+                    let height = (ctx.content_rect().height() - 100.0).clamp(200.0, 650.0);
+                    egui::ScrollArea::vertical()
+                        .id_salt("create-playlist-content")
+                        .max_height(height)
+                        .min_scrolled_height(if has_history { height } else { 64.0 })
+                        .auto_shrink([true, !has_history])
+                        .show(ui, |ui| create_playlist(app, ui));
+                }
                 Dialog::EditPlaylist { .. } => edit_playlist(app, ui),
                 Dialog::ConfirmDeletePlaylist { id, name, owned } => {
                     theme::text(
@@ -343,6 +353,13 @@ fn text_field(
 }
 
 fn create_playlist(app: &mut App, ui: &mut egui::Ui) {
+    if crate::ui::playlist_generation::creation(app, ui) {
+        standard_create_playlist(app, ui);
+    }
+    crate::ui::playlist_generation::history(app, ui);
+}
+
+fn standard_create_playlist(app: &mut App, ui: &mut egui::Ui) {
     let palette = app.palette;
     let locale = app.locale;
     let busy = app.playlist_busy;

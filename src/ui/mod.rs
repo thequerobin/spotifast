@@ -14,6 +14,7 @@ pub mod login;
 mod lyrics;
 pub mod new_releases;
 pub mod player_bar;
+pub mod playlist_generation;
 mod prerelease;
 pub mod queue;
 pub mod radio;

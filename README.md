@@ -163,6 +163,11 @@ Spotify is a trademark of Spotify AB.
 
 Licensed under the [MIT License](LICENSE).
 
+## Playlist generation
+MCANS playlist generation selects liked songs whose albums are not saved,
+with optional calendar periods, editable names and resumable desktop jobs.
+See [playlist generation and recovery](docs/_reference/playlist-generation.md).
+
 ## Star history
 
 <a href="https://www.star-history.com/?repos=crmne%2Fspotifast&amp;type=date">
