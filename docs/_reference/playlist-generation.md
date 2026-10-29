@@ -1,8 +1,46 @@
 ---
 title: Playlist Generation
-description: MCANS selection, calendar periods and resumable desktop jobs.
+description: MCANS and unliked followed-artist releases with resumable desktop jobs.
 nav_order: 12
 ---
+
+## Unliked releases from followed artists (MNCAS)
+
+Select **Músicas Não Curtidas de Artistas Seguidos (MNCAS)** in the existing
+playlist creation form. The default name is `MNCAS - {period}` and remains
+editable. Blank dates mean all available releases.
+
+This mode pages through **all** followed artists (not the Home shelf's
+50-artist fallback), then each artist's albums, singles, appearances and
+compilations. Only releases intersecting the requested calendar period have
+their tracks read. A track must credit at least one followed artist, so an
+unrelated song on a compilation is excluded. Collaborations are included.
+Saved-album membership is irrelevant to this mode.
+
+Spotify supplies a release date on the album/single, not an independently
+verified original-release date for every recording. Reissues therefore use
+the date of that edition. A date with only year or month precision denotes
+the whole corresponding calendar interval; it is included when that interval
+overlaps the requested range. Missing or invalid dates are skipped. Sorting
+uses the first day of the known release period, newest first, without
+claiming that this is an exact release day.
+
+Before selecting tracks, the job checks Spotify library membership in groups
+of at most 40 URIs and excludes liked tracks. Membership reflects the time
+of the check, rather than an atomic snapshot of all likes for the run. URI
+and available recording metadata prevent duplicates; different editions
+with different IDs and no shared recording metadata cannot always be
+recognized as one recording. Local/unavailable tracks and missing IDs are
+skipped. Keep follows and likes stable during a run for consistent results.
+
+The followed-artist cursor, artist index, release-page offset, unique album
+queue, track offset and selected songs are checkpointed after each page.
+HTTP 429, network retries, pause/resume, playlist reconciliation and library
+synchronization use the same worker as MCANS. The history identifies each
+discovery stage and shows artists processed, releases scanned and tracks
+analyzed. Discovery has indeterminate progress until the actual workload is
+known. Large catalogues can take substantial time and API requests, even
+when a narrow date range excludes most tracks.
 
 ## Creating an MCANS playlist
 
@@ -34,7 +72,8 @@ restored merely because their generation remains in history.
 
 ## Periods and names
 
-Dates use **UTC**, matching Spotify's timestamps. Enter `YYYY`, `MM/YYYY`
+MCANS uses **UTC** for like timestamps. MNCAS uses release calendar dates.
+Enter `YYYY`, `MM/YYYY`
 or `DD/MM/YYYY`. One start field denotes the whole year, month or day.
 Two fields include every instant from the start period's first day through
 the end period's final day. Precisions can differ: `2024` through `06/2025`
@@ -42,7 +81,7 @@ includes January 1, 2024 through June 30, 2025, inclusive. An end alone
 has no lower bound. Both fields blank means no filter. Invalid dates,
 non-leap February 29 and reversed intervals are refused before starting.
 
-The suggested name is `MCANS - {period}`, with slashes replaced by hyphens,
+The suggested name is `MCANS - {period}` or `MNCAS - {period}`, with slashes replaced by hyphens,
 ` a ` between endpoints and `Todas` for an unfiltered job. A custom name
 is retained when the period changes. Names must contain 1 to 100 characters.
 
@@ -93,11 +132,12 @@ when scanned, rather than an atomic snapshot of the entire run.
 
 ## Progress and request policy
 
-The history shows state, current stage, analyzed/total liked songs, album
-count, selected and added songs, execution time and an estimate when there
+The history shows state, current stage, analyzed/total songs, album
+count, followed artists processed where applicable, selected and added songs,
+execution time and an estimate when there
 are completed insertions to extrapolate from. Initial discovery has an
 indeterminate indicator. Once scanning finishes, overall progress is
-completed album rows + analyzed songs + inserted songs, divided by those
+completed artists + album rows + analyzed songs + inserted songs, divided by those
 same scanned rows + all selected insertions. No fixed stage percentages are
 invented. Elapsed time accumulates time in the running process across
 restarts, including queued work and retry waits, excluding time with the
@@ -123,6 +163,9 @@ Permissions errors remain visible and may require signing in again.
 ## Extending selection
 
 `src/playlist_generation/mod.rs` contains the small strategy registry.
+`Source` selects a durable discovery pipeline: liked tracks or followed
+releases. Selection predicates receive a `Track`, shared parameters and
+relevant library state independently of the date filter.
 For another liked-song selection, implement its predicate and add a `Kind`:
 
 ```rust
@@ -130,10 +173,11 @@ Kind {
     id: "liked-from-saved-albums",
     label: "Liked songs from saved albums",
     prefix: "Saved albums",
+    source: Source::LikedTracks,
     needs_albums: true,
     fields: &[],
     validate: |_| Ok(()),
-    select: |saved, albums, _parameters| saved.track.album.as_ref()
+    select: |track, albums, _parameters| track.album.as_ref()
         .is_some_and(|album| albums.contains(&album.id)),
 }
 ```
@@ -155,6 +199,7 @@ the registry is not a general workflow framework.
 | `src/playlist_generation/mod.rs` | Strategy registry, parameter declarations, eligibility and naming |
 | `src/playlist_generation/period.rs` | Calendar validation, normalized boundaries and UTC filtering |
 | `src/playlist_generation/jobs.rs` | Durable jobs, state transitions, scheduling, retries, checkpoints, reconciliation and timing |
+| `src/playlist_generation/releases.rs`, `src/playlist_generation/release_tests.rs` | Followed release discovery, membership checks and recovery regression tests |
 | `src/playlist_generation/tests.rs` | 26 selection, date, pagination, HTTP, interruption and recovery tests |
 | `src/ui/playlist_generation.rs` | Native generation form, progress, task controls and history |
 | `src/backend.rs` | Starts the job actor on the existing runtime and exposes its handle |
@@ -183,3 +228,10 @@ Checked against the current official documentation:
 The existing OAuth scopes already include `user-library-read`,
 `playlist-read-private`, `playlist-modify-private` and `playlist-modify-public`.
 No new Spotify app, service, audio source or credential store is introduced.
+
+The followed-release pipeline reuses the documented
+[followed artist cursor](https://developer.spotify.com/documentation/web-api/reference/get-followed),
+[artist release catalogue](https://developer.spotify.com/documentation/web-api/reference/get-an-artists-albums),
+[album tracks](https://developer.spotify.com/documentation/web-api/reference/get-an-albums-tracks)
+and [saved-item membership](https://developer.spotify.com/documentation/web-api/reference/check-library-contains)
+endpoints. Existing `user-follow-read` and library/playlist scopes suffice.

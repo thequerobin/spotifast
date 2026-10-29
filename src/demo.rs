@@ -1381,6 +1381,15 @@ pub fn apply_flags(app: &mut App, page: Option<&str>, show: Option<&str>) {
                     cover: Default::default(),
                 });
             }
+            "unliked-releases" => {
+                app.generation_draft.kind = "unliked-followed-releases".into();
+                app.generation_draft.period.start = "03/2025".into();
+                app.dialog = Some(Dialog::CreatePlaylist {
+                    name: String::new(),
+                    public: false,
+                    add_uris: Vec::new(),
+                });
+            }
             "generation" => {
                 app.generation_draft.kind = "mcans".into();
                 app.generation_draft.period.start = "2025".into();

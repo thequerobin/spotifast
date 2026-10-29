@@ -3,7 +3,7 @@ use crate::app::App;
 use crate::i18n::gettext;
 use crate::model::Action;
 use crate::playlist_generation::jobs::{Request, Stage, State};
-use crate::playlist_generation::{KINDS, Parameters, Period, default_name, kind};
+use crate::playlist_generation::{KINDS, Parameters, Period, Source, default_name, kind};
 
 #[derive(Default)]
 pub struct Draft {
@@ -45,10 +45,21 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
     if draft.kind.is_empty() {
         return true;
     }
-    ui.label(gettext(
-        locale,
-        "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs.",
-    ));
+    if kind(&draft.kind).is_ok_and(|kind| kind.source == Source::FollowedReleases) {
+        ui.label(gettext(locale, "Uses album/single release dates and excludes liked songs. Only tracks by followed artists are included."));
+    }
+    let release_dates = kind(&draft.kind).is_ok_and(|kind| kind.source == Source::FollowedReleases);
+    ui.label(if release_dates {
+        gettext(
+            locale,
+            "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases.",
+        )
+    } else {
+        gettext(
+            locale,
+            "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs.",
+        )
+    });
     ui.horizontal(|ui| {
         ui.label(gettext(locale, "From"));
         ui.add(egui::TextEdit::singleline(&mut draft.period.start).desired_width(100.0));
@@ -131,6 +142,9 @@ pub fn history(app: &mut App, ui: &mut egui::Ui) {
         ui.push_id(&job.id, |ui| {
                 ui.label(egui::RichText::new(&job.name).strong());
                 let stage = match job.stage {
+                    Stage::FollowedArtists => gettext(locale, "Reading followed artists"),
+                    Stage::ArtistReleases => gettext(locale, "Reading artist releases"),
+                    Stage::ReleaseTracks => gettext(locale, "Checking release tracks and likes"),
                     Stage::Albums => gettext(locale, "Reading saved albums"),
                     Stage::Tracks => gettext(locale, "Reading liked songs"),
                     Stage::Create => gettext(locale, "Creating playlist"),
@@ -144,6 +158,10 @@ pub fn history(app: &mut App, ui: &mut egui::Ui) {
                     State::Cancelled => gettext(locale, "Cancelled"),
                 };
                 ui.label(format!("{state}: {stage}"));
+                if let Some(total) = job.artists_total.filter(|total| *total > 0) {
+                    ui.label(gettext(locale, "Artists: {artists}/{total}")
+                        .replace("{artists}", &job.artists_checked.to_string()).replace("{total}", &total.to_string()));
+                }
                 if let Some(progress) = job.progress {
                     ui.add(egui::ProgressBar::new(progress).show_percentage());
                 } else if matches!(job.state, State::Pending | State::Running | State::Retrying) {

@@ -1,6 +1,6 @@
 //! One durable actor owns the job files. A checkpoint is synced before every
 //! mutation; an interrupted mutation is reconciled before another is issued.
-use super::{Parameters, Period, eligible, kind};
+use super::{Parameters, Period, Source, eligible, kind, releases};
 use crate::api::models::{Page, Playlist, PlaylistItem, SavedAlbum, SavedTrack};
 use crate::api::{ApiClient, ApiError, ApiGateway, Operation};
 use serde::{Deserialize, Serialize};
@@ -33,6 +33,9 @@ pub enum State {
 pub enum Stage {
     Albums,
     Tracks,
+    FollowedArtists,
+    ArtistReleases,
+    ReleaseTracks,
     Create,
     Add,
     Done,
@@ -76,6 +79,8 @@ pub struct Job {
     pub albums_offset: u32,
     pub tracks_offset: u32,
     pub albums: BTreeSet<String>,
+    #[serde(default)]
+    pub releases: releases::Scan,
     pub candidates: Vec<Candidate>,
     pub added: BTreeSet<String>,
     /// Persisted before sending. Never infer failure from a missing response.
@@ -94,6 +99,8 @@ pub struct View {
     pub analyzed: u32,
     pub tracks_total: Option<u32>,
     pub albums_checked: u32,
+    pub artists_checked: usize,
+    pub artists_total: Option<usize>,
     pub selected: usize,
     pub added: usize,
     pub skipped: u32,
@@ -128,7 +135,9 @@ impl Job {
             public,
             created_at: now(),
             state: State::Pending,
-            stage: if strategy.needs_albums {
+            stage: if strategy.source == Source::FollowedReleases {
+                Stage::FollowedArtists
+            } else if strategy.needs_albums {
                 Stage::Albums
             } else {
                 Stage::Tracks
@@ -148,6 +157,7 @@ impl Job {
             albums_offset: 0,
             tracks_offset: 0,
             albums: BTreeSet::new(),
+            releases: Default::default(),
             candidates: Vec::new(),
             added: BTreeSet::new(),
             create_intent: false,
@@ -162,9 +172,14 @@ impl Job {
         let progress = if self.state == State::Completed {
             Some(1.0)
         } else if matches!(self.stage, Stage::Create | Stage::Add) {
-            let done = self.albums_checked as usize + self.analyzed as usize + self.added.len();
-            let total =
-                self.albums_checked as usize + self.analyzed as usize + self.candidates.len();
+            let done = self.albums_checked as usize
+                + self.releases.artist_index
+                + self.analyzed as usize
+                + self.added.len();
+            let total = self.albums_checked as usize
+                + self.releases.artist_index
+                + self.analyzed as usize
+                + self.candidates.len();
             (total > 0).then(|| done as f32 / total as f32)
         } else {
             None
@@ -189,6 +204,16 @@ impl Job {
             analyzed: self.analyzed,
             tracks_total: self.tracks_total,
             albums_checked: self.albums_checked,
+            artists_checked: if self.stage == Stage::FollowedArtists {
+                self.releases.artists.len()
+            } else {
+                self.releases.artist_index
+            },
+            artists_total: if self.stage == Stage::FollowedArtists {
+                self.releases.followed_total.map(|total| total as usize)
+            } else {
+                Some(self.releases.artists.len())
+            },
             selected: self.candidates.len(),
             added: self.added.len(),
             skipped: self.skipped,
@@ -304,6 +329,7 @@ pub async fn load(root: &Path) -> Result<Vec<Job>, String> {
 
 #[derive(Clone, Debug)]
 pub enum Step {
+    Release(releases::Step),
     Albums,
     Tracks,
     Create,
@@ -316,6 +342,9 @@ pub enum Step {
 /// Changes here are saved before the returned operation can reach Spotify.
 pub fn prepare(job: &mut Job) -> Step {
     match job.stage {
+        Stage::FollowedArtists => Step::Release(releases::Step::Artists),
+        Stage::ArtistReleases => Step::Release(releases::Step::Albums),
+        Stage::ReleaseTracks => Step::Release(releases::Step::Tracks),
         Stage::Albums => Step::Albums,
         Stage::Tracks => Step::Tracks,
         Stage::Create if job.candidates.is_empty() => Step::Finish,
@@ -345,6 +374,7 @@ pub fn prepare(job: &mut Job) -> Step {
 }
 
 pub enum Outcome {
+    Release(Box<releases::Outcome>),
     Albums(Page<SavedAlbum>),
     Tracks(Page<SavedTrack>),
     Playlist(String),
@@ -363,6 +393,9 @@ pub(super) async fn execute(
     step: &Step,
 ) -> Result<Outcome, ApiError> {
     match step {
+        Step::Release(step) => releases::execute(client, job, step)
+            .await
+            .map(|outcome| Outcome::Release(Box::new(outcome))),
         Step::Albums => Ok(Outcome::Albums(
             client.saved_albums(job.albums_offset, 50).await?,
         )),
@@ -464,6 +497,7 @@ pub fn checked_next<T>(page: &Page<T>, offset: u32) -> Result<Option<u32>, ApiEr
 
 pub fn apply(job: &mut Job, outcome: Outcome) -> Result<(), ApiError> {
     match outcome {
+        Outcome::Release(outcome) => releases::apply(job, *outcome)?,
         Outcome::Albums(page) => {
             let next = checked_next(&page, job.albums_offset)?;
             if job.albums_total.is_some_and(|total| total != page.total) {

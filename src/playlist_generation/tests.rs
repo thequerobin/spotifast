@@ -463,7 +463,7 @@ async fn disk_checkpoints_survive_restart_for_multiple_independent_jobs() {
 }
 
 /// Real HTTP transport against a deterministic local Spotify stand-in.
-async fn server(
+pub(super) async fn server(
     replies: Vec<(&'static str, &'static str, String)>,
 ) -> (crate::api::ApiClient, tokio::task::JoinHandle<()>) {
     use tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -654,6 +654,7 @@ fn pause_resume_cancel_and_account_isolated_round_robin() {
 #[test]
 fn strategy_declares_and_persists_its_own_parameters() {
     let strategy = Kind {
+        source: Source::LikedTracks,
         id: "custom",
         label: "Custom",
         prefix: "Custom",
@@ -670,7 +671,7 @@ fn strategy_declares_and_persists_its_own_parameters() {
                 .map(|_| ())
                 .ok_or_else(|| "A track ID is required".into())
         },
-        select: |saved, _, parameters| saved.track.id.as_ref() == parameters.get("track"),
+        select: |track, _, parameters| track.id.as_ref() == parameters.get("track"),
     };
     let mut params = Parameters::new();
     assert!((strategy.validate)(&params).is_err());
@@ -753,7 +754,9 @@ async fn runtime_automatically_resumes_a_persisted_job_and_finishes_it() {
         receiver,
         crate::backend::Waker::default(),
     ));
-    tokio::time::timeout(std::time::Duration::from_secs(5), async {
+    // This verifies durable completion, not a five-second throughput budget.
+    // Allow the HTTP timeout when parallel Windows tests contend for resources.
+    tokio::time::timeout(std::time::Duration::from_secs(30), async {
         loop {
             if handle
                 .snapshot()
@@ -767,7 +770,13 @@ async fn runtime_automatically_resumes_a_persisted_job_and_finishes_it() {
         }
     })
     .await
-    .unwrap();
+    .unwrap_or_else(|error| {
+        panic!(
+            "{error}: jobs={:?}, storage_error={:?}",
+            handle.snapshot().jobs,
+            handle.snapshot().error
+        )
+    });
     actor.abort();
     let _ = actor.await;
     server.await.unwrap();

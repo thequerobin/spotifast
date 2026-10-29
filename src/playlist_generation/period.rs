@@ -57,6 +57,38 @@ fn boundary(input: &str, end: bool) -> Result<String, String> {
 }
 
 impl Period {
+    /// Spotify release dates carry day, month or year precision in ISO form.
+    pub fn release_period(value: &str) -> Option<Self> {
+        let parts: Vec<_> = value.split('-').collect();
+        let input = match parts.as_slice() {
+            [year] => year.to_string(),
+            [year, month] => format!("{month}/{year}"),
+            [year, month, day] => format!("{day}/{month}/{year}"),
+            _ => return None,
+        };
+        let period = Self {
+            start: input,
+            end: String::new(),
+        };
+        period.bounds().ok()?;
+        Some(period)
+    }
+
+    /// Unknown day/month is a calendar interval, never a fabricated exact date.
+    pub fn overlaps_release(&self, value: &str) -> bool {
+        let Some(release) = Self::release_period(value) else {
+            return false;
+        };
+        let Ok((low, high)) = self.bounds() else {
+            return false;
+        };
+        let Ok((Some(release_low), Some(release_high))) = release.bounds() else {
+            return false;
+        };
+        low.as_ref().is_none_or(|low| &release_high >= low)
+            && high.as_ref().is_none_or(|high| &release_low <= high)
+    }
+
     pub fn bounds(&self) -> Result<(Option<String>, Option<String>), String> {
         let start = self.start.trim();
         let end = self.end.trim();

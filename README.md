@@ -166,6 +166,8 @@ Licensed under the [MIT License](LICENSE).
 ## Playlist generation
 MCANS playlist generation selects liked songs whose albums are not saved,
 with optional calendar periods, editable names and resumable desktop jobs.
+MNCAS selects unliked songs from followed artists by album/single release
+date, with the same persistent progress and recovery.
 See [playlist generation and recovery](docs/_reference/playlist-generation.md).
 
 ## Star history

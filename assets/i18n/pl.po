@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-28 19:54-0300\n"
+"POT-Creation-Date: 2026-10-28 21:08-0300\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Polish\n"
@@ -29,12 +29,12 @@ msgstr "Wstrzymaj {name}"
 msgid "Play {name}"
 msgstr "Odtwórz {name}"
 
-#: src/ui/sidebar.rs:302 src/app.rs:3377 src/app.rs:22903
+#: src/ui/sidebar.rs:302 src/app.rs:3428 src/app.rs:23189
 #: src/ui/collection.rs:2139 src/ui/collection.rs:2368
 msgid "Playlist"
 msgstr "Playlista"
 
-#: src/ui/sidebar.rs:312 src/ui/friends.rs:286 src/app.rs:3351 src/app.rs:22908
+#: src/ui/sidebar.rs:312 src/ui/friends.rs:286 src/app.rs:3402 src/app.rs:23194
 #: src/ui/collection.rs:2361 src/ui/home.rs:93 src/ui/keys.rs:323
 #: src/ui/winamp/playlist.rs:653
 msgid "Liked Songs"
@@ -50,7 +50,7 @@ msgid "Recently played"
 msgstr "Ostatnio odtwarzane"
 
 #: src/ui/sidebar.rs:358 src/ui/dialogs.rs:383 src/ui/dialogs.rs:540
-#: src/ui/playlist_generation.rs:73
+#: src/ui/playlist_generation.rs:84
 msgid "Name"
 msgstr "Nazwa"
 
@@ -81,7 +81,7 @@ msgstr "Playlista • {owner}"
 msgid "Home"
 msgstr "Start"
 
-#: src/ui/sidebar.rs:979 src/app.rs:8157 src/ui/keys.rs:302
+#: src/ui/sidebar.rs:979 src/app.rs:8297 src/ui/keys.rs:302
 msgid "Search"
 msgstr "Szukaj"
 
@@ -113,7 +113,7 @@ msgstr "Przeszukaj bibliotekę"
 msgid "Library"
 msgstr "Biblioteka"
 
-#: src/ui/sidebar.rs:1095 src/app.rs:8131 src/model.rs:807 src/ui/search.rs:668
+#: src/ui/sidebar.rs:1095 src/app.rs:8271 src/model.rs:807 src/ui/search.rs:668
 msgid "Playlists"
 msgstr "Playlisty"
 
@@ -141,7 +141,7 @@ msgstr "Twoje"
 msgid "Search in Your Library"
 msgstr "Przeszukaj swoją bibliotekę"
 
-#: src/ui/sidebar.rs:1243 src/app.rs:3412 src/ui/artist.rs:221
+#: src/ui/sidebar.rs:1243 src/app.rs:3463 src/ui/artist.rs:221
 #: src/ui/artist.rs:364 src/ui/home.rs:791 src/ui/library.rs:101
 #: src/ui/search.rs:159 src/ui/search.rs:491 src/ui/winamp/playlist.rs:746
 msgid "Artist"
@@ -235,7 +235,7 @@ msgstr "Kliknij, aby zmienić wizualizację"
 msgid "Nothing playing"
 msgstr "Nic nie jest odtwarzane"
 
-#: src/ui/player_bar.rs:441 src/app.rs:9619
+#: src/ui/player_bar.rs:441 src/app.rs:9759
 msgid "Pick a song, album, or playlist"
 msgstr "Wybierz utwór, album lub playlistę"
 
@@ -263,7 +263,7 @@ msgid "Previous"
 msgstr "Poprzedni"
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:163
+#: src/ui/playlist_generation.rs:181
 msgid "Pause"
 msgstr "Wstrzymaj"
 
@@ -326,7 +326,7 @@ msgstr "Ostatnie"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:78
 #: src/ui/friends.rs:65 src/ui/mod.rs:642 src/window.rs:35
-#: src/ui/playlist_generation.rs:103
+#: src/ui/playlist_generation.rs:114
 msgid "Close"
 msgstr "Zamknij"
 
@@ -443,7 +443,7 @@ msgid "No timed lyrics for this track."
 msgstr "Brak zsynchronizowanego tekstu tego utworu."
 
 #: src/ui/lyrics.rs:462 src/ui/widgets.rs:2824 src/ui/widgets.rs:2864
-#: src/ui/widgets.rs:2892 src/app.rs:13338 src/ui/collection.rs:902
+#: src/ui/widgets.rs:2892 src/app.rs:13484 src/ui/collection.rs:902
 msgid "Loading…"
 msgstr "Wczytywanie…"
 
@@ -541,7 +541,7 @@ msgid "Copy link"
 msgstr "Kopiuj link"
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:172
+#: src/ui/playlist_generation.rs:190
 msgid "Open in Spotify"
 msgstr "Otwórz w Spotify"
 
@@ -651,7 +651,7 @@ msgstr "ODTWORZENIA"
 msgid "Sort by duration"
 msgstr "Sortuj według czasu trwania"
 
-#: src/ui/widgets.rs:2903 src/app.rs:13547 src/app.rs:13561
+#: src/ui/widgets.rs:2903 src/app.rs:13693 src/app.rs:13707
 msgid "Network connection error. Check your connection."
 msgstr "Błąd połączenia sieciowego. Sprawdź połączenie."
 
@@ -713,22 +713,22 @@ msgstr ""
 "Nazwy hostów Spotify są rozwiązywane przez proxy. Lokalne odtwarzanie łączy "
 "się bezpośrednio."
 
-#: src/app.rs:998
+#: src/app.rs:999
 msgid "Restoring proxy settings"
 msgstr "Przywracanie ustawień proxy"
 
-#: src/app.rs:1523
+#: src/app.rs:1525
 msgid "Couldn't change how Spotifast starts with your computer."
 msgstr "Nie udało się zmienić sposobu uruchamiania Spotifast z komputerem."
 
 #. Translators: {name} is the name of a speaker or other playback device.
-#: src/app.rs:2537
+#: src/app.rs:2587
 #, rust-format
 msgid "{name} is ready"
 msgstr "Urządzenie {name} jest gotowe"
 
 #. Translators: {error} is a sentence saying why the proxy password could not be stored.
-#: src/app.rs:2568
+#: src/app.rs:2618
 #, rust-format
 msgid ""
 "{error} The original settings file is kept intact; changed preferences are "
@@ -738,49 +738,49 @@ msgstr ""
 "preferencje nie są jeszcze zapisane."
 
 #. Translators: {version} is a version number such as 1.4.0.
-#: src/app.rs:2721
+#: src/app.rs:2771
 #, rust-format
 msgid "Spotifast {version} is available"
 msgstr "Dostępna jest wersja Spotifast {version}"
 
-#: src/app.rs:2738
+#: src/app.rs:2788
 msgid "Spotifast is up to date"
 msgstr "Spotifast jest aktualny"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:2746
+#: src/app.rs:2796
 #, rust-format
 msgid "Couldn't check for updates: {error}"
 msgstr "Nie udało się sprawdzić aktualizacji: {error}"
 
 #. Translators: {error} is an error message from the playback engine.
-#: src/app.rs:2846
+#: src/app.rs:2896
 #, rust-format
 msgid "Local playback: {error}"
 msgstr "Lokalne odtwarzanie: {error}"
 
-#: src/app.rs:2853
+#: src/app.rs:2903
 msgid "Opening your browser to set up local playback"
 msgstr "Otwieranie przeglądarki, aby skonfigurować lokalne odtwarzanie"
 
-#: src/app.rs:3241
+#: src/app.rs:3292
 msgid "Spotify audio disconnected. Reconnecting local playback"
 msgstr "Dźwięk Spotify rozłączony. Ponowne łączenie lokalnego odtwarzania"
 
-#: src/app.rs:3359 src/app/radio.rs:191 src/ui/radio.rs:35 src/ui/radio.rs:77
+#: src/app.rs:3410 src/app/radio.rs:191 src/ui/radio.rs:35 src/ui/radio.rs:77
 msgid "Radio"
 msgstr "Radio"
 
-#: src/app.rs:3393 src/api/models.rs:299 src/ui/prerelease.rs:71
+#: src/app.rs:3444 src/api/models.rs:299 src/ui/prerelease.rs:71
 msgid "Album"
 msgstr "Album"
 
-#: src/app.rs:3431 src/ui/show.rs:189
+#: src/app.rs:3482 src/ui/show.rs:189
 msgid "Podcast"
 msgstr "Podcast"
 
 #. Translators: {count} is the number of visualizer presets added.
-#: src/app.rs:3964
+#: src/app.rs:4015
 #, rust-format
 msgid "Added {count} MilkDrop preset"
 msgid_plural "Added {count} MilkDrop presets"
@@ -789,33 +789,33 @@ msgstr[1] "Dodano {count} presety MilkDrop"
 msgstr[2] "Dodano {count} presetów MilkDrop"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:3980
+#: src/app.rs:4031
 #, rust-format
 msgid "Couldn't fetch presets: {error}"
 msgstr "Nie udało się pobrać presetów: {error}"
 
 #. Translators: {folder} is a folder path and {error} is an error message.
-#: src/app.rs:4113
+#: src/app.rs:4164
 #, rust-format
 msgid "Couldn't open {folder}: {error}"
 msgstr "Nie udało się otworzyć {folder}: {error}"
 
 #. Translators: {skin} is the name of a Winamp skin.
-#: src/app.rs:4129
+#: src/app.rs:4180
 #, rust-format
 msgid "Added {skin} skin"
 msgstr "Dodano skórkę {skin}"
 
-#: src/app.rs:4230
+#: src/app.rs:4281
 msgid "Proxy applied. Restarting local playback."
 msgstr "Zastosowano proxy. Ponowne uruchamianie lokalnego odtwarzania."
 
-#: src/app.rs:4232
+#: src/app.rs:4283
 msgid "Proxy settings applied"
 msgstr "Zastosowano ustawienia proxy"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:4239
+#: src/app.rs:4290
 #, rust-format
 msgid ""
 "Proxy could not be applied: {error}. Previous connection settings are still "
@@ -824,200 +824,200 @@ msgstr ""
 "Nie udało się zastosować proxy: {error}. Nadal używane są poprzednie "
 "ustawienia połączenia."
 
-#: src/app.rs:6249
+#: src/app.rs:6300
 msgid "Queue cleared"
 msgstr "Kolejka wyczyszczona"
 
 #. Translators: Keep {date} unchanged. It is a date in YYYY-MM-DD form.
-#: src/app.rs:6279 src/app.rs:22893
+#: src/app.rs:6330 src/app.rs:23179
 #, rust-format
 msgid "Queue {date}"
 msgstr "Kolejka {date}"
 
-#: src/app.rs:6840 src/ui/login.rs:183
+#: src/app.rs:6891 src/ui/login.rs:183
 msgid "Your Spotify sign-in expired. Please sign in again."
 msgstr "Twoje logowanie do Spotify wygasło. Zaloguj się ponownie."
 
 #. Translators: {error} is an error message.
-#: src/app.rs:6847
+#: src/app.rs:6898
 #, rust-format
 msgid "Couldn't load your profile: {error}"
 msgstr "Nie udało się wczytać Twojego profilu: {error}"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:6908
+#: src/app.rs:6959
 #, rust-format
 msgid "Couldn't list devices: {error}"
 msgstr "Nie udało się wyświetlić urządzeń: {error}"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:7375
+#: src/app.rs:7441
 #, rust-format
 msgid "Couldn't load more playlists: {error}"
 msgstr "Nie udało się wczytać więcej playlist: {error}"
 
-#: src/app.rs:7421
+#: src/app.rs:7487
 msgid ""
 "Spotify hasn't confirmed your playlist changes yet. Try refreshing again."
 msgstr ""
 "Spotify nie potwierdził jeszcze zmian w Twojej playliście. Odśwież ponownie."
 
 #. Translators: {name} is a playlist name.
-#: src/app.rs:7625
+#: src/app.rs:7765
 #, rust-format
 msgid "Created {name}"
 msgstr "Utworzono {name}"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:7651
+#: src/app.rs:7791
 #, rust-format
 msgid "Couldn't create the playlist: {error}"
 msgstr "Nie udało się utworzyć playlisty: {error}"
 
-#: src/app.rs:7705
+#: src/app.rs:7845
 msgid "Playlist cover updated"
 msgstr "Zaktualizowano okładkę playlisty"
 
-#: src/app.rs:7714
+#: src/app.rs:7854
 msgid "Playlist updated"
 msgstr "Zaktualizowano playlistę"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:7724 src/app.rs:7841
+#: src/app.rs:7864 src/app.rs:7981
 #, rust-format
 msgid "Couldn't update the playlist: {error}"
 msgstr "Nie udało się zaktualizować playlisty: {error}"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:7798
+#: src/app.rs:7938
 #, rust-format
 msgid "Playlist change failed: {error}"
 msgstr "Nie udało się zmienić playlisty: {error}"
 
-#: src/app.rs:7825
+#: src/app.rs:7965
 msgid "Added to Your Library"
 msgstr "Dodano do Twojej biblioteki"
 
-#: src/app.rs:7827 src/app.rs:8035
+#: src/app.rs:7967 src/app.rs:8175
 msgid "Removed from Your Library"
 msgstr "Usunięto z Twojej biblioteki"
 
-#: src/app.rs:8028
+#: src/app.rs:8168
 msgid "Added to Liked Songs"
 msgstr "Dodano do Polubionych utworów"
 
-#: src/app.rs:8030
+#: src/app.rs:8170
 msgid "Removed from Liked Songs"
 msgstr "Usunięto z Polubionych utworów"
 
-#: src/app.rs:8032
+#: src/app.rs:8172
 msgid "Following artist"
 msgstr "Obserwujesz wykonawcę"
 
-#: src/app.rs:8033
+#: src/app.rs:8173
 msgid "Unfollowed artist"
 msgstr "Nie obserwujesz już wykonawcy"
 
-#: src/app.rs:8034
+#: src/app.rs:8174
 msgid "Saved to Your Library"
 msgstr "Zapisano w Twojej bibliotece"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:8049
+#: src/app.rs:8189
 #, rust-format
 msgid "Couldn't update your library: {error}"
 msgstr "Nie udało się zaktualizować Twojej biblioteki: {error}"
 
 #. Translators: {query} is the words someone searched for.
-#: src/app.rs:8101
+#: src/app.rs:8241
 #, rust-format
 msgid "Nothing on Spotify matches “{query}”"
 msgstr "Nic na Spotify nie pasuje do „{query}”"
 
 #. Translators: {query} is the words someone searched for; {error} is an error message.
-#: src/app.rs:8109
+#: src/app.rs:8249
 #, rust-format
 msgid "Couldn't search for “{query}”: {error}"
 msgstr "Nie udało się wyszukać „{query}”: {error}"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:8359
+#: src/app.rs:8499
 #, rust-format
 msgid "Cannot open this song: {error}"
 msgstr "Nie można otworzyć tego utworu: {error}"
 
-#: src/app.rs:8373
+#: src/app.rs:8513
 msgid "This episode's podcast is not on Spotify"
 msgstr "Podcastu z tym odcinkiem nie ma w Spotify"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:8378
+#: src/app.rs:8518
 #, rust-format
 msgid "Cannot open this episode: {error}"
 msgstr "Nie można otworzyć tego odcinka: {error}"
 
-#: src/app.rs:8430
+#: src/app.rs:8570
 msgid "Choose a device from the devices menu first."
 msgstr "Najpierw wybierz urządzenie z menu urządzeń."
 
 #. Translators: {error} is an error message.
-#: src/app.rs:8454
+#: src/app.rs:8594
 #, rust-format
 msgid "Couldn't switch device: {error}"
 msgstr "Nie udało się przełączyć urządzenia: {error}"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:8465 src/app.rs:8489
+#: src/app.rs:8605 src/app.rs:8629
 #, rust-format
 msgid "Couldn't add to queue: {error}"
 msgstr "Nie udało się dodać do kolejki: {error}"
 
-#: src/app.rs:8580
+#: src/app.rs:8720
 msgid "This song's album is not on Spotify"
 msgstr "Albumu z tym utworem nie ma w Spotify"
 
-#: src/app.rs:8597
+#: src/app.rs:8737
 msgid "Spotifast cannot open this kind of Spotify link"
 msgstr "Spotifast nie może otworzyć tego rodzaju linku Spotify"
 
-#: src/app.rs:8845
+#: src/app.rs:8985
 msgid "Nothing is playing. Pick something first"
 msgstr "Nic nie jest odtwarzane. Najpierw coś wybierz"
 
-#: src/app.rs:9240
+#: src/app.rs:9380
 msgid "Choose a device, or enable playback on this computer"
 msgstr "Wybierz urządzenie lub włącz odtwarzanie na tym komputerze"
 
-#: src/app.rs:9602 src/app.rs:9607
+#: src/app.rs:9742 src/app.rs:9747
 msgid "Pick something to play"
 msgstr "Wybierz coś do odtworzenia"
 
 #. Translators: {name} is an album name.
-#: src/app.rs:9993
+#: src/app.rs:10133
 #, rust-format
 msgid "Loading {name} to queue…"
 msgstr "Dodawanie {name} do kolejki…"
 
-#: src/app.rs:10012
+#: src/app.rs:10152
 msgid "Playback device changed. Add the album to queue again"
 msgstr "Zmieniono urządzenie odtwarzania. Dodaj album do kolejki ponownie"
 
-#: src/app.rs:10021 src/app.rs:10039 src/app.rs:10048
+#: src/app.rs:10161 src/app.rs:10179 src/app.rs:10188
 msgid "Couldn't load the album's songs in order. Try again"
 msgstr "Nie udało się wczytać utworów z albumu w kolejności. Spróbuj ponownie"
 
 #. Translators: {name} is an album name and {error} is an error message.
-#: src/app.rs:10028
+#: src/app.rs:10168
 #, rust-format
 msgid "Couldn't add {name} to queue: {error}"
 msgstr "Nie udało się dodać {name} do kolejki: {error}"
 
-#: src/app.rs:10086
+#: src/app.rs:10226
 msgid "This album has no playable songs to queue"
 msgstr "Ten album nie ma utworów, które można dodać do kolejki"
 
 #. Translators: {count} is a number of songs and {name} is an album name.
-#: src/app.rs:10095
+#: src/app.rs:10235
 #, rust-format
 msgid "{count} song from {name} added to queue"
 msgid_plural "{count} songs from {name} added to queue"
@@ -1026,7 +1026,7 @@ msgstr[1] "Dodano do kolejki {count} utwory z {name}"
 msgstr[2] "Dodano do kolejki {count} utworów z {name}"
 
 #. Translators: {count} is a number of songs.
-#: src/app.rs:10143
+#: src/app.rs:10283
 #, rust-format
 msgid "{count} song added to queue"
 msgid_plural "{count} songs added to queue"
@@ -1035,17 +1035,17 @@ msgstr[1] "Dodano do kolejki {count} utwory"
 msgstr[2] "Dodano do kolejki {count} utworów"
 
 #. Translators: {name} is a song, episode, album, or playlist name.
-#: src/app.rs:10183
+#: src/app.rs:10323
 #, rust-format
 msgid "{name} added to queue"
 msgstr "Dodano do kolejki: {name}"
 
-#: src/app.rs:10733
+#: src/app.rs:10873
 msgid "The clipboard has no Spotify song links"
 msgstr "Schowek nie zawiera linków do utworów Spotify"
 
 #. Translators: {count} is the number of pasted links that failed.
-#: src/app.rs:10814
+#: src/app.rs:10954
 #, rust-format
 msgid "{count} pasted link could not be added"
 msgid_plural "{count} pasted links could not be added"
@@ -1053,17 +1053,17 @@ msgstr[0] "Nie udało się dodać {count} wklejonego linku"
 msgstr[1] "Nie udało się dodać {count} wklejonych linków"
 msgstr[2] "Nie udało się dodać {count} wklejonych linków"
 
-#: src/app.rs:11497
+#: src/app.rs:11637
 msgid "Spotify doesn't let apps remove a playlist description, so it was kept"
 msgstr ""
 "Spotify nie pozwala aplikacjom usuwać opisu playlisty, więc został zachowany"
 
-#: src/app.rs:11559 src/app.rs:11572
+#: src/app.rs:11699 src/app.rs:11712
 msgid "Link copied"
 msgstr "Skopiowano link"
 
 #. Translators: {count} is a number of song links, always more than one.
-#: src/app.rs:11576
+#: src/app.rs:11716
 #, rust-format
 msgid "{count} link copied"
 msgid_plural "{count} links copied"
@@ -1071,7 +1071,7 @@ msgstr[0] "Skopiowano {count} link"
 msgstr[1] "Skopiowano {count} linki"
 msgstr[2] "Skopiowano {count} linków"
 
-#: src/app.rs:11870
+#: src/app.rs:12010
 msgid ""
 "Spotify doesn't let apps reorder your playlists, so this order is saved on "
 "this computer"
@@ -1079,77 +1079,77 @@ msgstr ""
 "Spotify nie pozwala aplikacjom zmieniać kolejności Twoich playlist, więc ta "
 "kolejność jest zapisana na tym komputerze"
 
-#: src/app.rs:11966
+#: src/app.rs:12106
 msgid "Restarting local playback"
 msgstr "Ponowne uruchamianie lokalnego odtwarzania"
 
-#: src/app.rs:12002
+#: src/app.rs:12142
 msgid "Local playback needs Spotify Premium"
 msgstr "Lokalne odtwarzanie wymaga Spotify Premium"
 
-#: src/app.rs:12052
+#: src/app.rs:12192
 msgid "Play history cleared"
 msgstr "Wyczyszczono historię odtwarzania"
 
 #. Translators: {size} is a size in megabytes, such as 12.5.
-#: src/app.rs:12063
+#: src/app.rs:12203
 #, rust-format
 msgid "Cleared {size} MB of artwork"
 msgstr "Zwolniono {size} MB okładek"
 
 #. Translators: {error} is an error message.
-#: src/app.rs:12069
+#: src/app.rs:12209
 #, rust-format
 msgid "Couldn't clear artwork: {error}"
 msgstr "Nie udało się wyczyścić okładek: {error}"
 
-#: src/app.rs:12296
+#: src/app.rs:12436
 msgid "Downloading MilkDrop preset packs"
 msgstr "Pobieranie pakietów presetów MilkDrop"
 
 #. Translators: {name} is the name of a visualizer preset pack.
-#: src/app.rs:12330
+#: src/app.rs:12470
 #, rust-format
 msgid "Downloading {name} presets"
 msgstr "Pobieranie presetów {name}"
 
-#: src/app.rs:13481
+#: src/app.rs:13627
 msgid "Couldn't start playback"
 msgstr "Nie udało się rozpocząć odtwarzania"
 
-#: src/app.rs:13482
+#: src/app.rs:13628
 msgid "Couldn't pause"
 msgstr "Nie udało się wstrzymać"
 
-#: src/app.rs:13483
+#: src/app.rs:13629
 msgid "Couldn't skip"
 msgstr "Nie udało się przejść dalej"
 
-#: src/app.rs:13484
+#: src/app.rs:13630
 msgid "Couldn't go back"
 msgstr "Nie udało się cofnąć"
 
-#: src/app.rs:13485
+#: src/app.rs:13631
 msgid "Couldn't seek"
 msgstr "Nie udało się przewinąć"
 
-#: src/app.rs:13486
+#: src/app.rs:13632
 msgid "Couldn't change the volume"
 msgstr "Nie udało się zmienić głośności"
 
-#: src/app.rs:13487
+#: src/app.rs:13633
 msgid "Couldn't change shuffle"
 msgstr "Nie udało się zmienić odtwarzania losowego"
 
-#: src/app.rs:13488
+#: src/app.rs:13634
 msgid "Couldn't change repeat"
 msgstr "Nie udało się zmienić powtarzania"
 
-#: src/app.rs:13531 src/ui/mod.rs:409
+#: src/app.rs:13677 src/ui/mod.rs:409
 msgid "Spotify won't let this computer play this song right now."
 msgstr "Spotify nie pozwala teraz odtworzyć tego utworu na tym komputerze."
 
-#: src/app.rs:13538
+#: src/app.rs:13684
 msgid ""
 "No audio output device was found. Connect or enable one, then press play "
 "again."
@@ -1157,18 +1157,18 @@ msgstr ""
 "Nie znaleziono urządzenia wyjścia dźwięku. Podłącz lub włącz jakieś "
 "urządzenie, a potem ponownie naciśnij Odtwórz."
 
-#: src/app.rs:13552
+#: src/app.rs:13698
 msgid ""
 "Spotify doesn't make this playlist's songs available to third-party apps."
 msgstr "Spotify nie udostępnia utworów z tej playlisty aplikacjom innych firm."
 
-#: src/app.rs:13673
+#: src/app.rs:13819
 msgid "Spotify sign-in expired. Sign in again, then retry the cover upload."
 msgstr ""
 "Logowanie do Spotify wygasło. Zaloguj się ponownie, a potem ponów "
 "przesyłanie okładki."
 
-#: src/app.rs:13678
+#: src/app.rs:13824
 msgid ""
 "Spotify refused this cover. Check that you own the playlist, then sign in "
 "again to grant image upload permission. If using a personal app, reconnect "
@@ -1178,19 +1178,19 @@ msgstr ""
 "potem zaloguj się ponownie, aby przyznać uprawnienie do przesyłania obrazów. "
 "Jeśli używasz osobistej aplikacji, połącz ją ponownie także w Ustawieniach."
 
-#: src/app.rs:13682
+#: src/app.rs:13828
 msgid "Spotify rejected the image size. Choose a smaller image."
 msgstr "Spotify odrzucił rozmiar obrazu. Wybierz mniejszy obraz."
 
 #. Translators: {error} is an error message.
-#: src/app.rs:13685
+#: src/app.rs:13831
 #, rust-format
 msgid "Couldn't upload the cover: {error}. Try again."
 msgstr "Nie udało się przesłać okładki: {error}. Spróbuj ponownie."
 
 #. Translators: Keep {track} unchanged. It is the name of the song,
 #. playlist, album, or artist the radio is based on, not translated.
-#: src/app.rs:22913 src/app/radio.rs:38
+#: src/app.rs:23199 src/app/radio.rs:38
 #, rust-format
 msgid "{track} Radio"
 msgstr "Radio utworu {track}"
@@ -2533,7 +2533,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "„{name}” nie będzie już widoczna w Twojej bibliotece."
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:165
+#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:183
 msgid "Cancel"
 msgstr "Anuluj"
 
@@ -2620,7 +2620,7 @@ msgid "My playlist"
 msgstr "Moja playlista"
 
 #: src/ui/dialogs.rs:398 src/ui/dialogs.rs:401 src/ui/dialogs.rs:588
-#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:75
+#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:86
 msgid "Public playlist"
 msgstr "Playlista publiczna"
 
@@ -3737,25 +3737,33 @@ msgstr ""
 msgid "Manual playlist"
 msgstr "Ręczna playlista"
 
-#: src/ui/playlist_generation.rs:50
+#: src/ui/playlist_generation.rs:49
+msgid "Uses album/single release dates and excludes liked songs. Only tracks by followed artists are included."
+msgstr "Używa dat wydania albumów i singli oraz pomija polubione utwory. Uwzględnia tylko utwory obserwowanych wykonawców."
+
+#: src/ui/playlist_generation.rs:55
+msgid "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases."
+msgstr "Okres: RRRR, MM/RRRR lub DD/MM/RRRR. Pozostaw puste, aby uwzględnić wszystkie wydania."
+
+#: src/ui/playlist_generation.rs:60
 msgid "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs."
 msgstr ""
 "Okres (UTC): RRRR, MM/RRRR lub DD/MM/RRRR. Pozostaw puste, aby uwzględnić "
 "wszystkie utwory."
 
-#: src/ui/playlist_generation.rs:53
+#: src/ui/playlist_generation.rs:64
 msgid "From"
 msgstr "Od"
 
-#: src/ui/playlist_generation.rs:55
+#: src/ui/playlist_generation.rs:66
 msgid "To"
 msgstr "Do"
 
-#: src/ui/playlist_generation.rs:86
+#: src/ui/playlist_generation.rs:97
 msgid "Start generation"
 msgstr "Rozpocznij tworzenie"
 
-#: src/ui/playlist_generation.rs:101
+#: src/ui/playlist_generation.rs:112
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
@@ -3763,63 +3771,80 @@ msgstr ""
 "Postęp jest zapisywany po każdej partii. Zamknięcie aplikacji wstrzymuje "
 "przetwarzanie do następnego uruchomienia."
 
-#: src/ui/playlist_generation.rs:129
+#: src/ui/playlist_generation.rs:140
 msgid "Playlist generations"
 msgstr "Tworzenie playlist"
 
-#: src/ui/playlist_generation.rs:134
+#: src/ui/playlist_generation.rs:145
+msgid "Reading followed artists"
+msgstr "Odczytywanie obserwowanych wykonawców"
+
+#: src/ui/playlist_generation.rs:146
+msgid "Reading artist releases"
+msgstr "Odczytywanie wydań wykonawców"
+
+#: src/ui/playlist_generation.rs:147
+msgid "Checking release tracks and likes"
+msgstr "Sprawdzanie utworów i polubień"
+
+#: src/ui/playlist_generation.rs:148
 msgid "Reading saved albums"
 msgstr "Odczytywanie zapisanych albumów"
 
-#: src/ui/playlist_generation.rs:135
+#: src/ui/playlist_generation.rs:149
 msgid "Reading liked songs"
 msgstr "Odczytywanie polubionych utworów"
 
-#: src/ui/playlist_generation.rs:136
+#: src/ui/playlist_generation.rs:150
 msgid "Creating playlist"
 msgstr "Tworzenie playlisty"
 
-#: src/ui/playlist_generation.rs:137
+#: src/ui/playlist_generation.rs:151
 msgid "Adding songs"
 msgstr "Dodawanie utworów"
 
-#: src/ui/playlist_generation.rs:138
+#: src/ui/playlist_generation.rs:152
 msgid "Finished"
 msgstr "Zakończono"
 
-#: src/ui/playlist_generation.rs:141
+#: src/ui/playlist_generation.rs:155
 msgid "Pending"
 msgstr "Oczekiwanie"
 
-#: src/ui/playlist_generation.rs:141
+#: src/ui/playlist_generation.rs:155
 msgid "Running"
 msgstr "W toku"
 
-#: src/ui/playlist_generation.rs:142
+#: src/ui/playlist_generation.rs:156
 msgid "Paused"
 msgstr "Wstrzymano"
 
-#: src/ui/playlist_generation.rs:142
+#: src/ui/playlist_generation.rs:156
 msgid "Retrying"
 msgstr "Ponowna próba"
 
-#: src/ui/playlist_generation.rs:143
+#: src/ui/playlist_generation.rs:157
 msgid "Completed"
 msgstr "Ukończono"
 
-#: src/ui/playlist_generation.rs:143
+#: src/ui/playlist_generation.rs:157
 msgid "Failed"
 msgstr "Niepowodzenie"
 
-#: src/ui/playlist_generation.rs:144
+#: src/ui/playlist_generation.rs:158
 msgid "Cancelled"
 msgstr "Anulowano"
 
-#: src/ui/playlist_generation.rs:150
+#: src/ui/playlist_generation.rs:162
+#, rust-format
+msgid "Artists: {artists}/{total}"
+msgstr "Wykonawcy: {artists}/{total}"
+
+#: src/ui/playlist_generation.rs:168
 msgid "Discovering total work…"
 msgstr "Obliczanie całkowitego zakresu pracy…"
 
-#: src/ui/playlist_generation.rs:152
+#: src/ui/playlist_generation.rs:170
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -3828,12 +3853,12 @@ msgstr ""
 "Przeanalizowano: {analyzed}/{total} · Albumy: {albums} · Wybrano: {selected} "
 "· Dodano: {added}"
 
-#: src/ui/playlist_generation.rs:157
+#: src/ui/playlist_generation.rs:175
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "Czas: {elapsed} · Szacowany pozostały czas: {remaining}"
 
-#: src/ui/playlist_generation.rs:164
+#: src/ui/playlist_generation.rs:182
 msgid "Resume"
 msgstr "Wznów"
 

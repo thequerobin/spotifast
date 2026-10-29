@@ -62,7 +62,7 @@ pub fn show(app: &mut App, ctx: &egui::Context) {
                     egui::ScrollArea::vertical()
                         .id_salt("create-playlist-content")
                         .max_height(height)
-                        .min_scrolled_height(if has_history { height } else { 64.0 })
+                        .min_scrolled_height(height)
                         .auto_shrink([true, !has_history])
                         .show(ui, |ui| create_playlist(app, ui));
                 }
