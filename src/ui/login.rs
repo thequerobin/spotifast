@@ -220,6 +220,8 @@ fn sign_in_column(app: &mut App, ui: &mut egui::Ui, connecting: bool, beside: Op
         );
     }
     ui.add_space(if steps { 12.0 } else { 22.0 });
+    let api_cost = app.backend.activity().cost.snapshot();
+    super::playlist_generation::quota_notice(app, ui, &api_cost);
     match &app.auth {
         AuthStatus::WaitingForBrowser { url } => {
             let url = url.clone();

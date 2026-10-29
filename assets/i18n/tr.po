@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-29 10:56-0300\n"
+"POT-Creation-Date: 2026-10-29 14:46-0300\n"
 "PO-Revision-Date: 2026-10-02 20:30+0300\n"
 "Last-Translator: Barış Berke Çetin <brsberkectn@gmail.com>\n"
 "Language-Team: Turkish\n"
@@ -258,7 +258,7 @@ msgid "Previous"
 msgstr "Önceki"
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:340
+#: src/ui/playlist_generation.rs:346
 msgid "Pause"
 msgstr "Duraklat"
 
@@ -321,7 +321,7 @@ msgstr "Geçmiş"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:78
 #: src/ui/friends.rs:65 src/ui/mod.rs:642 src/window.rs:35
-#: src/ui/playlist_generation.rs:125
+#: src/ui/playlist_generation.rs:130
 msgid "Close"
 msgstr "Kapat"
 
@@ -536,7 +536,7 @@ msgid "Copy link"
 msgstr "Bağlantıyı kopyala"
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:349
+#: src/ui/playlist_generation.rs:355
 msgid "Open in Spotify"
 msgstr "Spotify'da aç"
 
@@ -653,7 +653,7 @@ msgstr "Ağ bağlantısı hatası. Bağlantınızı kontrol edin."
 msgid "Cut"
 msgstr "Kes"
 
-#: src/ui/widgets.rs:3166 src/ui/login.rs:538
+#: src/ui/widgets.rs:3166 src/ui/login.rs:540
 msgid "Copy"
 msgstr "Kopyala"
 
@@ -1302,7 +1302,7 @@ msgstr "Spotify Free, yerel çalma için Premium gerekir"
 msgid "Connected as {username}"
 msgstr "{username} olarak bağlandı"
 
-#: src/ui/settings.rs:533 src/ui/login.rs:369
+#: src/ui/settings.rs:533 src/ui/login.rs:371
 msgid "Client ID"
 msgstr "İstemci Kimliği (Client ID)"
 
@@ -1337,7 +1337,7 @@ msgctxt "playback status"
 msgid "Connecting"
 msgstr "Bağlanıyor"
 
-#: src/ui/settings.rs:596 src/ui/login.rs:272
+#: src/ui/settings.rs:596 src/ui/login.rs:274
 msgid "Connecting to Spotify…"
 msgstr "Spotify'a bağlanıyor…"
 
@@ -1749,7 +1749,7 @@ msgstr ""
 "Kapalı, ortam değişkenlerini yok sayar. Sistem, bu değişkenleri ve macOS ile "
 "Windows'ta işletim sistemi proxy'sini kullanır."
 
-#: src/ui/settings.rs:1634 src/ui/login.rs:622
+#: src/ui/settings.rs:1634 src/ui/login.rs:624
 msgid "Apply settings"
 msgstr "Ayarları uygula"
 
@@ -2525,7 +2525,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "“{name}” artık Kitaplığınızda görünmeyecek."
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:342
+#: src/ui/dialogs.rs:623 src/ui/login.rs:264 src/ui/playlist_generation.rs:348
 msgid "Cancel"
 msgstr "İptal"
 
@@ -2951,15 +2951,15 @@ msgstr ""
 msgid "A native Spotify client."
 msgstr "Yerel bir Spotify istemcisi."
 
-#: src/ui/login.rs:231
+#: src/ui/login.rs:233
 msgid "Waiting for Spotify in your browser…"
 msgstr "Tarayıcınızda Spotify bekleniyor…"
 
-#: src/ui/login.rs:239
+#: src/ui/login.rs:241
 msgid "Didn't open? Open the sign-in page again"
 msgstr "Açılmadı mı? Giriş sayfasını tekrar açın"
 
-#: src/ui/login.rs:255
+#: src/ui/login.rs:257
 #, rust-format
 msgid ""
 "If Spotify says “Invalid redirect URI”, add {uri} to your app exactly, save, "
@@ -2968,11 +2968,11 @@ msgstr ""
 "Spotify “Invalid redirect URI” derse {uri} adresini uygulamanıza tam olarak "
 "ekleyin, kaydedin ve yeniden giriş yapın."
 
-#: src/ui/login.rs:297
+#: src/ui/login.rs:299
 msgid "Sign in with Spotify"
 msgstr "Spotify ile giriş yap"
 
-#: src/ui/login.rs:308
+#: src/ui/login.rs:310
 msgid ""
 "Sign in through your browser. Spotifast never sees your password. Local "
 "playback needs Spotify Premium."
@@ -2980,24 +2980,24 @@ msgstr ""
 "Tarayıcınız üzerinden giriş yapın. Spotifast parolanızı asla görmez. Yerel "
 "çalma için Spotify Premium gerekir."
 
-#: src/ui/login.rs:317
+#: src/ui/login.rs:319
 msgid "How to set up your Spotify app"
 msgstr "Spotify uygulamanızı nasıl kurarsınız"
 
-#: src/ui/login.rs:337
+#: src/ui/login.rs:339
 msgid "Proxy Settings"
 msgstr "Proxy Ayarları"
 
-#: src/ui/login.rs:387
+#: src/ui/login.rs:389
 msgid "A Client ID is 32 letters and digits. Copy it from your app's page."
 msgstr ""
 "İstemci Kimliği 32 harf ve rakamdan oluşur. Uygulama sayfanızdan kopyalayın."
 
-#: src/ui/login.rs:439
+#: src/ui/login.rs:441
 msgid "Set up your Spotify app"
 msgstr "Spotify uygulamanızı kurun"
 
-#: src/ui/login.rs:447
+#: src/ui/login.rs:449
 msgid ""
 "Spotifast signs in through your own free Spotify app. Spotify requires its "
 "owner to have Premium."
@@ -3005,28 +3005,28 @@ msgstr ""
 "Spotifast, kendi ücretsiz Spotify uygulamanız üzerinden giriş yapar. "
 "Spotify, uygulama sahibinin Premium olmasını şart koşar."
 
-#: src/ui/login.rs:457
+#: src/ui/login.rs:459
 msgid "Open Spotify's developer dashboard."
 msgstr "Spotify geliştirici panelini açın."
 
-#: src/ui/login.rs:476
+#: src/ui/login.rs:478
 msgid "Click Create app. Any name will do."
 msgstr "“Create app” düğmesine tıklayın. Herhangi bir ad olur."
 
-#: src/ui/login.rs:483
+#: src/ui/login.rs:485
 msgid "Under Redirect URIs, add exactly:"
 msgstr "“Redirect URIs” altına tam olarak şunu ekleyin:"
 
-#: src/ui/login.rs:492
+#: src/ui/login.rs:494
 msgid "Tick Web API, accept the terms, and save."
 msgstr "“Web API” kutusunu işaretleyin, koşulları kabul edin ve kaydedin."
 
-#: src/ui/login.rs:501
+#: src/ui/login.rs:503
 msgid "Paste the app's Client ID into the field and sign in."
 msgstr "Uygulamanın İstemci Kimliği'ni alana yapıştırın ve giriş yapın."
 
 #. Translators: shown on the Copy button for a moment after it copied.
-#: src/ui/login.rs:536
+#: src/ui/login.rs:538
 msgid "Copied"
 msgstr "Kopyalandı"
 
@@ -3102,11 +3102,6 @@ msgstr "Spotify’da önceden kaydet"
 #: src/ui/prerelease.rs:249
 msgid "Track list preview"
 msgstr "Parça listesi önizlemesi"
-
-#: src/ui/prerelease.rs:260
-msgctxt "column"
-msgid "Title"
-msgstr "Başlık"
 
 #: src/ui/prerelease.rs:326 src/ui/prerelease.rs:333
 #, rust-format
@@ -3726,17 +3721,17 @@ msgstr ""
 
 #: src/ui/playlist_generation.rs:53
 msgid "Release period"
-msgstr ""
+msgstr "Yayın dönemi"
 
 #: src/ui/playlist_generation.rs:55
 msgid "Liked songs period (UTC)"
-msgstr ""
+msgstr "Beğenilen şarkıların dönemi (UTC)"
 
 #: src/ui/playlist_generation.rs:59
 msgid ""
 "Select a year, then optionally a month and day. Leave both years as Any for "
 "all dates. A start alone selects that whole period."
-msgstr ""
+msgstr "Yılı seçin, ardından isterseniz ayı ve günü belirtin. Tüm tarihler için iki yılı da Tümü olarak bırakın. Yalnızca başlangıç seçmek o dönemin tamamını kapsar."
 
 #: src/ui/playlist_generation.rs:66
 msgid "From"
@@ -3746,11 +3741,23 @@ msgstr "Başlangıç"
 msgid "To"
 msgstr "Bitiş"
 
+#: src/ui/playlist_generation.rs:106
+msgid ""
+"Estimated API cost: high and variable (artists, releases and track pages). "
+"Cached discoveries reduce repeated work."
+msgstr "Tahmini API kullanımı: yüksek ve değişken (sanatçılar, yayınlar ve parça sayfaları). Önbellek tekrarlanan sorguları azaltır."
+
 #: src/ui/playlist_generation.rs:108
+msgid ""
+"Estimated API cost: medium; about one request per 50 library entries, plus "
+"playlist batches. Exact size is not known yet."
+msgstr "Tahmini API kullanımı: orta; 50 kitaplık öğesi başına yaklaşık bir istek ve çalma listesi grupları. Kesin boyut henüz bilinmiyor."
+
+#: src/ui/playlist_generation.rs:113
 msgid "Start generation"
 msgstr "Oluşturmayı başlat"
 
-#: src/ui/playlist_generation.rs:123
+#: src/ui/playlist_generation.rs:128
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
@@ -3758,107 +3765,111 @@ msgstr ""
 "İlerleme her gruptan sonra kaydedilir. Uygulamadan çıkmak işlemi bir sonraki "
 "açılışa kadar duraklatır."
 
-#: src/ui/playlist_generation.rs:200
+#: src/ui/playlist_generation.rs:205
 msgid "Year"
-msgstr ""
+msgstr "Yıl"
 
-#: src/ui/playlist_generation.rs:210
+#: src/ui/playlist_generation.rs:215
 msgid "Month"
-msgstr ""
+msgstr "Ay"
 
-#: src/ui/playlist_generation.rs:222
+#: src/ui/playlist_generation.rs:227
 msgid "Day"
-msgstr ""
+msgstr "Gün"
 
-#: src/ui/playlist_generation.rs:250
+#: src/ui/playlist_generation.rs:255
 msgid "Any"
-msgstr ""
+msgstr "Tümü"
 
-#: src/ui/playlist_generation.rs:289
+#: src/ui/playlist_generation.rs:295
 msgid "Playlist generations"
 msgstr "Çalma listesi oluşturma geçmişi"
 
-#: src/ui/playlist_generation.rs:294
+#: src/ui/playlist_generation.rs:300
 msgid "Reading followed artists"
 msgstr "Takip edilen sanatçılar okunuyor"
 
-#: src/ui/playlist_generation.rs:295
+#: src/ui/playlist_generation.rs:301
 msgid "Finding releases for the period"
-msgstr ""
+msgstr "Dönemdeki yayınlar aranıyor"
 
-#: src/ui/playlist_generation.rs:296
+#: src/ui/playlist_generation.rs:302
 msgid "Checking release tracks and likes"
 msgstr "Şarkılar ve beğeniler kontrol ediliyor"
 
-#: src/ui/playlist_generation.rs:297
+#: src/ui/playlist_generation.rs:303
 msgid "Reading saved albums"
 msgstr "Kaydedilen albümler okunuyor"
 
-#: src/ui/playlist_generation.rs:298
+#: src/ui/playlist_generation.rs:304
 msgid "Reading liked songs"
 msgstr "Beğenilen şarkılar okunuyor"
 
-#: src/ui/playlist_generation.rs:299
+#: src/ui/playlist_generation.rs:305
 msgid "Creating playlist"
 msgstr "Çalma listesi oluşturuluyor"
 
-#: src/ui/playlist_generation.rs:300
+#: src/ui/playlist_generation.rs:306
 msgid "Adding songs"
 msgstr "Şarkılar ekleniyor"
 
-#: src/ui/playlist_generation.rs:301
+#: src/ui/playlist_generation.rs:307
 msgid "Finished"
 msgstr "Bitti"
 
-#: src/ui/playlist_generation.rs:304
+#: src/ui/playlist_generation.rs:310
 msgid "Pending"
 msgstr "Bekliyor"
 
-#: src/ui/playlist_generation.rs:304
+#: src/ui/playlist_generation.rs:310
 msgid "Running"
 msgstr "Çalışıyor"
 
-#: src/ui/playlist_generation.rs:305
+#: src/ui/playlist_generation.rs:311
 msgid "Paused"
 msgstr "Duraklatıldı"
 
-#: src/ui/playlist_generation.rs:305
+#: src/ui/playlist_generation.rs:311
+msgid "Paused: Spotify quota"
+msgstr "Duraklatıldı: Spotify kotası"
+
+#: src/ui/playlist_generation.rs:311
 msgid "Retrying"
 msgstr "Yeniden deneniyor"
 
-#: src/ui/playlist_generation.rs:306
+#: src/ui/playlist_generation.rs:312
 msgid "Completed"
 msgstr "Tamamlandı"
 
-#: src/ui/playlist_generation.rs:306
+#: src/ui/playlist_generation.rs:312
 msgid "Failed"
 msgstr "Başarısız"
 
-#: src/ui/playlist_generation.rs:307
+#: src/ui/playlist_generation.rs:313
 msgid "Cancelled"
 msgstr "İptal edildi"
 
-#: src/ui/playlist_generation.rs:311
+#: src/ui/playlist_generation.rs:317
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "Sanatçılar: {artists}/{total}"
 
-#: src/ui/playlist_generation.rs:317
+#: src/ui/playlist_generation.rs:323
 msgid "Discovering total work…"
 msgstr "Toplam iş miktarı hesaplanıyor…"
 
-#: src/ui/playlist_generation.rs:320
+#: src/ui/playlist_generation.rs:326
 #, rust-format
 msgid "Unique releases checked: {checked} · Within period: {matched}"
-msgstr ""
+msgstr "Kontrol edilen benzersiz yayınlar: {checked} · Dönem içinde: {matched}"
 
-#: src/ui/playlist_generation.rs:323
+#: src/ui/playlist_generation.rs:329
 #, rust-format
 msgid ""
 "Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
-msgstr ""
+msgstr "İncelenen şarkılar: {analyzed}/{total} · Seçilen: {selected} · Eklenen: {added}"
 
-#: src/ui/playlist_generation.rs:328
+#: src/ui/playlist_generation.rs:334
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -3867,14 +3878,75 @@ msgstr ""
 "İncelenen: {analyzed}/{total} · Albümler: {albums} · Seçilen: {selected} · "
 "Eklenen: {added}"
 
-#: src/ui/playlist_generation.rs:334
+#: src/ui/playlist_generation.rs:340
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "Geçen süre: {elapsed} · Tahmini kalan süre: {remaining}"
 
-#: src/ui/playlist_generation.rs:341
+#: src/ui/playlist_generation.rs:347
 msgid "Resume"
 msgstr "Sürdür"
+
+#: src/ui/playlist_generation.rs:367
+msgid "API cost manager"
+msgstr "API kullanım yöneticisi"
+
+#: src/ui/playlist_generation.rs:369
+msgid "Official remaining quota: not provided by Spotify"
+msgstr "Resmî kalan kota: Spotify tarafından sağlanmıyor"
+
+#: src/ui/playlist_generation.rs:370
+msgid "Requests in the last 30 seconds / local budget"
+msgstr "Son 30 saniyedeki istekler / yerel bütçe"
+
+#: src/ui/playlist_generation.rs:371
+msgid "Effective dispatch rate (last 30 seconds)"
+msgstr "Gerçek gönderim hızı (son 30 saniye)"
+
+#: src/ui/playlist_generation.rs:372
+msgid "Queued (high / medium / low)"
+msgstr "Kuyruk (yüksek / orta / düşük)"
+
+#: src/ui/playlist_generation.rs:373
+msgid "In flight"
+msgstr "İşleniyor"
+
+#: src/ui/playlist_generation.rs:374
+msgid "Global cooldown remaining"
+msgstr "Kalan genel bekleme süresi"
+
+#: src/ui/playlist_generation.rs:376
+msgid "Catalog cache hits / reads"
+msgstr "Önbellek isabetleri / katalog okumaları"
+
+#: src/ui/playlist_generation.rs:385
+msgid ""
+"Limits and cost are local estimates. Other applications and devices can "
+"consume Spotify quota too."
+msgstr "Sınırlar ve kullanım yerel tahminlerdir. Diğer uygulamalar ve cihazlar da Spotify kotasını kullanabilir."
+
+#: src/ui/playlist_generation.rs:403
+msgid ""
+"Spotify quota exhausted. Jobs remain checkpointed. No reset time is known. "
+"Check the developer dashboard before trying again."
+msgstr "Spotify kotası tükendi. İlerleme kaydedildi. Yenilenme zamanı bilinmiyor. Yeniden denemeden önce geliştirici panelini kontrol edin."
+
+#: src/ui/playlist_generation.rs:405
+msgid "Spotify developer dashboard"
+msgstr "Spotify geliştirici paneli"
+
+#: src/ui/playlist_generation.rs:408
+msgid "Allow quota recheck"
+msgstr "Kotanın yeniden kontrolüne izin ver"
+
+#: src/ui/playlist_generation.rs:413
+msgid ""
+"Then resume paused jobs. A new quota rejection will pause requests again."
+msgstr "Ardından duraklatılan işleri sürdürün. Yeni bir kota reddi istekleri tekrar duraklatır."
+
+#~ msgctxt "column"
+#~ msgid "Title"
+#~ msgstr "Başlık"
 
 #~ msgid "Reading artist releases"
 #~ msgstr "Sanatçıların yayınları okunuyor"

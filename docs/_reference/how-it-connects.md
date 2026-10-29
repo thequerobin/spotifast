@@ -142,8 +142,10 @@ rejects a saved refresh grant, Spotifast removes that grant and asks for a new
 browser approval. Upgrading to protected storage does not itself require
 signing in again.
 
-Each personal app has its own Development Mode quota; a shared grant shares
-its app's quota with everyone still signed in through it. Playback state is
+Development Mode quotas are shared by apps belonging to the same developer
+account, in endpoint buckets whose limits are not published. Spotifast's local
+[API cost manager](api-cost-manager.md) shares one conservative dispatch budget
+across its grants. It cannot see calls made by other apps or devices. Playback state is
 checked every 15
 seconds, every 20 while this computer's player is active, every 30 while the
 window cannot be seen and nothing plays, every 4 while the window is visible

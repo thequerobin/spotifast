@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-29 10:56-0300\n"
+"POT-Creation-Date: 2026-10-29 14:46-0300\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: French\n"
@@ -258,7 +258,7 @@ msgid "Previous"
 msgstr "Précédent"
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:340
+#: src/ui/playlist_generation.rs:346
 msgid "Pause"
 msgstr "Pause"
 
@@ -321,7 +321,7 @@ msgstr "Récents"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:78
 #: src/ui/friends.rs:65 src/ui/mod.rs:642 src/window.rs:35
-#: src/ui/playlist_generation.rs:125
+#: src/ui/playlist_generation.rs:130
 msgid "Close"
 msgstr "Fermer"
 
@@ -538,7 +538,7 @@ msgid "Copy link"
 msgstr "Copier le lien"
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:349
+#: src/ui/playlist_generation.rs:355
 msgid "Open in Spotify"
 msgstr "Ouvrir dans Spotify"
 
@@ -655,7 +655,7 @@ msgstr "Erreur de connexion réseau. Vérifiez votre connexion."
 msgid "Cut"
 msgstr "Couper"
 
-#: src/ui/widgets.rs:3166 src/ui/login.rs:538
+#: src/ui/widgets.rs:3166 src/ui/login.rs:540
 msgid "Copy"
 msgstr "Copier"
 
@@ -1308,7 +1308,7 @@ msgstr "Spotify Free, la lecture locale nécessite Premium"
 msgid "Connected as {username}"
 msgstr "Connecté en tant que {username}"
 
-#: src/ui/settings.rs:533 src/ui/login.rs:369
+#: src/ui/settings.rs:533 src/ui/login.rs:371
 msgid "Client ID"
 msgstr "Client ID"
 
@@ -1343,7 +1343,7 @@ msgctxt "playback status"
 msgid "Connecting"
 msgstr "Connexion"
 
-#: src/ui/settings.rs:596 src/ui/login.rs:272
+#: src/ui/settings.rs:596 src/ui/login.rs:274
 msgid "Connecting to Spotify…"
 msgstr "Connexion à Spotify…"
 
@@ -1763,7 +1763,7 @@ msgstr ""
 "Désactivé ignore les variables d’environnement. Système les utilise, ainsi "
 "que le proxy du système sur macOS et Windows."
 
-#: src/ui/settings.rs:1634 src/ui/login.rs:622
+#: src/ui/settings.rs:1634 src/ui/login.rs:624
 msgid "Apply settings"
 msgstr "Appliquer les paramètres"
 
@@ -2547,7 +2547,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "« {name} » n’apparaîtra plus dans votre bibliothèque."
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:342
+#: src/ui/dialogs.rs:623 src/ui/login.rs:264 src/ui/playlist_generation.rs:348
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -2976,15 +2976,15 @@ msgstr ""
 msgid "A native Spotify client."
 msgstr "Un client Spotify natif."
 
-#: src/ui/login.rs:231
+#: src/ui/login.rs:233
 msgid "Waiting for Spotify in your browser…"
 msgstr "En attente de Spotify dans votre navigateur…"
 
-#: src/ui/login.rs:239
+#: src/ui/login.rs:241
 msgid "Didn't open? Open the sign-in page again"
 msgstr "Rien ne s’est ouvert ? Rouvrir la page de connexion"
 
-#: src/ui/login.rs:255
+#: src/ui/login.rs:257
 #, rust-format
 msgid ""
 "If Spotify says “Invalid redirect URI”, add {uri} to your app exactly, save, "
@@ -2993,11 +2993,11 @@ msgstr ""
 "Si Spotify affiche « Invalid redirect URI », ajoutez {uri} tel quel à votre "
 "application, enregistrez, puis reconnectez-vous."
 
-#: src/ui/login.rs:297
+#: src/ui/login.rs:299
 msgid "Sign in with Spotify"
 msgstr "Se connecter avec Spotify"
 
-#: src/ui/login.rs:308
+#: src/ui/login.rs:310
 msgid ""
 "Sign in through your browser. Spotifast never sees your password. Local "
 "playback needs Spotify Premium."
@@ -3005,25 +3005,25 @@ msgstr ""
 "Connectez-vous dans votre navigateur. Spotifast ne voit jamais votre mot de "
 "passe. La lecture locale nécessite Spotify Premium."
 
-#: src/ui/login.rs:317
+#: src/ui/login.rs:319
 msgid "How to set up your Spotify app"
 msgstr "Comment configurer votre application Spotify"
 
-#: src/ui/login.rs:337
+#: src/ui/login.rs:339
 msgid "Proxy Settings"
 msgstr "Paramètres du proxy"
 
-#: src/ui/login.rs:387
+#: src/ui/login.rs:389
 msgid "A Client ID is 32 letters and digits. Copy it from your app's page."
 msgstr ""
 "Un Client ID compte 32 lettres et chiffres. Copiez-le depuis la page de "
 "votre application."
 
-#: src/ui/login.rs:439
+#: src/ui/login.rs:441
 msgid "Set up your Spotify app"
 msgstr "Configurez votre application Spotify"
 
-#: src/ui/login.rs:447
+#: src/ui/login.rs:449
 msgid ""
 "Spotifast signs in through your own free Spotify app. Spotify requires its "
 "owner to have Premium."
@@ -3031,28 +3031,28 @@ msgstr ""
 "Spotifast vous connecte via votre propre application Spotify gratuite. "
 "Spotify exige que son propriétaire ait Premium."
 
-#: src/ui/login.rs:457
+#: src/ui/login.rs:459
 msgid "Open Spotify's developer dashboard."
 msgstr "Ouvrez le tableau de bord développeur de Spotify."
 
-#: src/ui/login.rs:476
+#: src/ui/login.rs:478
 msgid "Click Create app. Any name will do."
 msgstr "Cliquez sur « Create app ». N’importe quel nom convient."
 
-#: src/ui/login.rs:483
+#: src/ui/login.rs:485
 msgid "Under Redirect URIs, add exactly:"
 msgstr "Sous « Redirect URIs », ajoutez exactement :"
 
-#: src/ui/login.rs:492
+#: src/ui/login.rs:494
 msgid "Tick Web API, accept the terms, and save."
 msgstr "Cochez « Web API », acceptez les conditions et enregistrez."
 
-#: src/ui/login.rs:501
+#: src/ui/login.rs:503
 msgid "Paste the app's Client ID into the field and sign in."
 msgstr "Collez le Client ID de l’application dans le champ et connectez-vous."
 
 #. Translators: shown on the Copy button for a moment after it copied.
-#: src/ui/login.rs:536
+#: src/ui/login.rs:538
 msgid "Copied"
 msgstr "Copié"
 
@@ -3128,11 +3128,6 @@ msgstr "Préenregistrer sur Spotify"
 #: src/ui/prerelease.rs:249
 msgid "Track list preview"
 msgstr "Aperçu des titres"
-
-#: src/ui/prerelease.rs:260
-msgctxt "column"
-msgid "Title"
-msgstr "Titre"
 
 #: src/ui/prerelease.rs:326 src/ui/prerelease.rs:333
 #, rust-format
@@ -3757,17 +3752,17 @@ msgstr ""
 
 #: src/ui/playlist_generation.rs:53
 msgid "Release period"
-msgstr ""
+msgstr "Période de sortie"
 
 #: src/ui/playlist_generation.rs:55
 msgid "Liked songs period (UTC)"
-msgstr ""
+msgstr "Période des titres aimés (UTC)"
 
 #: src/ui/playlist_generation.rs:59
 msgid ""
 "Select a year, then optionally a month and day. Leave both years as Any for "
 "all dates. A start alone selects that whole period."
-msgstr ""
+msgstr "Choisissez une année, puis éventuellement un mois et un jour. Laissez les deux années sur Toutes pour inclure toutes les dates. Un début seul sélectionne toute cette période."
 
 #: src/ui/playlist_generation.rs:66
 msgid "From"
@@ -3777,11 +3772,23 @@ msgstr "Du"
 msgid "To"
 msgstr "Au"
 
+#: src/ui/playlist_generation.rs:106
+msgid ""
+"Estimated API cost: high and variable (artists, releases and track pages). "
+"Cached discoveries reduce repeated work."
+msgstr "Consommation API estimée : élevée et variable (artistes, sorties et pages de titres). Le cache réduit les consultations répétées."
+
 #: src/ui/playlist_generation.rs:108
+msgid ""
+"Estimated API cost: medium; about one request per 50 library entries, plus "
+"playlist batches. Exact size is not known yet."
+msgstr "Consommation API estimée : moyenne ; une requête pour 50 éléments de bibliothèque, plus les lots de playlist. La taille exacte reste inconnue."
+
+#: src/ui/playlist_generation.rs:113
 msgid "Start generation"
 msgstr "Lancer la génération"
 
-#: src/ui/playlist_generation.rs:123
+#: src/ui/playlist_generation.rs:128
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
@@ -3789,107 +3796,111 @@ msgstr ""
 "La progression est enregistrée après chaque lot. Quitter suspend le "
 "traitement jusqu’au prochain lancement."
 
-#: src/ui/playlist_generation.rs:200
+#: src/ui/playlist_generation.rs:205
 msgid "Year"
-msgstr ""
+msgstr "Année"
 
-#: src/ui/playlist_generation.rs:210
+#: src/ui/playlist_generation.rs:215
 msgid "Month"
-msgstr ""
+msgstr "Mois"
 
-#: src/ui/playlist_generation.rs:222
+#: src/ui/playlist_generation.rs:227
 msgid "Day"
-msgstr ""
+msgstr "Jour"
 
-#: src/ui/playlist_generation.rs:250
+#: src/ui/playlist_generation.rs:255
 msgid "Any"
-msgstr ""
+msgstr "Toutes"
 
-#: src/ui/playlist_generation.rs:289
+#: src/ui/playlist_generation.rs:295
 msgid "Playlist generations"
 msgstr "Générations de playlists"
 
-#: src/ui/playlist_generation.rs:294
+#: src/ui/playlist_generation.rs:300
 msgid "Reading followed artists"
 msgstr "Lecture des artistes suivis"
 
-#: src/ui/playlist_generation.rs:295
+#: src/ui/playlist_generation.rs:301
 msgid "Finding releases for the period"
-msgstr ""
+msgstr "Recherche des sorties de la période"
 
-#: src/ui/playlist_generation.rs:296
+#: src/ui/playlist_generation.rs:302
 msgid "Checking release tracks and likes"
 msgstr "Vérification des titres et des favoris"
 
-#: src/ui/playlist_generation.rs:297
+#: src/ui/playlist_generation.rs:303
 msgid "Reading saved albums"
 msgstr "Lecture des albums enregistrés"
 
-#: src/ui/playlist_generation.rs:298
+#: src/ui/playlist_generation.rs:304
 msgid "Reading liked songs"
 msgstr "Lecture des titres aimés"
 
-#: src/ui/playlist_generation.rs:299
+#: src/ui/playlist_generation.rs:305
 msgid "Creating playlist"
 msgstr "Création de la playlist"
 
-#: src/ui/playlist_generation.rs:300
+#: src/ui/playlist_generation.rs:306
 msgid "Adding songs"
 msgstr "Ajout des titres"
 
-#: src/ui/playlist_generation.rs:301
+#: src/ui/playlist_generation.rs:307
 msgid "Finished"
 msgstr "Terminé"
 
-#: src/ui/playlist_generation.rs:304
+#: src/ui/playlist_generation.rs:310
 msgid "Pending"
 msgstr "En attente"
 
-#: src/ui/playlist_generation.rs:304
+#: src/ui/playlist_generation.rs:310
 msgid "Running"
 msgstr "En cours"
 
-#: src/ui/playlist_generation.rs:305
+#: src/ui/playlist_generation.rs:311
 msgid "Paused"
 msgstr "En pause"
 
-#: src/ui/playlist_generation.rs:305
+#: src/ui/playlist_generation.rs:311
+msgid "Paused: Spotify quota"
+msgstr "En pause : quota Spotify"
+
+#: src/ui/playlist_generation.rs:311
 msgid "Retrying"
 msgstr "Nouvelle tentative"
 
-#: src/ui/playlist_generation.rs:306
+#: src/ui/playlist_generation.rs:312
 msgid "Completed"
 msgstr "Terminée"
 
-#: src/ui/playlist_generation.rs:306
+#: src/ui/playlist_generation.rs:312
 msgid "Failed"
 msgstr "Échec"
 
-#: src/ui/playlist_generation.rs:307
+#: src/ui/playlist_generation.rs:313
 msgid "Cancelled"
 msgstr "Annulée"
 
-#: src/ui/playlist_generation.rs:311
+#: src/ui/playlist_generation.rs:317
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "Artistes : {artists}/{total}"
 
-#: src/ui/playlist_generation.rs:317
+#: src/ui/playlist_generation.rs:323
 msgid "Discovering total work…"
 msgstr "Calcul du travail total…"
 
-#: src/ui/playlist_generation.rs:320
+#: src/ui/playlist_generation.rs:326
 #, rust-format
 msgid "Unique releases checked: {checked} · Within period: {matched}"
-msgstr ""
+msgstr "Sorties uniques vérifiées : {checked} · Dans la période : {matched}"
 
-#: src/ui/playlist_generation.rs:323
+#: src/ui/playlist_generation.rs:329
 #, rust-format
 msgid ""
 "Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
-msgstr ""
+msgstr "Titres analysés : {analyzed}/{total} · Sélectionnés : {selected} · Ajoutés : {added}"
 
-#: src/ui/playlist_generation.rs:328
+#: src/ui/playlist_generation.rs:334
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -3898,14 +3909,75 @@ msgstr ""
 "Analysés : {analyzed}/{total} · Albums : {albums} · Sélectionnés : "
 "{selected} · Ajoutés : {added}"
 
-#: src/ui/playlist_generation.rs:334
+#: src/ui/playlist_generation.rs:340
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "Temps écoulé : {elapsed} · Temps restant estimé : {remaining}"
 
-#: src/ui/playlist_generation.rs:341
+#: src/ui/playlist_generation.rs:347
 msgid "Resume"
 msgstr "Reprendre"
+
+#: src/ui/playlist_generation.rs:367
+msgid "API cost manager"
+msgstr "Gestion de la consommation API"
+
+#: src/ui/playlist_generation.rs:369
+msgid "Official remaining quota: not provided by Spotify"
+msgstr "Quota officiel restant : non fourni par Spotify"
+
+#: src/ui/playlist_generation.rs:370
+msgid "Requests in the last 30 seconds / local budget"
+msgstr "Requêtes des 30 dernières secondes / budget local"
+
+#: src/ui/playlist_generation.rs:371
+msgid "Effective dispatch rate (last 30 seconds)"
+msgstr "Débit effectif (30 dernières secondes)"
+
+#: src/ui/playlist_generation.rs:372
+msgid "Queued (high / medium / low)"
+msgstr "File (haute / moyenne / basse)"
+
+#: src/ui/playlist_generation.rs:373
+msgid "In flight"
+msgstr "En cours"
+
+#: src/ui/playlist_generation.rs:374
+msgid "Global cooldown remaining"
+msgstr "Attente globale restante"
+
+#: src/ui/playlist_generation.rs:376
+msgid "Catalog cache hits / reads"
+msgstr "Réponses du cache / consultations du catalogue"
+
+#: src/ui/playlist_generation.rs:385
+msgid ""
+"Limits and cost are local estimates. Other applications and devices can "
+"consume Spotify quota too."
+msgstr "Les limites et la consommation sont des estimations locales. D’autres applications et appareils peuvent aussi consommer le quota Spotify."
+
+#: src/ui/playlist_generation.rs:403
+msgid ""
+"Spotify quota exhausted. Jobs remain checkpointed. No reset time is known. "
+"Check the developer dashboard before trying again."
+msgstr "Quota Spotify épuisé. La progression est enregistrée. L’heure de renouvellement est inconnue. Consultez le tableau de bord développeur avant de réessayer."
+
+#: src/ui/playlist_generation.rs:405
+msgid "Spotify developer dashboard"
+msgstr "Tableau de bord développeur Spotify"
+
+#: src/ui/playlist_generation.rs:408
+msgid "Allow quota recheck"
+msgstr "Autoriser une nouvelle vérification du quota"
+
+#: src/ui/playlist_generation.rs:413
+msgid ""
+"Then resume paused jobs. A new quota rejection will pause requests again."
+msgstr "Reprenez ensuite les tâches en pause. Un nouveau refus de quota suspendra à nouveau les requêtes."
+
+#~ msgctxt "column"
+#~ msgid "Title"
+#~ msgstr "Titre"
 
 #~ msgid "Reading artist releases"
 #~ msgstr "Lecture des sorties des artistes"

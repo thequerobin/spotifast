@@ -102,6 +102,11 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
         && draft.name.chars().count() <= 100
         && account.is_some();
     ui.add_space(12.0);
+    ui.small(if release_dates {
+        gettext(locale, "Estimated API cost: high and variable (artists, releases and track pages). Cached discoveries reduce repeated work.")
+    } else {
+        gettext(locale, "Estimated API cost: medium; about one request per 50 library entries, plus playlist batches. Exact size is not known yet.")
+    });
     if ui
         .add_enabled(
             valid,
@@ -271,6 +276,7 @@ fn clock(seconds: u64) -> String {
 }
 
 pub fn history(app: &mut App, ui: &mut egui::Ui) {
+    diagnostics(app, ui);
     let snapshot = app.backend.generation.snapshot();
     let locale = app.locale;
     if let Some(error) = snapshot.error {
@@ -302,7 +308,7 @@ pub fn history(app: &mut App, ui: &mut egui::Ui) {
                 };
                 let state = match job.state {
                     State::Pending => gettext(locale, "Pending"), State::Running => gettext(locale, "Running"),
-                    State::Paused => gettext(locale, "Paused"), State::Retrying => gettext(locale, "Retrying"),
+                    State::Paused => gettext(locale, "Paused"), State::PausedQuota => gettext(locale, "Paused: Spotify quota"), State::Retrying => gettext(locale, "Retrying"),
                     State::Completed => gettext(locale, "Completed"), State::Failed => gettext(locale, "Failed"),
                     State::Cancelled => gettext(locale, "Cancelled"),
                 };
@@ -338,7 +344,7 @@ pub fn history(app: &mut App, ui: &mut egui::Ui) {
                 ui.horizontal_wrapped(|ui| {
                     for (label, target, visible) in [
                         (gettext(locale, "Pause"), State::Paused, matches!(job.state, State::Pending | State::Running | State::Retrying)),
-                        (gettext(locale, "Resume"), State::Pending, matches!(job.state, State::Paused | State::Failed)),
+                        (gettext(locale, "Resume"), State::Pending, matches!(job.state, State::Paused | State::PausedQuota | State::Failed)),
                         (gettext(locale, "Cancel"), State::Cancelled, !matches!(job.state, State::Completed | State::Cancelled)),
                     ] {
                         if visible && ui.button(label).clicked() {
@@ -351,6 +357,61 @@ pub fn history(app: &mut App, ui: &mut egui::Ui) {
                 });
                 ui.separator();
             });
+    }
+}
+
+/// A local diagnostic view, no requests or disk access on the UI thread.
+fn diagnostics(app: &mut App, ui: &mut egui::Ui) {
+    let snapshot = app.backend.activity().cost.snapshot();
+    let locale = app.locale;
+    ui.collapsing(gettext(locale, "API cost manager"), |ui| {
+        ui.ctx().request_repaint_after(std::time::Duration::from_secs(1));
+        ui.label(gettext(locale, "Official remaining quota: not provided by Spotify"));
+        ui.label(format!("{}: {} / {}", gettext(locale, "Requests in the last 30 seconds / local budget"), snapshot.recent_requests, snapshot.internal_budget));
+        ui.label(format!("{}: {:.2}/s", gettext(locale, "Effective dispatch rate (last 30 seconds)"), snapshot.recent_requests as f32 / 30.0));
+        ui.label(format!("{}: {} / {} / {}", gettext(locale, "Queued (high / medium / low)"), snapshot.queued[0], snapshot.queued[1], snapshot.queued[2]));
+        ui.label(format!("{}: {}", gettext(locale, "In flight"), snapshot.in_flight));
+        ui.label(format!("{}: {}s", gettext(locale, "Global cooldown remaining"), snapshot.cooldown_seconds));
+        let reads = snapshot.cache_hits + snapshot.cache_misses;
+        ui.label(format!("{}: {} / {}", gettext(locale, "Catalog cache hits / reads"), snapshot.cache_hits, reads));
+        quota_notice(app, ui, &snapshot);
+        egui::ScrollArea::vertical().id_salt("api-cost-endpoints").max_height(180.0).show(ui, |ui| {
+        for (endpoint, metrics) in &snapshot.endpoints {
+            ui.label(format!("{endpoint}: {} calls; 429 rate/quota {}/{}; 401/403/5xx {}/{}/{}; network {}; mean {}ms",
+                metrics.requests, metrics.rate_limits, metrics.quota_limits, metrics.unauthorized, metrics.forbidden,
+                metrics.server_errors, metrics.network_errors, metrics.latency_ms / metrics.requests.max(1)));
+        }
+        });
+        ui.small(gettext(locale, "Limits and cost are local estimates. Other applications and devices can consume Spotify quota too."));
+    });
+}
+
+/// Also available before sign-in, so a persisted circuit cannot lock the user
+/// out of its explicit recovery control after restarting.
+pub(crate) fn quota_notice(
+    app: &mut App,
+    ui: &mut egui::Ui,
+    snapshot: &crate::api::cost::Snapshot,
+) {
+    let locale = app.locale;
+    if let Some(error) = &snapshot.storage_error {
+        ui.label(error);
+    }
+    if snapshot.quota_blocked {
+        ui.ctx()
+            .request_repaint_after(std::time::Duration::from_secs(1));
+        ui.label(gettext(locale, "Spotify quota exhausted. Jobs remain checkpointed. No reset time is known. Check the developer dashboard before trying again."));
+        ui.hyperlink_to(
+            gettext(locale, "Spotify developer dashboard"),
+            crate::ui::login::DASHBOARD_URL,
+        );
+        if ui.button(gettext(locale, "Allow quota recheck")).clicked() {
+            app.actions.push(Action::Generation(Request::RecheckQuota));
+        }
+        ui.small(gettext(
+            locale,
+            "Then resume paused jobs. A new quota rejection will pause requests again.",
+        ));
     }
 }
 

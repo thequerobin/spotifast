@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-29 10:56-0300\n"
+"POT-Creation-Date: 2026-10-29 14:46-0300\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Traditional Chinese\n"
@@ -254,7 +254,7 @@ msgid "Previous"
 msgstr "上一首"
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:340
+#: src/ui/playlist_generation.rs:346
 msgid "Pause"
 msgstr "暫停"
 
@@ -317,7 +317,7 @@ msgstr "最近播放"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:78
 #: src/ui/friends.rs:65 src/ui/mod.rs:642 src/window.rs:35
-#: src/ui/playlist_generation.rs:125
+#: src/ui/playlist_generation.rs:130
 msgid "Close"
 msgstr "關閉"
 
@@ -531,7 +531,7 @@ msgid "Copy link"
 msgstr "複製連結"
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:349
+#: src/ui/playlist_generation.rs:355
 msgid "Open in Spotify"
 msgstr "在 Spotify 中開啟"
 
@@ -647,7 +647,7 @@ msgstr "網路連線錯誤。請檢查連線。"
 msgid "Cut"
 msgstr "剪下"
 
-#: src/ui/widgets.rs:3166 src/ui/login.rs:538
+#: src/ui/widgets.rs:3166 src/ui/login.rs:540
 msgid "Copy"
 msgstr "複製"
 
@@ -1267,7 +1267,7 @@ msgstr "Spotify Free，本機播放需要 Premium"
 msgid "Connected as {username}"
 msgstr "已以 {username} 身分連線"
 
-#: src/ui/settings.rs:533 src/ui/login.rs:369
+#: src/ui/settings.rs:533 src/ui/login.rs:371
 msgid "Client ID"
 msgstr "用戶端 ID"
 
@@ -1302,7 +1302,7 @@ msgctxt "playback status"
 msgid "Connecting"
 msgstr "正在連線"
 
-#: src/ui/settings.rs:596 src/ui/login.rs:272
+#: src/ui/settings.rs:596 src/ui/login.rs:274
 msgid "Connecting to Spotify…"
 msgstr "正在連線至 Spotify…"
 
@@ -1695,7 +1695,7 @@ msgstr ""
 "「關閉」會忽略環境變數。「系統」會使用環境變數，在 macOS 和 Windows 上還會使"
 "用作業系統的 Proxy。"
 
-#: src/ui/settings.rs:1634 src/ui/login.rs:622
+#: src/ui/settings.rs:1634 src/ui/login.rs:624
 msgid "Apply settings"
 msgstr "套用設定"
 
@@ -2427,7 +2427,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "「{name}」將不再顯示於你的音樂庫。"
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:342
+#: src/ui/dialogs.rs:623 src/ui/login.rs:264 src/ui/playlist_generation.rs:348
 msgid "Cancel"
 msgstr "取消"
 
@@ -2845,15 +2845,15 @@ msgstr ""
 msgid "A native Spotify client."
 msgstr "原生 Spotify 用戶端。"
 
-#: src/ui/login.rs:231
+#: src/ui/login.rs:233
 msgid "Waiting for Spotify in your browser…"
 msgstr "正在等待瀏覽器中的 Spotify…"
 
-#: src/ui/login.rs:239
+#: src/ui/login.rs:241
 msgid "Didn't open? Open the sign-in page again"
 msgstr "沒有開啟嗎？重新開啟登入頁面"
 
-#: src/ui/login.rs:255
+#: src/ui/login.rs:257
 #, rust-format
 msgid ""
 "If Spotify says “Invalid redirect URI”, add {uri} to your app exactly, save, "
@@ -2862,11 +2862,11 @@ msgstr ""
 "如果 Spotify 顯示「Invalid redirect URI」，請將 {uri} 原樣新增到你的應用程"
 "式，儲存後重新登入。"
 
-#: src/ui/login.rs:297
+#: src/ui/login.rs:299
 msgid "Sign in with Spotify"
 msgstr "使用 Spotify 登入"
 
-#: src/ui/login.rs:308
+#: src/ui/login.rs:310
 msgid ""
 "Sign in through your browser. Spotifast never sees your password. Local "
 "playback needs Spotify Premium."
@@ -2874,23 +2874,23 @@ msgstr ""
 "透過瀏覽器登入。Spotifast 永遠不會看到你的密碼。本機播放需要 Spotify "
 "Premium。"
 
-#: src/ui/login.rs:317
+#: src/ui/login.rs:319
 msgid "How to set up your Spotify app"
 msgstr "如何設定你的 Spotify 應用程式"
 
-#: src/ui/login.rs:337
+#: src/ui/login.rs:339
 msgid "Proxy Settings"
 msgstr "Proxy 設定"
 
-#: src/ui/login.rs:387
+#: src/ui/login.rs:389
 msgid "A Client ID is 32 letters and digits. Copy it from your app's page."
 msgstr "用戶端 ID 由 32 個字母和數字組成。請從你的應用程式頁面複製。"
 
-#: src/ui/login.rs:439
+#: src/ui/login.rs:441
 msgid "Set up your Spotify app"
 msgstr "設定你的 Spotify 應用程式"
 
-#: src/ui/login.rs:447
+#: src/ui/login.rs:449
 msgid ""
 "Spotifast signs in through your own free Spotify app. Spotify requires its "
 "owner to have Premium."
@@ -2898,28 +2898,28 @@ msgstr ""
 "Spotifast 透過你自己的免費 Spotify 應用程式登入。Spotify 要求應用程式擁有者具"
 "備 Premium。"
 
-#: src/ui/login.rs:457
+#: src/ui/login.rs:459
 msgid "Open Spotify's developer dashboard."
 msgstr "開啟 Spotify 開發人員資訊主頁。"
 
-#: src/ui/login.rs:476
+#: src/ui/login.rs:478
 msgid "Click Create app. Any name will do."
 msgstr "按一下「Create app」。名稱不拘。"
 
-#: src/ui/login.rs:483
+#: src/ui/login.rs:485
 msgid "Under Redirect URIs, add exactly:"
 msgstr "在「Redirect URIs」中準確新增："
 
-#: src/ui/login.rs:492
+#: src/ui/login.rs:494
 msgid "Tick Web API, accept the terms, and save."
 msgstr "勾選「Web API」，接受條款並儲存。"
 
-#: src/ui/login.rs:501
+#: src/ui/login.rs:503
 msgid "Paste the app's Client ID into the field and sign in."
 msgstr "將應用程式的用戶端 ID 貼到欄位中並登入。"
 
 #. Translators: shown on the Copy button for a moment after it copied.
-#: src/ui/login.rs:536
+#: src/ui/login.rs:538
 msgid "Copied"
 msgstr "已複製"
 
@@ -2993,11 +2993,6 @@ msgstr "在 Spotify 預先儲存"
 #: src/ui/prerelease.rs:249
 msgid "Track list preview"
 msgstr "曲目清單預覽"
-
-#: src/ui/prerelease.rs:260
-msgctxt "column"
-msgid "Title"
-msgstr "標題"
 
 #: src/ui/prerelease.rs:326 src/ui/prerelease.rs:333
 #, rust-format
@@ -3602,17 +3597,17 @@ msgstr "使用專輯和單曲的發行日期，並排除喜歡的歌曲。僅包
 
 #: src/ui/playlist_generation.rs:53
 msgid "Release period"
-msgstr ""
+msgstr "發行時間範圍"
 
 #: src/ui/playlist_generation.rs:55
 msgid "Liked songs period (UTC)"
-msgstr ""
+msgstr "已按讚歌曲的時間範圍（UTC）"
 
 #: src/ui/playlist_generation.rs:59
 msgid ""
 "Select a year, then optionally a month and day. Leave both years as Any for "
 "all dates. A start alone selects that whole period."
-msgstr ""
+msgstr "選擇年份，再視需要選擇月份和日期。將兩個年份都設為「全部」即可包含所有日期。僅設定開始時間會選取該完整時段。"
 
 #: src/ui/playlist_generation.rs:66
 msgid "From"
@@ -3622,117 +3617,133 @@ msgstr "從"
 msgid "To"
 msgstr "到"
 
+#: src/ui/playlist_generation.rs:106
+msgid ""
+"Estimated API cost: high and variable (artists, releases and track pages). "
+"Cached discoveries reduce repeated work."
+msgstr "預估 API 用量：較高且不固定（藝人、發行作品和歌曲分頁）。快取可減少重複查詢。"
+
 #: src/ui/playlist_generation.rs:108
+msgid ""
+"Estimated API cost: medium; about one request per 50 library entries, plus "
+"playlist batches. Exact size is not known yet."
+msgstr "預估 API 用量：中等；每 50 個音樂庫項目約需一次請求，另加播放清單的批次請求。確切數量尚不確定。"
+
+#: src/ui/playlist_generation.rs:113
 msgid "Start generation"
 msgstr "開始產生"
 
-#: src/ui/playlist_generation.rs:123
+#: src/ui/playlist_generation.rs:128
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
 msgstr "每批完成後都會儲存進度。結束應用程式會暫停處理，下次啟動時繼續。"
 
-#: src/ui/playlist_generation.rs:200
+#: src/ui/playlist_generation.rs:205
 msgid "Year"
-msgstr ""
+msgstr "年"
 
-#: src/ui/playlist_generation.rs:210
+#: src/ui/playlist_generation.rs:215
 msgid "Month"
-msgstr ""
+msgstr "月"
 
-#: src/ui/playlist_generation.rs:222
+#: src/ui/playlist_generation.rs:227
 msgid "Day"
-msgstr ""
+msgstr "日"
 
-#: src/ui/playlist_generation.rs:250
+#: src/ui/playlist_generation.rs:255
 msgid "Any"
-msgstr ""
+msgstr "全部"
 
-#: src/ui/playlist_generation.rs:289
+#: src/ui/playlist_generation.rs:295
 msgid "Playlist generations"
 msgstr "播放清單產生記錄"
 
-#: src/ui/playlist_generation.rs:294
+#: src/ui/playlist_generation.rs:300
 msgid "Reading followed artists"
 msgstr "正在讀取追蹤的藝人"
 
-#: src/ui/playlist_generation.rs:295
+#: src/ui/playlist_generation.rs:301
 msgid "Finding releases for the period"
-msgstr ""
+msgstr "正在尋找時段內的發行作品"
 
-#: src/ui/playlist_generation.rs:296
+#: src/ui/playlist_generation.rs:302
 msgid "Checking release tracks and likes"
 msgstr "正在檢查曲目和喜歡狀態"
 
-#: src/ui/playlist_generation.rs:297
+#: src/ui/playlist_generation.rs:303
 msgid "Reading saved albums"
 msgstr "正在讀取已儲存的專輯"
 
-#: src/ui/playlist_generation.rs:298
+#: src/ui/playlist_generation.rs:304
 msgid "Reading liked songs"
 msgstr "正在讀取喜歡的歌曲"
 
-#: src/ui/playlist_generation.rs:299
+#: src/ui/playlist_generation.rs:305
 msgid "Creating playlist"
 msgstr "正在建立播放清單"
 
-#: src/ui/playlist_generation.rs:300
+#: src/ui/playlist_generation.rs:306
 msgid "Adding songs"
 msgstr "正在加入歌曲"
 
-#: src/ui/playlist_generation.rs:301
+#: src/ui/playlist_generation.rs:307
 msgid "Finished"
 msgstr "已結束"
 
-#: src/ui/playlist_generation.rs:304
+#: src/ui/playlist_generation.rs:310
 msgid "Pending"
 msgstr "等待中"
 
-#: src/ui/playlist_generation.rs:304
+#: src/ui/playlist_generation.rs:310
 msgid "Running"
 msgstr "執行中"
 
-#: src/ui/playlist_generation.rs:305
+#: src/ui/playlist_generation.rs:311
 msgid "Paused"
 msgstr "已暫停"
 
-#: src/ui/playlist_generation.rs:305
+#: src/ui/playlist_generation.rs:311
+msgid "Paused: Spotify quota"
+msgstr "已暫停：Spotify 配額"
+
+#: src/ui/playlist_generation.rs:311
 msgid "Retrying"
 msgstr "正在重試"
 
-#: src/ui/playlist_generation.rs:306
+#: src/ui/playlist_generation.rs:312
 msgid "Completed"
 msgstr "已完成"
 
-#: src/ui/playlist_generation.rs:306
+#: src/ui/playlist_generation.rs:312
 msgid "Failed"
 msgstr "失敗"
 
-#: src/ui/playlist_generation.rs:307
+#: src/ui/playlist_generation.rs:313
 msgid "Cancelled"
 msgstr "已取消"
 
-#: src/ui/playlist_generation.rs:311
+#: src/ui/playlist_generation.rs:317
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "藝人：{artists}/{total}"
 
-#: src/ui/playlist_generation.rs:317
+#: src/ui/playlist_generation.rs:323
 msgid "Discovering total work…"
 msgstr "正在計算總工作量…"
 
-#: src/ui/playlist_generation.rs:320
+#: src/ui/playlist_generation.rs:326
 #, rust-format
 msgid "Unique releases checked: {checked} · Within period: {matched}"
-msgstr ""
+msgstr "已檢查的不重複發行作品：{checked} · 時段內：{matched}"
 
-#: src/ui/playlist_generation.rs:323
+#: src/ui/playlist_generation.rs:329
 #, rust-format
 msgid ""
 "Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
-msgstr ""
+msgstr "已分析歌曲：{analyzed}/{total} · 已選取：{selected} · 已新增：{added}"
 
-#: src/ui/playlist_generation.rs:328
+#: src/ui/playlist_generation.rs:334
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -3741,14 +3752,75 @@ msgstr ""
 "已分析：{analyzed}/{total} · 專輯：{albums} · 已選：{selected} · 已加入："
 "{added}"
 
-#: src/ui/playlist_generation.rs:334
+#: src/ui/playlist_generation.rs:340
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "已用時間：{elapsed} · 預估剩餘時間：{remaining}"
 
-#: src/ui/playlist_generation.rs:341
+#: src/ui/playlist_generation.rs:347
 msgid "Resume"
 msgstr "繼續"
+
+#: src/ui/playlist_generation.rs:367
+msgid "API cost manager"
+msgstr "API 用量管理員"
+
+#: src/ui/playlist_generation.rs:369
+msgid "Official remaining quota: not provided by Spotify"
+msgstr "官方剩餘配額：Spotify 未提供"
+
+#: src/ui/playlist_generation.rs:370
+msgid "Requests in the last 30 seconds / local budget"
+msgstr "最近 30 秒的請求數 / 本機預算"
+
+#: src/ui/playlist_generation.rs:371
+msgid "Effective dispatch rate (last 30 seconds)"
+msgstr "實際傳送速率（最近 30 秒）"
+
+#: src/ui/playlist_generation.rs:372
+msgid "Queued (high / medium / low)"
+msgstr "佇列（高 / 中 / 低）"
+
+#: src/ui/playlist_generation.rs:373
+msgid "In flight"
+msgstr "執行中"
+
+#: src/ui/playlist_generation.rs:374
+msgid "Global cooldown remaining"
+msgstr "剩餘全域等待時間"
+
+#: src/ui/playlist_generation.rs:376
+msgid "Catalog cache hits / reads"
+msgstr "快取命中 / 曲庫查詢"
+
+#: src/ui/playlist_generation.rs:385
+msgid ""
+"Limits and cost are local estimates. Other applications and devices can "
+"consume Spotify quota too."
+msgstr "限制和用量均為本機估算。其他應用程式和裝置也可能消耗 Spotify 配額。"
+
+#: src/ui/playlist_generation.rs:403
+msgid ""
+"Spotify quota exhausted. Jobs remain checkpointed. No reset time is known. "
+"Check the developer dashboard before trying again."
+msgstr "Spotify 配額已用盡。進度已儲存。配額更新時間未知。重試前請檢查開發者控制台。"
+
+#: src/ui/playlist_generation.rs:405
+msgid "Spotify developer dashboard"
+msgstr "Spotify 開發者控制台"
+
+#: src/ui/playlist_generation.rs:408
+msgid "Allow quota recheck"
+msgstr "允許重新檢查配額"
+
+#: src/ui/playlist_generation.rs:413
+msgid ""
+"Then resume paused jobs. A new quota rejection will pause requests again."
+msgstr "接著恢復已暫停的工作。若再次因配額遭拒，請求將再次暫停。"
+
+#~ msgctxt "column"
+#~ msgid "Title"
+#~ msgstr "標題"
 
 #~ msgid "Reading artist releases"
 #~ msgstr "正在讀取藝人的發行作品"

@@ -1251,6 +1251,13 @@ impl Backend {
             .name("spotifast-backend".to_string())
             .spawn(move || {
                 runtime.block_on(async move {
+                    if let Err(error) = worker_activity
+                        .cost
+                        .restore(dirs.state.join("api-cost.json"))
+                        .await
+                    {
+                        let _ = event_tx.send(Event::Error(error.to_string()));
+                    }
                     let mut worker = Worker::new(
                         dirs,
                         engine_config,

@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-29 10:56-0300\n"
+"POT-Creation-Date: 2026-10-29 14:46-0300\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Swedish\n"
@@ -258,7 +258,7 @@ msgid "Previous"
 msgstr "Föregående"
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:340
+#: src/ui/playlist_generation.rs:346
 msgid "Pause"
 msgstr "Pausa"
 
@@ -321,7 +321,7 @@ msgstr "Senaste"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:78
 #: src/ui/friends.rs:65 src/ui/mod.rs:642 src/window.rs:35
-#: src/ui/playlist_generation.rs:125
+#: src/ui/playlist_generation.rs:130
 msgid "Close"
 msgstr "Stäng"
 
@@ -535,7 +535,7 @@ msgid "Copy link"
 msgstr "Kopiera länk"
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:349
+#: src/ui/playlist_generation.rs:355
 msgid "Open in Spotify"
 msgstr "Öppna i Spotify"
 
@@ -652,7 +652,7 @@ msgstr "Nätverksanslutningsfel. Kontrollera din anslutning."
 msgid "Cut"
 msgstr "Klipp ut"
 
-#: src/ui/widgets.rs:3166 src/ui/login.rs:538
+#: src/ui/widgets.rs:3166 src/ui/login.rs:540
 msgid "Copy"
 msgstr "Kopiera"
 
@@ -1298,7 +1298,7 @@ msgstr "Spotify Free, lokal uppspelning kräver Premium"
 msgid "Connected as {username}"
 msgstr "Ansluten som {username}"
 
-#: src/ui/settings.rs:533 src/ui/login.rs:369
+#: src/ui/settings.rs:533 src/ui/login.rs:371
 msgid "Client ID"
 msgstr "Client ID"
 
@@ -1333,7 +1333,7 @@ msgctxt "playback status"
 msgid "Connecting"
 msgstr "Ansluter"
 
-#: src/ui/settings.rs:596 src/ui/login.rs:272
+#: src/ui/settings.rs:596 src/ui/login.rs:274
 msgid "Connecting to Spotify…"
 msgstr "Ansluter till Spotify…"
 
@@ -1736,7 +1736,7 @@ msgstr ""
 "”Av” ignorerar miljövariabler. ”System” använder dem, och operativsystemets "
 "proxy på macOS och Windows."
 
-#: src/ui/settings.rs:1634 src/ui/login.rs:622
+#: src/ui/settings.rs:1634 src/ui/login.rs:624
 msgid "Apply settings"
 msgstr "Tillämpa inställningar"
 
@@ -2498,7 +2498,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "”{name}” visas inte längre i Ditt bibliotek."
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:342
+#: src/ui/dialogs.rs:623 src/ui/login.rs:264 src/ui/playlist_generation.rs:348
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -2923,15 +2923,15 @@ msgstr ""
 msgid "A native Spotify client."
 msgstr "En inbyggd Spotify-klient."
 
-#: src/ui/login.rs:231
+#: src/ui/login.rs:233
 msgid "Waiting for Spotify in your browser…"
 msgstr "Väntar på Spotify i webbläsaren…"
 
-#: src/ui/login.rs:239
+#: src/ui/login.rs:241
 msgid "Didn't open? Open the sign-in page again"
 msgstr "Öppnades inte? Öppna inloggningssidan igen"
 
-#: src/ui/login.rs:255
+#: src/ui/login.rs:257
 #, rust-format
 msgid ""
 "If Spotify says “Invalid redirect URI”, add {uri} to your app exactly, save, "
@@ -2940,11 +2940,11 @@ msgstr ""
 "Om Spotify säger ”Invalid redirect URI”, lägg till exakt {uri} i din app, "
 "spara och logga in igen."
 
-#: src/ui/login.rs:297
+#: src/ui/login.rs:299
 msgid "Sign in with Spotify"
 msgstr "Logga in med Spotify"
 
-#: src/ui/login.rs:308
+#: src/ui/login.rs:310
 msgid ""
 "Sign in through your browser. Spotifast never sees your password. Local "
 "playback needs Spotify Premium."
@@ -2952,25 +2952,25 @@ msgstr ""
 "Logga in via webbläsaren. Spotifast ser aldrig ditt lösenord. Lokal "
 "uppspelning kräver Spotify Premium."
 
-#: src/ui/login.rs:317
+#: src/ui/login.rs:319
 msgid "How to set up your Spotify app"
 msgstr "Så konfigurerar du din Spotify-app"
 
-#: src/ui/login.rs:337
+#: src/ui/login.rs:339
 msgid "Proxy Settings"
 msgstr "Proxyinställningar"
 
-#: src/ui/login.rs:387
+#: src/ui/login.rs:389
 msgid "A Client ID is 32 letters and digits. Copy it from your app's page."
 msgstr ""
 "Ett Client ID består av 32 bokstäver och siffror. Kopiera det från appens "
 "sida."
 
-#: src/ui/login.rs:439
+#: src/ui/login.rs:441
 msgid "Set up your Spotify app"
 msgstr "Konfigurera din Spotify-app"
 
-#: src/ui/login.rs:447
+#: src/ui/login.rs:449
 msgid ""
 "Spotifast signs in through your own free Spotify app. Spotify requires its "
 "owner to have Premium."
@@ -2978,28 +2978,28 @@ msgstr ""
 "Spotifast loggar in via din egen gratis Spotify-app. Spotify kräver att "
 "appens ägare har Premium."
 
-#: src/ui/login.rs:457
+#: src/ui/login.rs:459
 msgid "Open Spotify's developer dashboard."
 msgstr "Öppna Spotifys utvecklarpanel."
 
-#: src/ui/login.rs:476
+#: src/ui/login.rs:478
 msgid "Click Create app. Any name will do."
 msgstr "Klicka på ”Create app”. Vilket namn som helst fungerar."
 
-#: src/ui/login.rs:483
+#: src/ui/login.rs:485
 msgid "Under Redirect URIs, add exactly:"
 msgstr "Under ”Redirect URIs” lägger du till exakt:"
 
-#: src/ui/login.rs:492
+#: src/ui/login.rs:494
 msgid "Tick Web API, accept the terms, and save."
 msgstr "Kryssa i ”Web API”, godkänn villkoren och spara."
 
-#: src/ui/login.rs:501
+#: src/ui/login.rs:503
 msgid "Paste the app's Client ID into the field and sign in."
 msgstr "Klistra in appens Client ID i fältet och logga in."
 
 #. Translators: shown on the Copy button for a moment after it copied.
-#: src/ui/login.rs:536
+#: src/ui/login.rs:538
 msgid "Copied"
 msgstr "Kopierat"
 
@@ -3075,11 +3075,6 @@ msgstr "Förspara på Spotify"
 #: src/ui/prerelease.rs:249
 msgid "Track list preview"
 msgstr "Förhandsvisning av låtlista"
-
-#: src/ui/prerelease.rs:260
-msgctxt "column"
-msgid "Title"
-msgstr "Titel"
 
 #: src/ui/prerelease.rs:326 src/ui/prerelease.rs:333
 #, rust-format
@@ -3699,17 +3694,17 @@ msgstr ""
 
 #: src/ui/playlist_generation.rs:53
 msgid "Release period"
-msgstr ""
+msgstr "Utgivningsperiod"
 
 #: src/ui/playlist_generation.rs:55
 msgid "Liked songs period (UTC)"
-msgstr ""
+msgstr "Period för gillade låtar (UTC)"
 
 #: src/ui/playlist_generation.rs:59
 msgid ""
 "Select a year, then optionally a month and day. Leave both years as Any for "
 "all dates. A start alone selects that whole period."
-msgstr ""
+msgstr "Välj ett år och eventuellt månad och dag. Lämna båda åren som Alla för alla datum. Enbart en start väljer hela den perioden."
 
 #: src/ui/playlist_generation.rs:66
 msgid "From"
@@ -3719,11 +3714,23 @@ msgstr "Från"
 msgid "To"
 msgstr "Till"
 
+#: src/ui/playlist_generation.rs:106
+msgid ""
+"Estimated API cost: high and variable (artists, releases and track pages). "
+"Cached discoveries reduce repeated work."
+msgstr "Uppskattad API-förbrukning: hög och varierande (artister, utgåvor och låtsidor). Cachen minskar upprepade frågor."
+
 #: src/ui/playlist_generation.rs:108
+msgid ""
+"Estimated API cost: medium; about one request per 50 library entries, plus "
+"playlist batches. Exact size is not known yet."
+msgstr "Uppskattad API-förbrukning: medelhög; ungefär en begäran per 50 biblioteksposter plus spellistebatcher. Exakt storlek är ännu okänd."
+
+#: src/ui/playlist_generation.rs:113
 msgid "Start generation"
 msgstr "Starta generering"
 
-#: src/ui/playlist_generation.rs:123
+#: src/ui/playlist_generation.rs:128
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
@@ -3731,107 +3738,111 @@ msgstr ""
 "Förloppet sparas efter varje omgång. Om du avslutar pausas bearbetningen "
 "till nästa start."
 
-#: src/ui/playlist_generation.rs:200
+#: src/ui/playlist_generation.rs:205
 msgid "Year"
-msgstr ""
+msgstr "År"
 
-#: src/ui/playlist_generation.rs:210
+#: src/ui/playlist_generation.rs:215
 msgid "Month"
-msgstr ""
+msgstr "Månad"
 
-#: src/ui/playlist_generation.rs:222
+#: src/ui/playlist_generation.rs:227
 msgid "Day"
-msgstr ""
+msgstr "Dag"
 
-#: src/ui/playlist_generation.rs:250
+#: src/ui/playlist_generation.rs:255
 msgid "Any"
-msgstr ""
+msgstr "Alla"
 
-#: src/ui/playlist_generation.rs:289
+#: src/ui/playlist_generation.rs:295
 msgid "Playlist generations"
 msgstr "Generering av spellistor"
 
-#: src/ui/playlist_generation.rs:294
+#: src/ui/playlist_generation.rs:300
 msgid "Reading followed artists"
 msgstr "Läser följda artister"
 
-#: src/ui/playlist_generation.rs:295
+#: src/ui/playlist_generation.rs:301
 msgid "Finding releases for the period"
-msgstr ""
+msgstr "Söker utgåvor för perioden"
 
-#: src/ui/playlist_generation.rs:296
+#: src/ui/playlist_generation.rs:302
 msgid "Checking release tracks and likes"
 msgstr "Kontrollerar låtar och gillanden"
 
-#: src/ui/playlist_generation.rs:297
+#: src/ui/playlist_generation.rs:303
 msgid "Reading saved albums"
 msgstr "Läser sparade album"
 
-#: src/ui/playlist_generation.rs:298
+#: src/ui/playlist_generation.rs:304
 msgid "Reading liked songs"
 msgstr "Läser gillade låtar"
 
-#: src/ui/playlist_generation.rs:299
+#: src/ui/playlist_generation.rs:305
 msgid "Creating playlist"
 msgstr "Skapar spellista"
 
-#: src/ui/playlist_generation.rs:300
+#: src/ui/playlist_generation.rs:306
 msgid "Adding songs"
 msgstr "Lägger till låtar"
 
-#: src/ui/playlist_generation.rs:301
+#: src/ui/playlist_generation.rs:307
 msgid "Finished"
 msgstr "Klar"
 
-#: src/ui/playlist_generation.rs:304
+#: src/ui/playlist_generation.rs:310
 msgid "Pending"
 msgstr "Väntar"
 
-#: src/ui/playlist_generation.rs:304
+#: src/ui/playlist_generation.rs:310
 msgid "Running"
 msgstr "Körs"
 
-#: src/ui/playlist_generation.rs:305
+#: src/ui/playlist_generation.rs:311
 msgid "Paused"
 msgstr "Pausad"
 
-#: src/ui/playlist_generation.rs:305
+#: src/ui/playlist_generation.rs:311
+msgid "Paused: Spotify quota"
+msgstr "Pausad: Spotify-kvot"
+
+#: src/ui/playlist_generation.rs:311
 msgid "Retrying"
 msgstr "Försöker igen"
 
-#: src/ui/playlist_generation.rs:306
+#: src/ui/playlist_generation.rs:312
 msgid "Completed"
 msgstr "Slutförd"
 
-#: src/ui/playlist_generation.rs:306
+#: src/ui/playlist_generation.rs:312
 msgid "Failed"
 msgstr "Misslyckades"
 
-#: src/ui/playlist_generation.rs:307
+#: src/ui/playlist_generation.rs:313
 msgid "Cancelled"
 msgstr "Avbruten"
 
-#: src/ui/playlist_generation.rs:311
+#: src/ui/playlist_generation.rs:317
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "Artister: {artists}/{total}"
 
-#: src/ui/playlist_generation.rs:317
+#: src/ui/playlist_generation.rs:323
 msgid "Discovering total work…"
 msgstr "Beräknar den totala arbetsmängden…"
 
-#: src/ui/playlist_generation.rs:320
+#: src/ui/playlist_generation.rs:326
 #, rust-format
 msgid "Unique releases checked: {checked} · Within period: {matched}"
-msgstr ""
+msgstr "Unika utgåvor kontrollerade: {checked} · Inom perioden: {matched}"
 
-#: src/ui/playlist_generation.rs:323
+#: src/ui/playlist_generation.rs:329
 #, rust-format
 msgid ""
 "Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
-msgstr ""
+msgstr "Analyserade låtar: {analyzed}/{total} · Valda: {selected} · Tillagda: {added}"
 
-#: src/ui/playlist_generation.rs:328
+#: src/ui/playlist_generation.rs:334
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -3840,14 +3851,75 @@ msgstr ""
 "Analyserade: {analyzed}/{total} · Album: {albums} · Valda: {selected} · "
 "Tillagda: {added}"
 
-#: src/ui/playlist_generation.rs:334
+#: src/ui/playlist_generation.rs:340
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "Förfluten tid: {elapsed} · Uppskattad återstående tid: {remaining}"
 
-#: src/ui/playlist_generation.rs:341
+#: src/ui/playlist_generation.rs:347
 msgid "Resume"
 msgstr "Återuppta"
+
+#: src/ui/playlist_generation.rs:367
+msgid "API cost manager"
+msgstr "Hantering av API-förbrukning"
+
+#: src/ui/playlist_generation.rs:369
+msgid "Official remaining quota: not provided by Spotify"
+msgstr "Officiell återstående kvot: tillhandahålls inte av Spotify"
+
+#: src/ui/playlist_generation.rs:370
+msgid "Requests in the last 30 seconds / local budget"
+msgstr "Begäranden de senaste 30 sekunderna / lokal budget"
+
+#: src/ui/playlist_generation.rs:371
+msgid "Effective dispatch rate (last 30 seconds)"
+msgstr "Faktisk sändningstakt (senaste 30 sekunderna)"
+
+#: src/ui/playlist_generation.rs:372
+msgid "Queued (high / medium / low)"
+msgstr "Kö (hög / medel / låg)"
+
+#: src/ui/playlist_generation.rs:373
+msgid "In flight"
+msgstr "Pågående"
+
+#: src/ui/playlist_generation.rs:374
+msgid "Global cooldown remaining"
+msgstr "Återstående global väntetid"
+
+#: src/ui/playlist_generation.rs:376
+msgid "Catalog cache hits / reads"
+msgstr "Cacheträffar / katalogläsningar"
+
+#: src/ui/playlist_generation.rs:385
+msgid ""
+"Limits and cost are local estimates. Other applications and devices can "
+"consume Spotify quota too."
+msgstr "Gränser och förbrukning är lokala uppskattningar. Andra appar och enheter kan också förbruka Spotify-kvot."
+
+#: src/ui/playlist_generation.rs:403
+msgid ""
+"Spotify quota exhausted. Jobs remain checkpointed. No reset time is known. "
+"Check the developer dashboard before trying again."
+msgstr "Spotify-kvoten är slut. Förloppet är sparat. Tidpunkten för förnyelse är okänd. Kontrollera utvecklarpanelen innan du försöker igen."
+
+#: src/ui/playlist_generation.rs:405
+msgid "Spotify developer dashboard"
+msgstr "Spotifys utvecklarpanel"
+
+#: src/ui/playlist_generation.rs:408
+msgid "Allow quota recheck"
+msgstr "Tillåt ny kvotkontroll"
+
+#: src/ui/playlist_generation.rs:413
+msgid ""
+"Then resume paused jobs. A new quota rejection will pause requests again."
+msgstr "Återuppta sedan pausade jobb. Ett nytt kvotavslag pausar begärandena igen."
+
+#~ msgctxt "column"
+#~ msgid "Title"
+#~ msgstr "Titel"
 
 #~ msgid "Reading artist releases"
 #~ msgstr "Läser artisternas utgivningar"

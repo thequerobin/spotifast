@@ -180,3 +180,13 @@ See [playlist generation and recovery](docs/_reference/playlist-generation.md).
     <img alt="Spotifast GitHub stars over time" src="https://api.star-history.com/chart?repos=crmne/spotifast&amp;type=date">
   </picture>
 </a>
+
+## API cost manager
+
+All Spotify Web API calls share a paced local budget, fair priorities and a
+bounded request queue. HTTP 429 preserves the complete server wait across
+restarts; quota exhaustion pauses requests until an explicit recheck. Expand
+**API cost manager** in the playlist creation dialog for traffic, failures,
+cache use and pause reasons. Jobs keep their confirmed checkpoints. These
+controls reduce avoidable throttling, but cannot guarantee zero 429 responses.
+See [configuration, recovery and tests](docs/_reference/api-cost-manager.md).

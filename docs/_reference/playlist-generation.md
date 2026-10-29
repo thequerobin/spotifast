@@ -186,17 +186,16 @@ Estimates are approximate, particularly after throttling.
 Jobs rotate after each step through one generation worker, so several jobs
 can coexist without flooding Spotify. The existing shared transport's
 request semaphore, queue and per-grant cooldown also cover generation.
-Generation honors the **full** `Retry-After` duration and checkpoints a
-RETRYING state and retry deadline. It does not inherit the interactive
-transport's 30-second wait cap. Repeated throttling increases generation
+All Web API traffic honors the **full** `Retry-After` duration. Generation
+checkpoints a RETRYING state and retry deadline. Repeated throttling increases generation
 pacing up to 30 seconds between steps; successful steps gradually recover.
 The pace is adaptive, not an assumed Spotify requests-per-second quota.
 
 Network errors and server failures use exponential backoff plus jitter,
 up to eight consecutive transient failures (`MAX_ATTEMPTS` in the job
-module). Resume resets the counter. HTTP 429 continues automatically even
-after that count, including quota refusals, using the server wait and
-adaptive pacing. Refused authorization needs intervention. Existing OAuth refresh handles aging tokens and one 401 retry.
+module). Resume resets the counter. HTTP 429 uses the same bounded retry
+count, full server wait and adaptive pacing. A quota refusal pauses the job
+until an explicit quota recheck and Resume. Refused authorization needs intervention. Existing OAuth refresh handles aging tokens and one 401 retry.
 Permissions errors remain visible and may require signing in again.
 
 ## Extending selection
@@ -274,3 +273,15 @@ The followed-release pipeline reuses the documented
 [album tracks](https://developer.spotify.com/documentation/web-api/reference/get-an-albums-tracks)
 and [saved-item membership](https://developer.spotify.com/documentation/web-api/reference/check-library-contains)
 endpoints. Existing `user-follow-read` and library/playlist scopes suffice.
+
+## Shared API budget
+
+Generation is low priority in the [API cost manager](api-cost-manager.md).
+Interactive reads and short mutations have higher priority, with weighted
+turns guaranteeing progress for background work. Quota exhaustion persists
+`PAUSED_QUOTA`; confirmed results stay intact and no timer invents a reset.
+Check Spotify's developer dashboard, choose **Allow quota recheck** in the
+diagnostic panel, then **Resume** the affected jobs. This does not clear any
+remaining `Retry-After` interval. Repeated rate-limit failures stop after eight
+retries and require intervention rather than retrying forever. Existing job
+files remain readable; existing state names retain their meaning.

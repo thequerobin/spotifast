@@ -23,6 +23,7 @@ pub enum State {
     Pending,
     Running,
     Paused,
+    PausedQuota,
     Retrying,
     Completed,
     Failed,
@@ -250,6 +251,7 @@ impl Job {
 
 #[derive(Clone, Debug)]
 pub enum Request {
+    RecheckQuota,
     Start {
         account: String,
         kind: String,
@@ -621,12 +623,13 @@ pub fn apply(job: &mut Job, outcome: Outcome) -> Result<(), ApiError> {
 
 pub fn failed_attempt(job: &mut Job, step: &Step, error: ApiError) {
     job.retries = job.retries.saturating_add(1);
+    let quota = matches!(&error, ApiError::QuotaExhausted);
     let throttled = matches!(
         &error,
         ApiError::Status { status: 429, .. } | ApiError::RateLimited
     );
     let temporary = throttled || error.is_network() || error.status().is_some_and(|s| s >= 500);
-    if throttled {
+    if throttled || quota {
         // A 429 explicitly rejected the mutation, so retrying is safe.
         if matches!(step, Step::Create) {
             job.create_intent = false;
@@ -645,7 +648,9 @@ pub fn failed_attempt(job: &mut Job, step: &Step, error: ApiError) {
         (1_u64 << job.retries.min(8)) + rand::random_range(0..=3)
     };
     job.retry_at = now().saturating_add(delay);
-    job.state = if temporary && (throttled || job.retries <= MAX_ATTEMPTS) {
+    job.state = if quota {
+        State::PausedQuota
+    } else if temporary && job.retries <= MAX_ATTEMPTS {
         State::Retrying
     } else {
         State::Failed
@@ -742,6 +747,17 @@ pub async fn run(
         }
         while let Some(request) = pending.pop_front().or_else(|| requests.try_recv().ok()) {
             let changed = match request {
+                Request::RecheckQuota => {
+                    if let Err(error) = api
+                        .verification_client(crate::api::ApiSource::Personal)
+                        .cost_manager()
+                        .recheck_quota()
+                        .await
+                    {
+                        handle.publish(&jobs, Some(error.to_string()), &waker);
+                    }
+                    continue;
+                }
                 Request::Start {
                     account,
                     kind,

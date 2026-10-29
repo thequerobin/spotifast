@@ -3,6 +3,7 @@
 use std::fmt;
 
 pub mod client;
+pub mod cost;
 pub mod gateway;
 pub mod models;
 

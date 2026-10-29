@@ -788,3 +788,28 @@ async fn runtime_automatically_resumes_a_persisted_job_and_finishes_it() {
     assert_eq!(restored[0].state, State::Completed);
     tokio::fs::remove_dir_all(root).await.unwrap();
 }
+
+#[test]
+fn quota_pauses_durably_without_losing_confirmed_batches() {
+    let mut job = job();
+    job.stage = Stage::Add;
+    job.candidates.push(candidate(1));
+    let step = prepare(&mut job);
+    let confirmed = job.added.clone();
+    failed_attempt(&mut job, &step, ApiError::QuotaExhausted);
+    let restored = crash(&job);
+    assert_eq!(restored.state, State::PausedQuota);
+    assert!(!restored.runnable());
+    assert_eq!(restored.added, confirmed);
+    assert!(restored.pending_batch.is_empty());
+}
+
+#[test]
+fn repeated_rate_limits_eventually_require_user_intervention() {
+    let mut job = job();
+    for _ in 0..=MAX_ATTEMPTS {
+        failed_attempt(&mut job, &Step::Albums, ApiError::RateLimited);
+    }
+    assert_eq!(job.state, State::Failed);
+    assert!(!job.runnable());
+}
