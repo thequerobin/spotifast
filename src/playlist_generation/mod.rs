@@ -1,6 +1,9 @@
 //! Resumable playlist selection, independent of the native interface.
 pub mod jobs;
+#[cfg(test)]
+mod optimization_tests;
 pub mod period;
+pub mod release_cache;
 #[cfg(test)]
 mod release_tests;
 pub mod releases;

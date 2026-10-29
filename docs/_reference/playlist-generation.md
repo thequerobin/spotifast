@@ -11,11 +11,43 @@ playlist creation form. The default name is `MNCAS - {period}` and remains
 editable. Leaving both years as **Any** includes all available releases.
 
 This mode pages through **all** followed artists (not the Home shelf's
-50-artist fallback), then each artist's albums, singles, appearances and
-compilations. Only releases intersecting the requested calendar period have
-their tracks read. A track must credit at least one followed artist, so an
-unrelated song on a compilation is excluded. Collaborations are included.
-Saved-album membership is irrelevant to this mode.
+50-artist fallback). New jobs with a closed period spanning at most five
+calendar years search tracks by quoted artist name and each requested year.
+The artist's Spotify **ID**, not its name, must occur in the track credits.
+Each returned album/single is deduplicated and filtered against the requested
+month/day interval before its tracks are inspected. Searching tracks also
+finds credited collaborations and appearances on compilations. Saved-album
+membership is irrelevant to this mode.
+
+Search is an indexed discovery source, not a transactional enumeration of
+Spotify's catalog. Indexing or edition metadata may differ from the complete
+artist catalog. At 1,000 reported search hits, a changing total, malformed
+pagination or missing required release metadata, the current artist falls back
+to its complete albums, singles, appearances and compilations. An unsupported
+search endpoint disables further searches for that job. Rate limits and
+transport failures retain the search checkpoint and use the normal retries.
+Open or broader periods, missing artist names and legacy checkpoints retain
+the complete-catalog traversal. No early stop relies on an undocumented date
+ordering. A track must credit at least one followed artist to be selected.
+
+Complete artist/year query results and complete artist catalogs are cached
+under `playlist-generations/release-catalog-cache/`. Cache keys include the
+Spotify account, artist ID and discovery year (or catalog mode). They store
+only release IDs, dates and track counts, never credentials or liked-song
+membership. The requested month/day filter is reapplied when reusing them.
+The current/future year and full catalogs expire after 15 minutes; previous
+years expire after 24 hours. Only fully paginated results are cached, including
+empty results. Mid-query progress remains in the durable job checkpoint.
+Corrupt, oversized or expired cache files are ignored. Startup removes expired
+files and retains at most 4,096 existing cache entries; individual entries are
+limited to 8 MiB. Cache-write failures do not fail a job. Checkpoint-write
+failures still stop processing. Removing this disposable cache does not remove
+jobs or playlists.
+
+The history separates **unique releases checked**, **releases within the
+period**, and **songs analyzed/selected/added**. A compilation shared by several
+followed artists is counted once. Already-running jobs resume with their saved
+catalog cursor; start a new generation to use indexed discovery.
 
 Spotify supplies a release date on the album/single, not an independently
 verified original-release date for every recording. Reissues therefore use

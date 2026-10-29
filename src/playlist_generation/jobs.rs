@@ -101,6 +101,8 @@ pub struct View {
     pub albums_checked: u32,
     pub artists_checked: usize,
     pub artists_total: Option<usize>,
+    pub release_source: bool,
+    pub matched_releases: u32,
     pub selected: usize,
     pub added: usize,
     pub skipped: u32,
@@ -124,6 +126,7 @@ impl Job {
         if name.trim().is_empty() || name.chars().count() > 100 {
             return Err("Use a playlist name between 1 and 100 characters".into());
         }
+        let release_scan = releases::Scan::for_period(&period);
         Ok(Self {
             version: 1,
             id: format!("{:032x}", rand::random::<u128>()),
@@ -157,7 +160,7 @@ impl Job {
             albums_offset: 0,
             tracks_offset: 0,
             albums: BTreeSet::new(),
-            releases: Default::default(),
+            releases: release_scan,
             candidates: Vec::new(),
             added: BTreeSet::new(),
             create_intent: false,
@@ -203,7 +206,13 @@ impl Job {
             stage: self.stage,
             analyzed: self.analyzed,
             tracks_total: self.tracks_total,
-            albums_checked: self.albums_checked,
+            albums_checked: if kind(&self.kind)
+                .is_ok_and(|kind| kind.source == Source::FollowedReleases)
+            {
+                self.releases.seen_albums.len() as u32
+            } else {
+                self.albums_checked
+            },
             artists_checked: if self.stage == Stage::FollowedArtists {
                 self.releases.artists.len()
             } else {
@@ -214,6 +223,9 @@ impl Job {
             } else {
                 Some(self.releases.artists.len())
             },
+            release_source: kind(&self.kind)
+                .is_ok_and(|kind| kind.source == Source::FollowedReleases),
+            matched_releases: self.releases.matched.max(self.releases.albums.len() as u32),
             selected: self.candidates.len(),
             added: self.added.len(),
             skipped: self.skipped,
@@ -341,9 +353,10 @@ pub enum Step {
 
 /// Changes here are saved before the returned operation can reach Spotify.
 pub fn prepare(job: &mut Job) -> Step {
+    job.releases.matched = job.releases.matched.max(job.releases.albums.len() as u32);
     match job.stage {
         Stage::FollowedArtists => Step::Release(releases::Step::Artists),
-        Stage::ArtistReleases => Step::Release(releases::Step::Albums),
+        Stage::ArtistReleases => Step::Release(job.releases.step()),
         Stage::ReleaseTracks => Step::Release(releases::Step::Tracks),
         Stage::Albums => Step::Albums,
         Stage::Tracks => Step::Tracks,
@@ -701,6 +714,7 @@ pub async fn run(
             return;
         }
     };
+    super::release_cache::prune(&root).await;
     let mut last_tick = std::time::Instant::now();
     let mut pending = VecDeque::new();
     let mut cursor = 0;
@@ -826,6 +840,13 @@ pub async fn run(
         let result = {
             let job = &jobs[index];
             let work = async {
+                if matches!(
+                    step,
+                    Step::Release(releases::Step::Search | releases::Step::Albums)
+                ) && let Some(outcome) = super::release_cache::read(&root, job).await
+                {
+                    return Ok(Outcome::Release(Box::new(outcome)));
+                }
                 let client = api.client_for(Operation::PlaylistCreation).await?;
                 crate::api::client::generation_job_request(
                     execute(&client, job, &step),
@@ -879,6 +900,7 @@ pub async fn run(
             milliseconds,
         );
         finish_step(&mut jobs[index], &step, result, elapsed);
+        super::release_cache::flush(&root, &mut jobs[index]).await;
         if let Err(error) = save(&root, &jobs[index]).await {
             handle.publish(
                 &jobs,

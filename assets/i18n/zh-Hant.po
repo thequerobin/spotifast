@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-29 09:24-0300\n"
+"POT-Creation-Date: 2026-10-29 10:56-0300\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Traditional Chinese\n"
@@ -254,7 +254,7 @@ msgid "Previous"
 msgstr "上一首"
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:442
+#: src/ui/playlist_generation.rs:340
 msgid "Pause"
 msgstr "暫停"
 
@@ -531,7 +531,7 @@ msgid "Copy link"
 msgstr "複製連結"
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:451
+#: src/ui/playlist_generation.rs:349
 msgid "Open in Spotify"
 msgstr "在 Spotify 中開啟"
 
@@ -2427,7 +2427,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "「{name}」將不再顯示於你的音樂庫。"
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:444
+#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:342
 msgid "Cancel"
 msgstr "取消"
 
@@ -3648,80 +3648,91 @@ msgstr ""
 msgid "Any"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:401
+#: src/ui/playlist_generation.rs:289
 msgid "Playlist generations"
 msgstr "播放清單產生記錄"
 
-#: src/ui/playlist_generation.rs:406
+#: src/ui/playlist_generation.rs:294
 msgid "Reading followed artists"
 msgstr "正在讀取追蹤的藝人"
 
-#: src/ui/playlist_generation.rs:407
-msgid "Reading artist releases"
-msgstr "正在讀取藝人的發行作品"
+#: src/ui/playlist_generation.rs:295
+msgid "Finding releases for the period"
+msgstr ""
 
-#: src/ui/playlist_generation.rs:408
+#: src/ui/playlist_generation.rs:296
 msgid "Checking release tracks and likes"
 msgstr "正在檢查曲目和喜歡狀態"
 
-#: src/ui/playlist_generation.rs:409
+#: src/ui/playlist_generation.rs:297
 msgid "Reading saved albums"
 msgstr "正在讀取已儲存的專輯"
 
-#: src/ui/playlist_generation.rs:410
+#: src/ui/playlist_generation.rs:298
 msgid "Reading liked songs"
 msgstr "正在讀取喜歡的歌曲"
 
-#: src/ui/playlist_generation.rs:411
+#: src/ui/playlist_generation.rs:299
 msgid "Creating playlist"
 msgstr "正在建立播放清單"
 
-#: src/ui/playlist_generation.rs:412
+#: src/ui/playlist_generation.rs:300
 msgid "Adding songs"
 msgstr "正在加入歌曲"
 
-#: src/ui/playlist_generation.rs:413
+#: src/ui/playlist_generation.rs:301
 msgid "Finished"
 msgstr "已結束"
 
-#: src/ui/playlist_generation.rs:416
+#: src/ui/playlist_generation.rs:304
 msgid "Pending"
 msgstr "等待中"
 
-#: src/ui/playlist_generation.rs:416
+#: src/ui/playlist_generation.rs:304
 msgid "Running"
 msgstr "執行中"
 
-#: src/ui/playlist_generation.rs:417
+#: src/ui/playlist_generation.rs:305
 msgid "Paused"
 msgstr "已暫停"
 
-#: src/ui/playlist_generation.rs:417
+#: src/ui/playlist_generation.rs:305
 msgid "Retrying"
 msgstr "正在重試"
 
-#: src/ui/playlist_generation.rs:418
+#: src/ui/playlist_generation.rs:306
 msgid "Completed"
 msgstr "已完成"
 
-#: src/ui/playlist_generation.rs:418
+#: src/ui/playlist_generation.rs:306
 msgid "Failed"
 msgstr "失敗"
 
-#: src/ui/playlist_generation.rs:419
+#: src/ui/playlist_generation.rs:307
 msgid "Cancelled"
 msgstr "已取消"
 
-#: src/ui/playlist_generation.rs:423
+#: src/ui/playlist_generation.rs:311
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "藝人：{artists}/{total}"
 
-#: src/ui/playlist_generation.rs:429
+#: src/ui/playlist_generation.rs:317
 msgid "Discovering total work…"
 msgstr "正在計算總工作量…"
 
-#: src/ui/playlist_generation.rs:431
+#: src/ui/playlist_generation.rs:320
+#, rust-format
+msgid "Unique releases checked: {checked} · Within period: {matched}"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:323
+#, rust-format
+msgid ""
+"Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:328
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -3730,14 +3741,17 @@ msgstr ""
 "已分析：{analyzed}/{total} · 專輯：{albums} · 已選：{selected} · 已加入："
 "{added}"
 
-#: src/ui/playlist_generation.rs:436
+#: src/ui/playlist_generation.rs:334
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "已用時間：{elapsed} · 預估剩餘時間：{remaining}"
 
-#: src/ui/playlist_generation.rs:443
+#: src/ui/playlist_generation.rs:341
 msgid "Resume"
 msgstr "繼續"
+
+#~ msgid "Reading artist releases"
+#~ msgstr "正在讀取藝人的發行作品"
 
 #~ msgid "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases."
 #~ msgstr "期間：YYYY、MM/YYYY 或 DD/MM/YYYY。留空以包含所有發行作品。"

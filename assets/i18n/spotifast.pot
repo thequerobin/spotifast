@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-29 09:24-0300\n"
+"POT-Creation-Date: 2026-10-29 10:56-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -261,7 +261,7 @@ msgid "Previous"
 msgstr ""
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:442
+#: src/ui/playlist_generation.rs:340
 msgid "Pause"
 msgstr ""
 
@@ -538,7 +538,7 @@ msgid "Copy link"
 msgstr ""
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:451
+#: src/ui/playlist_generation.rs:349
 msgid "Open in Spotify"
 msgstr ""
 
@@ -2409,7 +2409,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr ""
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:444
+#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:342
 msgid "Cancel"
 msgstr ""
 
@@ -3612,91 +3612,102 @@ msgstr ""
 msgid "Any"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:401
+#: src/ui/playlist_generation.rs:289
 msgid "Playlist generations"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:406
+#: src/ui/playlist_generation.rs:294
 msgid "Reading followed artists"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:407
-msgid "Reading artist releases"
+#: src/ui/playlist_generation.rs:295
+msgid "Finding releases for the period"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:408
+#: src/ui/playlist_generation.rs:296
 msgid "Checking release tracks and likes"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:409
+#: src/ui/playlist_generation.rs:297
 msgid "Reading saved albums"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:410
+#: src/ui/playlist_generation.rs:298
 msgid "Reading liked songs"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:411
+#: src/ui/playlist_generation.rs:299
 msgid "Creating playlist"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:412
+#: src/ui/playlist_generation.rs:300
 msgid "Adding songs"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:413
+#: src/ui/playlist_generation.rs:301
 msgid "Finished"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:416
+#: src/ui/playlist_generation.rs:304
 msgid "Pending"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:416
+#: src/ui/playlist_generation.rs:304
 msgid "Running"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:417
+#: src/ui/playlist_generation.rs:305
 msgid "Paused"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:417
+#: src/ui/playlist_generation.rs:305
 msgid "Retrying"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:418
+#: src/ui/playlist_generation.rs:306
 msgid "Completed"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:418
+#: src/ui/playlist_generation.rs:306
 msgid "Failed"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:419
+#: src/ui/playlist_generation.rs:307
 msgid "Cancelled"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:423
+#: src/ui/playlist_generation.rs:311
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:429
+#: src/ui/playlist_generation.rs:317
 msgid "Discovering total work…"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:431
+#: src/ui/playlist_generation.rs:320
+#, rust-format
+msgid "Unique releases checked: {checked} · Within period: {matched}"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:323
+#, rust-format
+msgid ""
+"Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:328
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
 "Added: {added}"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:436
+#: src/ui/playlist_generation.rs:334
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:443
+#: src/ui/playlist_generation.rs:341
 msgid "Resume"
 msgstr ""

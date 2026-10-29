@@ -89,6 +89,20 @@ impl Period {
             && high.as_ref().is_none_or(|high| &release_low <= high)
     }
 
+    /// Keep indexed discovery bounded. Broad/open periods use the catalog.
+    pub fn search_years(&self) -> Vec<u16> {
+        let Ok((Some(low), Some(high))) = self.bounds() else {
+            return Vec::new();
+        };
+        let (Ok(first), Ok(last)) = (low[..4].parse::<u16>(), high[..4].parse::<u16>()) else {
+            return Vec::new();
+        };
+        if last < first || last - first >= 5 {
+            return Vec::new();
+        }
+        (first..=last).collect()
+    }
+
     pub fn bounds(&self) -> Result<(Option<String>, Option<String>), String> {
         let start = self.start.trim();
         let end = self.end.trim();

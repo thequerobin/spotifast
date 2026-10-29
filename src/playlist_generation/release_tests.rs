@@ -205,7 +205,7 @@ fn release_catalog_offsets_and_global_album_dedup_survive_restart() {
     assert_eq!(restored.stage, Stage::ReleaseTracks);
     assert_eq!(restored.releases.albums.len(), 2);
     assert_eq!(restored.tracks_total, Some(5));
-    assert_eq!(restored.albums_checked, 4);
+    assert_eq!(restored.albums_checked, 3);
 }
 
 #[test]

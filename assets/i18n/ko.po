@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-29 09:24-0300\n"
+"POT-Creation-Date: 2026-10-29 10:56-0300\n"
 "PO-Revision-Date: 2026-10-15 12:00+0900\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Korean\n"
@@ -254,7 +254,7 @@ msgid "Previous"
 msgstr "이전"
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:442
+#: src/ui/playlist_generation.rs:340
 msgid "Pause"
 msgstr "일시정지"
 
@@ -531,7 +531,7 @@ msgid "Copy link"
 msgstr "링크 복사"
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:451
+#: src/ui/playlist_generation.rs:349
 msgid "Open in Spotify"
 msgstr "Spotify에서 열기"
 
@@ -2472,7 +2472,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "“{name}”이(가) 더 이상 내 라이브러리에 표시되지 않습니다."
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:444
+#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:342
 msgid "Cancel"
 msgstr "취소"
 
@@ -3706,80 +3706,91 @@ msgstr ""
 msgid "Any"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:401
+#: src/ui/playlist_generation.rs:289
 msgid "Playlist generations"
 msgstr "재생목록 생성 기록"
 
-#: src/ui/playlist_generation.rs:406
+#: src/ui/playlist_generation.rs:294
 msgid "Reading followed artists"
 msgstr "팔로우한 아티스트 읽는 중"
 
-#: src/ui/playlist_generation.rs:407
-msgid "Reading artist releases"
-msgstr "아티스트의 발매작 읽는 중"
+#: src/ui/playlist_generation.rs:295
+msgid "Finding releases for the period"
+msgstr ""
 
-#: src/ui/playlist_generation.rs:408
+#: src/ui/playlist_generation.rs:296
 msgid "Checking release tracks and likes"
 msgstr "수록곡과 좋아요 확인 중"
 
-#: src/ui/playlist_generation.rs:409
+#: src/ui/playlist_generation.rs:297
 msgid "Reading saved albums"
 msgstr "저장된 앨범 읽는 중"
 
-#: src/ui/playlist_generation.rs:410
+#: src/ui/playlist_generation.rs:298
 msgid "Reading liked songs"
 msgstr "좋아요 표시한 곡 읽는 중"
 
-#: src/ui/playlist_generation.rs:411
+#: src/ui/playlist_generation.rs:299
 msgid "Creating playlist"
 msgstr "재생목록 만드는 중"
 
-#: src/ui/playlist_generation.rs:412
+#: src/ui/playlist_generation.rs:300
 msgid "Adding songs"
 msgstr "곡 추가 중"
 
-#: src/ui/playlist_generation.rs:413
+#: src/ui/playlist_generation.rs:301
 msgid "Finished"
 msgstr "종료됨"
 
-#: src/ui/playlist_generation.rs:416
+#: src/ui/playlist_generation.rs:304
 msgid "Pending"
 msgstr "대기 중"
 
-#: src/ui/playlist_generation.rs:416
+#: src/ui/playlist_generation.rs:304
 msgid "Running"
 msgstr "실행 중"
 
-#: src/ui/playlist_generation.rs:417
+#: src/ui/playlist_generation.rs:305
 msgid "Paused"
 msgstr "일시 중지됨"
 
-#: src/ui/playlist_generation.rs:417
+#: src/ui/playlist_generation.rs:305
 msgid "Retrying"
 msgstr "재시도 대기 중"
 
-#: src/ui/playlist_generation.rs:418
+#: src/ui/playlist_generation.rs:306
 msgid "Completed"
 msgstr "완료됨"
 
-#: src/ui/playlist_generation.rs:418
+#: src/ui/playlist_generation.rs:306
 msgid "Failed"
 msgstr "실패함"
 
-#: src/ui/playlist_generation.rs:419
+#: src/ui/playlist_generation.rs:307
 msgid "Cancelled"
 msgstr "취소됨"
 
-#: src/ui/playlist_generation.rs:423
+#: src/ui/playlist_generation.rs:311
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "아티스트: {artists}/{total}"
 
-#: src/ui/playlist_generation.rs:429
+#: src/ui/playlist_generation.rs:317
 msgid "Discovering total work…"
 msgstr "전체 작업량 확인 중…"
 
-#: src/ui/playlist_generation.rs:431
+#: src/ui/playlist_generation.rs:320
+#, rust-format
+msgid "Unique releases checked: {checked} · Within period: {matched}"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:323
+#, rust-format
+msgid ""
+"Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:328
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -3787,14 +3798,17 @@ msgid ""
 msgstr ""
 "분석: {analyzed}/{total} · 앨범: {albums} · 선택: {selected} · 추가: {added}"
 
-#: src/ui/playlist_generation.rs:436
+#: src/ui/playlist_generation.rs:334
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "경과 시간: {elapsed} · 예상 남은 시간: {remaining}"
 
-#: src/ui/playlist_generation.rs:443
+#: src/ui/playlist_generation.rs:341
 msgid "Resume"
 msgstr "계속"
+
+#~ msgid "Reading artist releases"
+#~ msgstr "아티스트의 발매작 읽는 중"
 
 #~ msgid "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases."
 #~ msgstr ""

@@ -266,6 +266,94 @@ fn date_component(
     });
 }
 
+fn clock(seconds: u64) -> String {
+    format!("{:02}:{:02}", seconds / 60, seconds % 60)
+}
+
+pub fn history(app: &mut App, ui: &mut egui::Ui) {
+    let snapshot = app.backend.generation.snapshot();
+    let locale = app.locale;
+    if let Some(error) = snapshot.error {
+        ui.colored_label(app.palette.danger, error);
+    }
+    let account = app.user_id().unwrap_or_default().to_owned();
+    let jobs: Vec<_> = snapshot
+        .jobs
+        .iter()
+        .filter(|job| job.account == account)
+        .collect();
+    if jobs.is_empty() {
+        return;
+    }
+    ui.separator();
+    ui.label(gettext(locale, "Playlist generations"));
+    for job in jobs.into_iter().rev() {
+        ui.push_id(&job.id, |ui| {
+                ui.label(egui::RichText::new(&job.name).strong());
+                let stage = match job.stage {
+                    Stage::FollowedArtists => gettext(locale, "Reading followed artists"),
+                    Stage::ArtistReleases => gettext(locale, "Finding releases for the period"),
+                    Stage::ReleaseTracks => gettext(locale, "Checking release tracks and likes"),
+                    Stage::Albums => gettext(locale, "Reading saved albums"),
+                    Stage::Tracks => gettext(locale, "Reading liked songs"),
+                    Stage::Create => gettext(locale, "Creating playlist"),
+                    Stage::Add => gettext(locale, "Adding songs"),
+                    Stage::Done => gettext(locale, "Finished"),
+                };
+                let state = match job.state {
+                    State::Pending => gettext(locale, "Pending"), State::Running => gettext(locale, "Running"),
+                    State::Paused => gettext(locale, "Paused"), State::Retrying => gettext(locale, "Retrying"),
+                    State::Completed => gettext(locale, "Completed"), State::Failed => gettext(locale, "Failed"),
+                    State::Cancelled => gettext(locale, "Cancelled"),
+                };
+                ui.label(format!("{state}: {stage}"));
+                if let Some(total) = job.artists_total.filter(|total| *total > 0) {
+                    ui.label(gettext(locale, "Artists: {artists}/{total}")
+                        .replace("{artists}", &job.artists_checked.to_string()).replace("{total}", &total.to_string()));
+                }
+                if let Some(progress) = job.progress {
+                    ui.add(egui::ProgressBar::new(progress).show_percentage());
+                } else if matches!(job.state, State::Pending | State::Running | State::Retrying) {
+                    ui.horizontal(|ui| { ui.spinner(); ui.label(gettext(locale, "Discovering total work…")); });
+                }
+                if job.release_source {
+                    ui.label(gettext(locale, "Unique releases checked: {checked} · Within period: {matched}")
+                        .replace("{checked}", &job.albums_checked.to_string())
+                        .replace("{matched}", &job.matched_releases.to_string()));
+                    ui.label(gettext(locale, "Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}")
+                        .replace("{analyzed}", &job.analyzed.to_string())
+                        .replace("{total}", &job.tracks_total.map_or_else(|| "?".into(), |n| n.to_string()))
+                        .replace("{selected}", &job.selected.to_string()).replace("{added}", &job.added.to_string()));
+                } else {
+                ui.label(gettext(locale, "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · Added: {added}")
+                    .replace("{analyzed}", &job.analyzed.to_string())
+                    .replace("{total}", &job.tracks_total.map_or_else(|| "?".into(), |n| n.to_string()))
+                    .replace("{albums}", &job.albums_checked.to_string())
+                    .replace("{selected}", &job.selected.to_string()).replace("{added}", &job.added.to_string()));
+                }
+                ui.label(gettext(locale, "Elapsed: {elapsed} · Estimated remaining: {remaining}")
+                    .replace("{elapsed}", &clock(job.elapsed))
+                    .replace("{remaining}", &job.eta.map_or_else(|| "?".into(), clock)));
+                if let Some(error) = &job.error { ui.label(error); }
+                ui.horizontal_wrapped(|ui| {
+                    for (label, target, visible) in [
+                        (gettext(locale, "Pause"), State::Paused, matches!(job.state, State::Pending | State::Running | State::Retrying)),
+                        (gettext(locale, "Resume"), State::Pending, matches!(job.state, State::Paused | State::Failed)),
+                        (gettext(locale, "Cancel"), State::Cancelled, !matches!(job.state, State::Completed | State::Cancelled)),
+                    ] {
+                        if visible && ui.button(label).clicked() {
+                            app.actions.push(Action::Generation(Request::Control { id: job.id.clone(), state: target }));
+                        }
+                    }
+                    if let Some(id) = &job.playlist_id {
+                        ui.hyperlink_to(gettext(locale, "Open in Spotify"), format!("https://open.spotify.com/playlist/{id}"));
+                    }
+                });
+                ui.separator();
+            });
+    }
+}
+
 #[cfg(test)]
 mod date_selector_tests {
     use super::DateSelection;
@@ -375,83 +463,5 @@ mod date_selector_tests {
         date.year = None;
         date.normalize();
         assert_eq!(date, DateSelection::default());
-    }
-}
-
-fn clock(seconds: u64) -> String {
-    format!("{:02}:{:02}", seconds / 60, seconds % 60)
-}
-
-pub fn history(app: &mut App, ui: &mut egui::Ui) {
-    let snapshot = app.backend.generation.snapshot();
-    let locale = app.locale;
-    if let Some(error) = snapshot.error {
-        ui.colored_label(app.palette.danger, error);
-    }
-    let account = app.user_id().unwrap_or_default().to_owned();
-    let jobs: Vec<_> = snapshot
-        .jobs
-        .iter()
-        .filter(|job| job.account == account)
-        .collect();
-    if jobs.is_empty() {
-        return;
-    }
-    ui.separator();
-    ui.label(gettext(locale, "Playlist generations"));
-    for job in jobs.into_iter().rev() {
-        ui.push_id(&job.id, |ui| {
-                ui.label(egui::RichText::new(&job.name).strong());
-                let stage = match job.stage {
-                    Stage::FollowedArtists => gettext(locale, "Reading followed artists"),
-                    Stage::ArtistReleases => gettext(locale, "Reading artist releases"),
-                    Stage::ReleaseTracks => gettext(locale, "Checking release tracks and likes"),
-                    Stage::Albums => gettext(locale, "Reading saved albums"),
-                    Stage::Tracks => gettext(locale, "Reading liked songs"),
-                    Stage::Create => gettext(locale, "Creating playlist"),
-                    Stage::Add => gettext(locale, "Adding songs"),
-                    Stage::Done => gettext(locale, "Finished"),
-                };
-                let state = match job.state {
-                    State::Pending => gettext(locale, "Pending"), State::Running => gettext(locale, "Running"),
-                    State::Paused => gettext(locale, "Paused"), State::Retrying => gettext(locale, "Retrying"),
-                    State::Completed => gettext(locale, "Completed"), State::Failed => gettext(locale, "Failed"),
-                    State::Cancelled => gettext(locale, "Cancelled"),
-                };
-                ui.label(format!("{state}: {stage}"));
-                if let Some(total) = job.artists_total.filter(|total| *total > 0) {
-                    ui.label(gettext(locale, "Artists: {artists}/{total}")
-                        .replace("{artists}", &job.artists_checked.to_string()).replace("{total}", &total.to_string()));
-                }
-                if let Some(progress) = job.progress {
-                    ui.add(egui::ProgressBar::new(progress).show_percentage());
-                } else if matches!(job.state, State::Pending | State::Running | State::Retrying) {
-                    ui.horizontal(|ui| { ui.spinner(); ui.label(gettext(locale, "Discovering total work…")); });
-                }
-                ui.label(gettext(locale, "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · Added: {added}")
-                    .replace("{analyzed}", &job.analyzed.to_string())
-                    .replace("{total}", &job.tracks_total.map_or_else(|| "?".into(), |n| n.to_string()))
-                    .replace("{albums}", &job.albums_checked.to_string())
-                    .replace("{selected}", &job.selected.to_string()).replace("{added}", &job.added.to_string()));
-                ui.label(gettext(locale, "Elapsed: {elapsed} · Estimated remaining: {remaining}")
-                    .replace("{elapsed}", &clock(job.elapsed))
-                    .replace("{remaining}", &job.eta.map_or_else(|| "?".into(), clock)));
-                if let Some(error) = &job.error { ui.label(error); }
-                ui.horizontal_wrapped(|ui| {
-                    for (label, target, visible) in [
-                        (gettext(locale, "Pause"), State::Paused, matches!(job.state, State::Pending | State::Running | State::Retrying)),
-                        (gettext(locale, "Resume"), State::Pending, matches!(job.state, State::Paused | State::Failed)),
-                        (gettext(locale, "Cancel"), State::Cancelled, !matches!(job.state, State::Completed | State::Cancelled)),
-                    ] {
-                        if visible && ui.button(label).clicked() {
-                            app.actions.push(Action::Generation(Request::Control { id: job.id.clone(), state: target }));
-                        }
-                    }
-                    if let Some(id) = &job.playlist_id {
-                        ui.hyperlink_to(gettext(locale, "Open in Spotify"), format!("https://open.spotify.com/playlist/{id}"));
-                    }
-                });
-                ui.separator();
-            });
     }
 }

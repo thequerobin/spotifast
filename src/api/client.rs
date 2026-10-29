@@ -1277,6 +1277,24 @@ impl ApiClient {
         .await
     }
 
+    /// Paginated, year-filtered discovery shares the normal request budget.
+    pub async fn search_release_tracks(&self, query: &str, offset: u32) -> Result<Page<Track>> {
+        let results: SearchResults = self
+            .get(
+                "/search",
+                &[
+                    ("q", query.to_owned()),
+                    ("type", "track".to_owned()),
+                    ("limit", self.search_limit.to_string()),
+                    ("offset", offset.to_string()),
+                ],
+            )
+            .await?;
+        results
+            .tracks
+            .ok_or_else(|| ApiError::Decode("Spotify omitted the release search results".into()))
+    }
+
     pub async fn artist(&self, id: &str) -> Result<Artist> {
         self.get(&format!("/artists/{id}"), &[]).await
     }

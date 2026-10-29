@@ -685,3 +685,8 @@ For a manual installation, remove only
 Packaged launches recreate missing integration files. To disable the hook
 while keeping the package installed, leave that hook file empty instead;
 existing user files are preserved. Selecting Dark or Light is sufficient to stop following Omarchy's colors.
+
+`playlist-generations/release-catalog-cache/` is a disposable, account-scoped
+cache of completed artist/year searches and complete artist catalogs. It
+contains release metadata only. Recent results expire after 15 minutes and
+historical years after 24 hours; job checkpoints are stored separately.
