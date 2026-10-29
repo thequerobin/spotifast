@@ -8,7 +8,7 @@ nav_order: 12
 
 Select **Músicas Não Curtidas de Artistas Seguidos (MNCAS)** in the existing
 playlist creation form. The default name is `MNCAS - {period}` and remains
-editable. Blank dates mean all available releases.
+editable. Leaving both years as **Any** includes all available releases.
 
 This mode pages through **all** followed artists (not the Home shelf's
 50-artist fallback), then each artist's albums, singles, appearances and
@@ -73,12 +73,19 @@ restored merely because their generation remains in history.
 ## Periods and names
 
 MCANS uses **UTC** for like timestamps. MNCAS uses release calendar dates.
-Enter `YYYY`, `MM/YYYY`
-or `DD/MM/YYYY`. One start field denotes the whole year, month or day.
+Use the **Year**, **Month**, **Day** selectors, in that order, for each
+endpoint. **Any** year removes that endpoint; selecting a year enables the
+optional month, and selecting a month enables the optional day. Clearing a
+component clears the more precise components. When a year or month changes,
+the day is clamped to the last valid day, including leap years. The two
+endpoints occupy separate rows with equal-width columns.
+
+Saved jobs retain their existing `YYYY`, `MM/YYYY` or `DD/MM/YYYY` format.
+One start field denotes the whole year, month or day.
 Two fields include every instant from the start period's first day through
 the end period's final day. Precisions can differ: `2024` through `06/2025`
 includes January 1, 2024 through June 30, 2025, inclusive. An end alone
-has no lower bound. Both fields blank means no filter. Invalid dates,
+has no lower bound. Both years set to **Any** means no filter. Invalid dates,
 non-leap February 29 and reversed intervals are refused before starting.
 
 The suggested name is `MCANS - {period}` or `MNCAS - {period}`, with slashes replaced by hyphens,

@@ -1,6 +1,6 @@
 //! Native form and history. Views only emit actions; the runtime owns jobs.
 use crate::app::App;
-use crate::i18n::gettext;
+use crate::i18n::{Locale, gettext};
 use crate::model::Action;
 use crate::playlist_generation::jobs::{Request, Stage, State};
 use crate::playlist_generation::{KINDS, Parameters, Period, Source, default_name, kind};
@@ -50,22 +50,31 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
     }
     let release_dates = kind(&draft.kind).is_ok_and(|kind| kind.source == Source::FollowedReleases);
     ui.label(if release_dates {
-        gettext(
-            locale,
-            "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases.",
-        )
+        gettext(locale, "Release period")
     } else {
-        gettext(
-            locale,
-            "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs.",
-        )
+        gettext(locale, "Liked songs period (UTC)")
     });
-    ui.horizontal(|ui| {
-        ui.label(gettext(locale, "From"));
-        ui.add(egui::TextEdit::singleline(&mut draft.period.start).desired_width(100.0));
-        ui.label(gettext(locale, "To"));
-        ui.add(egui::TextEdit::singleline(&mut draft.period.end).desired_width(100.0));
-    });
+    ui.small(gettext(
+        locale,
+        "Select a year, then optionally a month and day. Leave both years as Any for all dates. A start alone selects that whole period.",
+    ));
+    ui.add_space(8.0);
+    date_selector(
+        ui,
+        locale,
+        "generation-start",
+        gettext(locale, "From").as_ref(),
+        &mut draft.period.start,
+    );
+    ui.add_space(12.0);
+    date_selector(
+        ui,
+        locale,
+        "generation-end",
+        gettext(locale, "To").as_ref(),
+        &mut draft.period.end,
+    );
+    ui.add_space(16.0);
     let validation = kind(&draft.kind).and_then(|strategy| {
         for field in strategy.fields {
             ui.label(gettext(locale, field.label));
@@ -83,6 +92,7 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
     }
     ui.label(gettext(locale, "Name"));
     ui.text_edit_singleline(&mut draft.name);
+    ui.add_space(8.0);
     ui.checkbox(&mut draft.public, gettext(locale, "Public playlist"));
     if let Err(error) = &validation {
         ui.colored_label(app.palette.danger, error);
@@ -91,6 +101,7 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
         && !draft.name.trim().is_empty()
         && draft.name.chars().count() <= 100
         && account.is_some();
+    ui.add_space(12.0);
     if ui
         .add_enabled(
             valid,
@@ -115,6 +126,256 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
         app.actions.push(Action::CloseDialog);
     }
     false
+}
+
+/// UI order is year/month/day; persisted periods retain their existing format.
+#[derive(Debug, Default, PartialEq, Eq)]
+struct DateSelection {
+    year: Option<u16>,
+    month: Option<u16>,
+    day: Option<u16>,
+}
+
+impl DateSelection {
+    fn from_period(value: &str) -> Self {
+        let parts: Vec<_> = value.split('/').collect();
+        match parts.as_slice() {
+            [year] => Self {
+                year: year.parse().ok(),
+                ..Self::default()
+            },
+            [month, year] => Self {
+                year: year.parse().ok(),
+                month: month.parse().ok(),
+                day: None,
+            },
+            [day, month, year] => Self {
+                year: year.parse().ok(),
+                month: month.parse().ok(),
+                day: day.parse().ok(),
+            },
+            _ => Self::default(),
+        }
+    }
+
+    fn days_in_month(&self) -> u16 {
+        self.year
+            .zip(self.month)
+            .and_then(|(year, month)| jiff::civil::Date::new(year as i16, month as i8, 1).ok())
+            .map_or(31, |date| date.days_in_month() as u16)
+    }
+
+    fn normalize(&mut self) {
+        if self.year.is_none() {
+            self.month = None;
+        }
+        if self.month.is_none() {
+            self.day = None;
+        }
+        if let Some(day) = self.day {
+            self.day = Some(day.min(self.days_in_month()));
+        }
+    }
+
+    fn period_value(&self) -> String {
+        match (self.year, self.month, self.day) {
+            (Some(year), Some(month), Some(day)) => format!("{day:02}/{month:02}/{year:04}"),
+            (Some(year), Some(month), None) => format!("{month:02}/{year:04}"),
+            (Some(year), _, _) => format!("{year:04}"),
+            _ => String::new(),
+        }
+    }
+}
+
+fn date_selector(ui: &mut egui::Ui, locale: Locale, id: &str, label: &str, value: &mut String) {
+    ui.push_id(id, |ui| {
+        ui.label(egui::RichText::new(label).strong());
+        let mut date = DateSelection::from_period(value);
+        let last_year = (jiff::Zoned::now().year() as u16 + 1).max(date.year.unwrap_or(0));
+        ui.columns(3, |columns| {
+            date_component(
+                &mut columns[0],
+                locale,
+                "year",
+                gettext(locale, "Year").as_ref(),
+                &mut date.year,
+                last_year,
+            );
+            date.normalize();
+            columns[1].add_enabled_ui(date.year.is_some(), |ui| {
+                date_component(
+                    ui,
+                    locale,
+                    "month",
+                    gettext(locale, "Month").as_ref(),
+                    &mut date.month,
+                    12,
+                );
+            });
+            date.normalize();
+            let days = date.days_in_month();
+            columns[2].add_enabled_ui(date.month.is_some(), |ui| {
+                date_component(
+                    ui,
+                    locale,
+                    "day",
+                    gettext(locale, "Day").as_ref(),
+                    &mut date.day,
+                    days,
+                );
+            });
+        });
+        date.normalize();
+        *value = date.period_value();
+    });
+}
+
+fn date_component(
+    ui: &mut egui::Ui,
+    locale: Locale,
+    id: &str,
+    label: &str,
+    value: &mut Option<u16>,
+    max: u16,
+) {
+    ui.label(label);
+    let year = id == "year";
+    let mut index = value.map_or(0, |value| {
+        usize::from(if year { max + 1 - value } else { value })
+    });
+    let response = egui::ComboBox::from_id_salt(id)
+        .width(ui.available_width())
+        .show_index(ui, &mut index, usize::from(max) + 1, |index| {
+            if index == 0 {
+                gettext(locale, "Any").into_owned()
+            } else if year {
+                format!("{:04}", usize::from(max) + 1 - index)
+            } else {
+                format!("{index:02}")
+            }
+        });
+    response.widget_info(|| {
+        egui::WidgetInfo::labeled(egui::WidgetType::ComboBox, ui.is_enabled(), label)
+    });
+    *value = (index > 0).then(|| {
+        if year {
+            max + 1 - index as u16
+        } else {
+            index as u16
+        }
+    });
+}
+
+#[cfg(test)]
+mod date_selector_tests {
+    use super::DateSelection;
+    use crate::playlist_generation::Period;
+
+    #[test]
+    fn date_rows_keep_columns_aligned_at_narrow_and_normal_widths() {
+        for width in [300.0, 420.0] {
+            for dark in [false, true] {
+                let ctx = egui::Context::default();
+                ctx.set_visuals(if dark {
+                    egui::Visuals::dark()
+                } else {
+                    egui::Visuals::light()
+                });
+                let input = egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(width, 400.0),
+                    )),
+                    ..Default::default()
+                };
+                let mut output = ctx.run_ui(input, |ui| {
+                    let right = ui.max_rect().right();
+                    let mut start = "29/02/2024".to_owned();
+                    let mut end = String::new();
+                    super::date_selector(
+                        ui,
+                        crate::i18n::Locale::English,
+                        "start",
+                        "From",
+                        &mut start,
+                    );
+                    ui.add_space(12.0);
+                    super::date_selector(ui, crate::i18n::Locale::English, "end", "To", &mut end);
+                    assert!(
+                        ui.min_rect().right() <= right + 0.5,
+                        "date selectors overflow at {width}"
+                    );
+                    assert_eq!(start, "29/02/2024");
+                    assert_eq!(end, "");
+                });
+                output.textures_delta.clear();
+                let labels: Vec<_> = output
+                    .shapes
+                    .iter()
+                    .filter_map(|shape| {
+                        if let egui::epaint::Shape::Text(text) = &shape.shape {
+                            let label = text.galley.text();
+                            if matches!(label, "Year" | "Month" | "Day") {
+                                return Some((label, text.pos));
+                            }
+                        }
+                        None
+                    })
+                    .collect();
+                assert_eq!(labels.len(), 6);
+                for row in labels.as_chunks::<3>().0 {
+                    assert_eq!([row[0].0, row[1].0, row[2].0], ["Year", "Month", "Day"]);
+                    assert!(row[0].1.x < row[1].1.x && row[1].1.x < row[2].1.x);
+                    assert!((row[0].1.y - row[1].1.y).abs() < 0.5);
+                    assert!((row[1].1.y - row[2].1.y).abs() < 0.5);
+                }
+                for column in 0..3 {
+                    assert!((labels[column].1.x - labels[column + 3].1.x).abs() < 0.5);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn selectors_preserve_existing_period_precision_and_bounds() {
+        for value in ["", "2024", "02/2024", "29/02/2024"] {
+            let date = DateSelection::from_period(value);
+            assert_eq!(date.period_value(), value);
+            let period = Period {
+                start: date.period_value(),
+                end: String::new(),
+            };
+            assert!(period.bounds().is_ok());
+        }
+    }
+
+    #[test]
+    fn changing_year_or_month_clamps_the_day_to_the_calendar() {
+        for (value, year, month, expected) in [
+            ("29/02/2024", 2025, 2, "28/02/2025"),
+            ("31/01/2024", 2024, 4, "30/04/2024"),
+            ("31/01/2024", 2024, 2, "29/02/2024"),
+            ("29/02/2000", 1900, 2, "28/02/1900"),
+        ] {
+            let mut date = DateSelection::from_period(value);
+            date.year = Some(year);
+            date.month = Some(month);
+            date.normalize();
+            assert_eq!(date.period_value(), expected);
+        }
+    }
+
+    #[test]
+    fn clearing_a_component_clears_more_precise_components() {
+        let mut date = DateSelection::from_period("29/02/2024");
+        date.month = None;
+        date.normalize();
+        assert_eq!(date.period_value(), "2024");
+        assert_eq!(date.day, None);
+        date.year = None;
+        date.normalize();
+        assert_eq!(date, DateSelection::default());
+    }
 }
 
 fn clock(seconds: u64) -> String {

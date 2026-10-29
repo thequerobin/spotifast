@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-28 21:08-0300\n"
+"POT-Creation-Date: 2026-10-29 09:24-0300\n"
 "PO-Revision-Date: 2026-10-06 18:00+0300\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Ukrainian\n"
@@ -50,7 +50,7 @@ msgid "Recently played"
 msgstr "Нещодавно прослухані"
 
 #: src/ui/sidebar.rs:358 src/ui/dialogs.rs:383 src/ui/dialogs.rs:540
-#: src/ui/playlist_generation.rs:84
+#: src/ui/playlist_generation.rs:93
 msgid "Name"
 msgstr "Назва"
 
@@ -263,7 +263,7 @@ msgid "Previous"
 msgstr "Попередній"
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:181
+#: src/ui/playlist_generation.rs:442
 msgid "Pause"
 msgstr "Призупинити"
 
@@ -326,7 +326,7 @@ msgstr "Нещодавні"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:78
 #: src/ui/friends.rs:65 src/ui/mod.rs:642 src/window.rs:35
-#: src/ui/playlist_generation.rs:114
+#: src/ui/playlist_generation.rs:125
 msgid "Close"
 msgstr "Закрити"
 
@@ -540,7 +540,7 @@ msgid "Copy link"
 msgstr "Копіювати посилання"
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:190
+#: src/ui/playlist_generation.rs:451
 msgid "Open in Spotify"
 msgstr "Відкрити в Spotify"
 
@@ -2539,7 +2539,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "«{name}» більше не показуватиметься у вашій бібліотеці."
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:183
+#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:444
 msgid "Cancel"
 msgstr "Скасувати"
 
@@ -2625,7 +2625,7 @@ msgid "My playlist"
 msgstr "Мій плейліст"
 
 #: src/ui/dialogs.rs:398 src/ui/dialogs.rs:401 src/ui/dialogs.rs:588
-#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:86
+#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:96
 msgid "Public playlist"
 msgstr "Публічний плейліст"
 
@@ -3745,32 +3745,40 @@ msgid "Manual playlist"
 msgstr "Ручний плейлист"
 
 #: src/ui/playlist_generation.rs:49
-msgid "Uses album/single release dates and excludes liked songs. Only tracks by followed artists are included."
-msgstr "Використовує дати випуску альбомів і синглів та виключає вподобані композиції. Включає лише композиції виконавців, на яких ви підписані."
+msgid ""
+"Uses album/single release dates and excludes liked songs. Only tracks by "
+"followed artists are included."
+msgstr ""
+"Використовує дати випуску альбомів і синглів та виключає вподобані "
+"композиції. Включає лише композиції виконавців, на яких ви підписані."
+
+#: src/ui/playlist_generation.rs:53
+msgid "Release period"
+msgstr ""
 
 #: src/ui/playlist_generation.rs:55
-msgid "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases."
-msgstr "Період: РРРР, ММ/РРРР або ДД/ММ/РРРР. Залиште порожнім для всіх релізів."
-
-#: src/ui/playlist_generation.rs:60
-msgid "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs."
+msgid "Liked songs period (UTC)"
 msgstr ""
-"Період (UTC): РРРР, ММ/РРРР або ДД/ММ/РРРР. Залиште порожнім для всіх "
-"композицій."
 
-#: src/ui/playlist_generation.rs:64
+#: src/ui/playlist_generation.rs:59
+msgid ""
+"Select a year, then optionally a month and day. Leave both years as Any for "
+"all dates. A start alone selects that whole period."
+msgstr ""
+
+#: src/ui/playlist_generation.rs:66
 msgid "From"
 msgstr "Від"
 
-#: src/ui/playlist_generation.rs:66
+#: src/ui/playlist_generation.rs:74
 msgid "To"
 msgstr "До"
 
-#: src/ui/playlist_generation.rs:97
+#: src/ui/playlist_generation.rs:108
 msgid "Start generation"
 msgstr "Почати створення"
 
-#: src/ui/playlist_generation.rs:112
+#: src/ui/playlist_generation.rs:123
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
@@ -3778,80 +3786,96 @@ msgstr ""
 "Прогрес зберігається після кожної партії. Вихід призупиняє обробку до "
 "наступного запуску."
 
-#: src/ui/playlist_generation.rs:140
+#: src/ui/playlist_generation.rs:200
+msgid "Year"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:210
+msgid "Month"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:222
+msgid "Day"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:250
+msgid "Any"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:401
 msgid "Playlist generations"
 msgstr "Створення плейлистів"
 
-#: src/ui/playlist_generation.rs:145
+#: src/ui/playlist_generation.rs:406
 msgid "Reading followed artists"
 msgstr "Читання виконавців із підписок"
 
-#: src/ui/playlist_generation.rs:146
+#: src/ui/playlist_generation.rs:407
 msgid "Reading artist releases"
 msgstr "Читання релізів виконавців"
 
-#: src/ui/playlist_generation.rs:147
+#: src/ui/playlist_generation.rs:408
 msgid "Checking release tracks and likes"
 msgstr "Перевірка композицій і вподобань"
 
-#: src/ui/playlist_generation.rs:148
+#: src/ui/playlist_generation.rs:409
 msgid "Reading saved albums"
 msgstr "Читання збережених альбомів"
 
-#: src/ui/playlist_generation.rs:149
+#: src/ui/playlist_generation.rs:410
 msgid "Reading liked songs"
 msgstr "Читання вподобаних композицій"
 
-#: src/ui/playlist_generation.rs:150
+#: src/ui/playlist_generation.rs:411
 msgid "Creating playlist"
 msgstr "Створення плейлиста"
 
-#: src/ui/playlist_generation.rs:151
+#: src/ui/playlist_generation.rs:412
 msgid "Adding songs"
 msgstr "Додавання композицій"
 
-#: src/ui/playlist_generation.rs:152
+#: src/ui/playlist_generation.rs:413
 msgid "Finished"
 msgstr "Завершено"
 
-#: src/ui/playlist_generation.rs:155
+#: src/ui/playlist_generation.rs:416
 msgid "Pending"
 msgstr "Очікування"
 
-#: src/ui/playlist_generation.rs:155
+#: src/ui/playlist_generation.rs:416
 msgid "Running"
 msgstr "Виконується"
 
-#: src/ui/playlist_generation.rs:156
+#: src/ui/playlist_generation.rs:417
 msgid "Paused"
 msgstr "Призупинено"
 
-#: src/ui/playlist_generation.rs:156
+#: src/ui/playlist_generation.rs:417
 msgid "Retrying"
 msgstr "Повторна спроба"
 
-#: src/ui/playlist_generation.rs:157
+#: src/ui/playlist_generation.rs:418
 msgid "Completed"
 msgstr "Готово"
 
-#: src/ui/playlist_generation.rs:157
+#: src/ui/playlist_generation.rs:418
 msgid "Failed"
 msgstr "Помилка"
 
-#: src/ui/playlist_generation.rs:158
+#: src/ui/playlist_generation.rs:419
 msgid "Cancelled"
 msgstr "Скасовано"
 
-#: src/ui/playlist_generation.rs:162
+#: src/ui/playlist_generation.rs:423
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "Виконавці: {artists}/{total}"
 
-#: src/ui/playlist_generation.rs:168
+#: src/ui/playlist_generation.rs:429
 msgid "Discovering total work…"
 msgstr "Визначення загального обсягу роботи…"
 
-#: src/ui/playlist_generation.rs:170
+#: src/ui/playlist_generation.rs:431
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -3860,14 +3884,24 @@ msgstr ""
 "Перевірено: {analyzed}/{total} · Альбоми: {albums} · Вибрано: {selected} · "
 "Додано: {added}"
 
-#: src/ui/playlist_generation.rs:175
+#: src/ui/playlist_generation.rs:436
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "Минуло: {elapsed} · Приблизно залишилося: {remaining}"
 
-#: src/ui/playlist_generation.rs:182
+#: src/ui/playlist_generation.rs:443
 msgid "Resume"
 msgstr "Продовжити"
+
+#~ msgid "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases."
+#~ msgstr ""
+#~ "Період: РРРР, ММ/РРРР або ДД/ММ/РРРР. Залиште порожнім для всіх релізів."
+
+#~ msgid ""
+#~ "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs."
+#~ msgstr ""
+#~ "Період (UTC): РРРР, ММ/РРРР або ДД/ММ/РРРР. Залиште порожнім для всіх "
+#~ "композицій."
 
 #~ msgid ""
 #~ "Use a personal Development Mode app for a separate API quota. The shared "

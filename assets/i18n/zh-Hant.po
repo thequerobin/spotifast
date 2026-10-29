@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-28 21:08-0300\n"
+"POT-Creation-Date: 2026-10-29 09:24-0300\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Traditional Chinese\n"
@@ -49,7 +49,7 @@ msgid "Recently played"
 msgstr "最近播放"
 
 #: src/ui/sidebar.rs:358 src/ui/dialogs.rs:383 src/ui/dialogs.rs:540
-#: src/ui/playlist_generation.rs:84
+#: src/ui/playlist_generation.rs:93
 msgid "Name"
 msgstr "名稱"
 
@@ -254,7 +254,7 @@ msgid "Previous"
 msgstr "上一首"
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:181
+#: src/ui/playlist_generation.rs:442
 msgid "Pause"
 msgstr "暫停"
 
@@ -317,7 +317,7 @@ msgstr "最近播放"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:78
 #: src/ui/friends.rs:65 src/ui/mod.rs:642 src/window.rs:35
-#: src/ui/playlist_generation.rs:114
+#: src/ui/playlist_generation.rs:125
 msgid "Close"
 msgstr "關閉"
 
@@ -531,7 +531,7 @@ msgid "Copy link"
 msgstr "複製連結"
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:190
+#: src/ui/playlist_generation.rs:451
 msgid "Open in Spotify"
 msgstr "在 Spotify 中開啟"
 
@@ -2427,7 +2427,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "「{name}」將不再顯示於你的音樂庫。"
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:183
+#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:444
 msgid "Cancel"
 msgstr "取消"
 
@@ -2507,7 +2507,7 @@ msgid "My playlist"
 msgstr "我的播放清單"
 
 #: src/ui/dialogs.rs:398 src/ui/dialogs.rs:401 src/ui/dialogs.rs:588
-#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:86
+#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:96
 msgid "Public playlist"
 msgstr "公開播放清單"
 
@@ -3595,109 +3595,133 @@ msgid "Manual playlist"
 msgstr "手動播放清單"
 
 #: src/ui/playlist_generation.rs:49
-msgid "Uses album/single release dates and excludes liked songs. Only tracks by followed artists are included."
+msgid ""
+"Uses album/single release dates and excludes liked songs. Only tracks by "
+"followed artists are included."
 msgstr "使用專輯和單曲的發行日期，並排除喜歡的歌曲。僅包含你追蹤的藝人的曲目。"
 
+#: src/ui/playlist_generation.rs:53
+msgid "Release period"
+msgstr ""
+
 #: src/ui/playlist_generation.rs:55
-msgid "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases."
-msgstr "期間：YYYY、MM/YYYY 或 DD/MM/YYYY。留空以包含所有發行作品。"
+msgid "Liked songs period (UTC)"
+msgstr ""
 
-#: src/ui/playlist_generation.rs:60
-msgid "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs."
-msgstr "期間（UTC）：YYYY、MM/YYYY 或 DD/MM/YYYY。留空以包含所有歌曲。"
+#: src/ui/playlist_generation.rs:59
+msgid ""
+"Select a year, then optionally a month and day. Leave both years as Any for "
+"all dates. A start alone selects that whole period."
+msgstr ""
 
-#: src/ui/playlist_generation.rs:64
+#: src/ui/playlist_generation.rs:66
 msgid "From"
 msgstr "從"
 
-#: src/ui/playlist_generation.rs:66
+#: src/ui/playlist_generation.rs:74
 msgid "To"
 msgstr "到"
 
-#: src/ui/playlist_generation.rs:97
+#: src/ui/playlist_generation.rs:108
 msgid "Start generation"
 msgstr "開始產生"
 
-#: src/ui/playlist_generation.rs:112
+#: src/ui/playlist_generation.rs:123
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
 msgstr "每批完成後都會儲存進度。結束應用程式會暫停處理，下次啟動時繼續。"
 
-#: src/ui/playlist_generation.rs:140
+#: src/ui/playlist_generation.rs:200
+msgid "Year"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:210
+msgid "Month"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:222
+msgid "Day"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:250
+msgid "Any"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:401
 msgid "Playlist generations"
 msgstr "播放清單產生記錄"
 
-#: src/ui/playlist_generation.rs:145
+#: src/ui/playlist_generation.rs:406
 msgid "Reading followed artists"
 msgstr "正在讀取追蹤的藝人"
 
-#: src/ui/playlist_generation.rs:146
+#: src/ui/playlist_generation.rs:407
 msgid "Reading artist releases"
 msgstr "正在讀取藝人的發行作品"
 
-#: src/ui/playlist_generation.rs:147
+#: src/ui/playlist_generation.rs:408
 msgid "Checking release tracks and likes"
 msgstr "正在檢查曲目和喜歡狀態"
 
-#: src/ui/playlist_generation.rs:148
+#: src/ui/playlist_generation.rs:409
 msgid "Reading saved albums"
 msgstr "正在讀取已儲存的專輯"
 
-#: src/ui/playlist_generation.rs:149
+#: src/ui/playlist_generation.rs:410
 msgid "Reading liked songs"
 msgstr "正在讀取喜歡的歌曲"
 
-#: src/ui/playlist_generation.rs:150
+#: src/ui/playlist_generation.rs:411
 msgid "Creating playlist"
 msgstr "正在建立播放清單"
 
-#: src/ui/playlist_generation.rs:151
+#: src/ui/playlist_generation.rs:412
 msgid "Adding songs"
 msgstr "正在加入歌曲"
 
-#: src/ui/playlist_generation.rs:152
+#: src/ui/playlist_generation.rs:413
 msgid "Finished"
 msgstr "已結束"
 
-#: src/ui/playlist_generation.rs:155
+#: src/ui/playlist_generation.rs:416
 msgid "Pending"
 msgstr "等待中"
 
-#: src/ui/playlist_generation.rs:155
+#: src/ui/playlist_generation.rs:416
 msgid "Running"
 msgstr "執行中"
 
-#: src/ui/playlist_generation.rs:156
+#: src/ui/playlist_generation.rs:417
 msgid "Paused"
 msgstr "已暫停"
 
-#: src/ui/playlist_generation.rs:156
+#: src/ui/playlist_generation.rs:417
 msgid "Retrying"
 msgstr "正在重試"
 
-#: src/ui/playlist_generation.rs:157
+#: src/ui/playlist_generation.rs:418
 msgid "Completed"
 msgstr "已完成"
 
-#: src/ui/playlist_generation.rs:157
+#: src/ui/playlist_generation.rs:418
 msgid "Failed"
 msgstr "失敗"
 
-#: src/ui/playlist_generation.rs:158
+#: src/ui/playlist_generation.rs:419
 msgid "Cancelled"
 msgstr "已取消"
 
-#: src/ui/playlist_generation.rs:162
+#: src/ui/playlist_generation.rs:423
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "藝人：{artists}/{total}"
 
-#: src/ui/playlist_generation.rs:168
+#: src/ui/playlist_generation.rs:429
 msgid "Discovering total work…"
 msgstr "正在計算總工作量…"
 
-#: src/ui/playlist_generation.rs:170
+#: src/ui/playlist_generation.rs:431
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -3706,14 +3730,21 @@ msgstr ""
 "已分析：{analyzed}/{total} · 專輯：{albums} · 已選：{selected} · 已加入："
 "{added}"
 
-#: src/ui/playlist_generation.rs:175
+#: src/ui/playlist_generation.rs:436
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "已用時間：{elapsed} · 預估剩餘時間：{remaining}"
 
-#: src/ui/playlist_generation.rs:182
+#: src/ui/playlist_generation.rs:443
 msgid "Resume"
 msgstr "繼續"
+
+#~ msgid "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases."
+#~ msgstr "期間：YYYY、MM/YYYY 或 DD/MM/YYYY。留空以包含所有發行作品。"
+
+#~ msgid ""
+#~ "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs."
+#~ msgstr "期間（UTC）：YYYY、MM/YYYY 或 DD/MM/YYYY。留空以包含所有歌曲。"
 
 #~ msgid ""
 #~ "Use a personal Development Mode app for a separate API quota. The shared "

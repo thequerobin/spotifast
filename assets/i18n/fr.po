@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-28 21:08-0300\n"
+"POT-Creation-Date: 2026-10-29 09:24-0300\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: French\n"
@@ -49,7 +49,7 @@ msgid "Recently played"
 msgstr "Écoutés récemment"
 
 #: src/ui/sidebar.rs:358 src/ui/dialogs.rs:383 src/ui/dialogs.rs:540
-#: src/ui/playlist_generation.rs:84
+#: src/ui/playlist_generation.rs:93
 msgid "Name"
 msgstr "Nom"
 
@@ -258,7 +258,7 @@ msgid "Previous"
 msgstr "Précédent"
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:181
+#: src/ui/playlist_generation.rs:442
 msgid "Pause"
 msgstr "Pause"
 
@@ -321,7 +321,7 @@ msgstr "Récents"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:78
 #: src/ui/friends.rs:65 src/ui/mod.rs:642 src/window.rs:35
-#: src/ui/playlist_generation.rs:114
+#: src/ui/playlist_generation.rs:125
 msgid "Close"
 msgstr "Fermer"
 
@@ -538,7 +538,7 @@ msgid "Copy link"
 msgstr "Copier le lien"
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:190
+#: src/ui/playlist_generation.rs:451
 msgid "Open in Spotify"
 msgstr "Ouvrir dans Spotify"
 
@@ -2547,7 +2547,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "« {name} » n’apparaîtra plus dans votre bibliothèque."
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:183
+#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:444
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -2632,7 +2632,7 @@ msgid "My playlist"
 msgstr "Ma playlist"
 
 #: src/ui/dialogs.rs:398 src/ui/dialogs.rs:401 src/ui/dialogs.rs:588
-#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:86
+#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:96
 msgid "Public playlist"
 msgstr "Playlist publique"
 
@@ -3748,32 +3748,40 @@ msgid "Manual playlist"
 msgstr "Playlist manuelle"
 
 #: src/ui/playlist_generation.rs:49
-msgid "Uses album/single release dates and excludes liked songs. Only tracks by followed artists are included."
-msgstr "Utilise les dates de sortie des albums et singles et exclut les titres aimés. Seuls les titres des artistes suivis sont inclus."
+msgid ""
+"Uses album/single release dates and excludes liked songs. Only tracks by "
+"followed artists are included."
+msgstr ""
+"Utilise les dates de sortie des albums et singles et exclut les titres "
+"aimés. Seuls les titres des artistes suivis sont inclus."
+
+#: src/ui/playlist_generation.rs:53
+msgid "Release period"
+msgstr ""
 
 #: src/ui/playlist_generation.rs:55
-msgid "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases."
-msgstr "Période : AAAA, MM/AAAA ou JJ/MM/AAAA. Laissez vide pour toutes les sorties."
-
-#: src/ui/playlist_generation.rs:60
-msgid "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs."
+msgid "Liked songs period (UTC)"
 msgstr ""
-"Période (UTC) : AAAA, MM/AAAA ou JJ/MM/AAAA. Laissez vide pour tous les "
-"titres."
 
-#: src/ui/playlist_generation.rs:64
+#: src/ui/playlist_generation.rs:59
+msgid ""
+"Select a year, then optionally a month and day. Leave both years as Any for "
+"all dates. A start alone selects that whole period."
+msgstr ""
+
+#: src/ui/playlist_generation.rs:66
 msgid "From"
 msgstr "Du"
 
-#: src/ui/playlist_generation.rs:66
+#: src/ui/playlist_generation.rs:74
 msgid "To"
 msgstr "Au"
 
-#: src/ui/playlist_generation.rs:97
+#: src/ui/playlist_generation.rs:108
 msgid "Start generation"
 msgstr "Lancer la génération"
 
-#: src/ui/playlist_generation.rs:112
+#: src/ui/playlist_generation.rs:123
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
@@ -3781,80 +3789,96 @@ msgstr ""
 "La progression est enregistrée après chaque lot. Quitter suspend le "
 "traitement jusqu’au prochain lancement."
 
-#: src/ui/playlist_generation.rs:140
+#: src/ui/playlist_generation.rs:200
+msgid "Year"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:210
+msgid "Month"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:222
+msgid "Day"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:250
+msgid "Any"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:401
 msgid "Playlist generations"
 msgstr "Générations de playlists"
 
-#: src/ui/playlist_generation.rs:145
+#: src/ui/playlist_generation.rs:406
 msgid "Reading followed artists"
 msgstr "Lecture des artistes suivis"
 
-#: src/ui/playlist_generation.rs:146
+#: src/ui/playlist_generation.rs:407
 msgid "Reading artist releases"
 msgstr "Lecture des sorties des artistes"
 
-#: src/ui/playlist_generation.rs:147
+#: src/ui/playlist_generation.rs:408
 msgid "Checking release tracks and likes"
 msgstr "Vérification des titres et des favoris"
 
-#: src/ui/playlist_generation.rs:148
+#: src/ui/playlist_generation.rs:409
 msgid "Reading saved albums"
 msgstr "Lecture des albums enregistrés"
 
-#: src/ui/playlist_generation.rs:149
+#: src/ui/playlist_generation.rs:410
 msgid "Reading liked songs"
 msgstr "Lecture des titres aimés"
 
-#: src/ui/playlist_generation.rs:150
+#: src/ui/playlist_generation.rs:411
 msgid "Creating playlist"
 msgstr "Création de la playlist"
 
-#: src/ui/playlist_generation.rs:151
+#: src/ui/playlist_generation.rs:412
 msgid "Adding songs"
 msgstr "Ajout des titres"
 
-#: src/ui/playlist_generation.rs:152
+#: src/ui/playlist_generation.rs:413
 msgid "Finished"
 msgstr "Terminé"
 
-#: src/ui/playlist_generation.rs:155
+#: src/ui/playlist_generation.rs:416
 msgid "Pending"
 msgstr "En attente"
 
-#: src/ui/playlist_generation.rs:155
+#: src/ui/playlist_generation.rs:416
 msgid "Running"
 msgstr "En cours"
 
-#: src/ui/playlist_generation.rs:156
+#: src/ui/playlist_generation.rs:417
 msgid "Paused"
 msgstr "En pause"
 
-#: src/ui/playlist_generation.rs:156
+#: src/ui/playlist_generation.rs:417
 msgid "Retrying"
 msgstr "Nouvelle tentative"
 
-#: src/ui/playlist_generation.rs:157
+#: src/ui/playlist_generation.rs:418
 msgid "Completed"
 msgstr "Terminée"
 
-#: src/ui/playlist_generation.rs:157
+#: src/ui/playlist_generation.rs:418
 msgid "Failed"
 msgstr "Échec"
 
-#: src/ui/playlist_generation.rs:158
+#: src/ui/playlist_generation.rs:419
 msgid "Cancelled"
 msgstr "Annulée"
 
-#: src/ui/playlist_generation.rs:162
+#: src/ui/playlist_generation.rs:423
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "Artistes : {artists}/{total}"
 
-#: src/ui/playlist_generation.rs:168
+#: src/ui/playlist_generation.rs:429
 msgid "Discovering total work…"
 msgstr "Calcul du travail total…"
 
-#: src/ui/playlist_generation.rs:170
+#: src/ui/playlist_generation.rs:431
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -3863,14 +3887,25 @@ msgstr ""
 "Analysés : {analyzed}/{total} · Albums : {albums} · Sélectionnés : "
 "{selected} · Ajoutés : {added}"
 
-#: src/ui/playlist_generation.rs:175
+#: src/ui/playlist_generation.rs:436
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "Temps écoulé : {elapsed} · Temps restant estimé : {remaining}"
 
-#: src/ui/playlist_generation.rs:182
+#: src/ui/playlist_generation.rs:443
 msgid "Resume"
 msgstr "Reprendre"
+
+#~ msgid "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases."
+#~ msgstr ""
+#~ "Période : AAAA, MM/AAAA ou JJ/MM/AAAA. Laissez vide pour toutes les "
+#~ "sorties."
+
+#~ msgid ""
+#~ "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs."
+#~ msgstr ""
+#~ "Période (UTC) : AAAA, MM/AAAA ou JJ/MM/AAAA. Laissez vide pour tous les "
+#~ "titres."
 
 #~ msgid ""
 #~ "Use a personal Development Mode app for a separate API quota. The shared "

@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-28 21:08-0300\n"
+"POT-Creation-Date: 2026-10-29 09:24-0300\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Japanese\n"
@@ -49,7 +49,7 @@ msgid "Recently played"
 msgstr "最近再生した順"
 
 #: src/ui/sidebar.rs:358 src/ui/dialogs.rs:383 src/ui/dialogs.rs:540
-#: src/ui/playlist_generation.rs:84
+#: src/ui/playlist_generation.rs:93
 msgid "Name"
 msgstr "名前順"
 
@@ -254,7 +254,7 @@ msgid "Previous"
 msgstr "前へ"
 
 #: src/ui/player_bar.rs:791 src/ui/friends.rs:190 src/ui/collection.rs:300
-#: src/ui/playlist_generation.rs:181
+#: src/ui/playlist_generation.rs:442
 msgid "Pause"
 msgstr "一時停止"
 
@@ -317,7 +317,7 @@ msgstr "履歴"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:78
 #: src/ui/friends.rs:65 src/ui/mod.rs:642 src/window.rs:35
-#: src/ui/playlist_generation.rs:114
+#: src/ui/playlist_generation.rs:125
 msgid "Close"
 msgstr "閉じる"
 
@@ -531,7 +531,7 @@ msgid "Copy link"
 msgstr "リンクをコピー"
 
 #: src/ui/widgets.rs:1194 src/ui/widgets.rs:1306 src/ui/prerelease.rs:230
-#: src/ui/playlist_generation.rs:190
+#: src/ui/playlist_generation.rs:451
 msgid "Open in Spotify"
 msgstr "Spotifyで開く"
 
@@ -2502,7 +2502,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "「{name}」はマイライブラリに表示されなくなります。"
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:183
+#: src/ui/dialogs.rs:623 src/ui/login.rs:262 src/ui/playlist_generation.rs:444
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -2584,7 +2584,7 @@ msgid "My playlist"
 msgstr "マイプレイリスト"
 
 #: src/ui/dialogs.rs:398 src/ui/dialogs.rs:401 src/ui/dialogs.rs:588
-#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:86
+#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:96
 msgid "Public playlist"
 msgstr "公開プレイリスト"
 
@@ -3685,32 +3685,40 @@ msgid "Manual playlist"
 msgstr "手動プレイリスト"
 
 #: src/ui/playlist_generation.rs:49
-msgid "Uses album/single release dates and excludes liked songs. Only tracks by followed artists are included."
-msgstr "アルバムやシングルの発売日を使い、お気に入りの曲を除外します。フォロー中のアーティストの曲のみ含めます。"
+msgid ""
+"Uses album/single release dates and excludes liked songs. Only tracks by "
+"followed artists are included."
+msgstr ""
+"アルバムやシングルの発売日を使い、お気に入りの曲を除外します。フォロー中の"
+"アーティストの曲のみ含めます。"
+
+#: src/ui/playlist_generation.rs:53
+msgid "Release period"
+msgstr ""
 
 #: src/ui/playlist_generation.rs:55
-msgid "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases."
-msgstr "期間：YYYY、MM/YYYY または DD/MM/YYYY。すべてのリリースを対象にする場合は空欄にしてください。"
-
-#: src/ui/playlist_generation.rs:60
-msgid "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs."
+msgid "Liked songs period (UTC)"
 msgstr ""
-"期間（UTC）：YYYY、MM/YYYY または DD/MM/YYYY。すべての曲を対象にする場合は空"
-"欄にしてください。"
 
-#: src/ui/playlist_generation.rs:64
+#: src/ui/playlist_generation.rs:59
+msgid ""
+"Select a year, then optionally a month and day. Leave both years as Any for "
+"all dates. A start alone selects that whole period."
+msgstr ""
+
+#: src/ui/playlist_generation.rs:66
 msgid "From"
 msgstr "開始"
 
-#: src/ui/playlist_generation.rs:66
+#: src/ui/playlist_generation.rs:74
 msgid "To"
 msgstr "終了"
 
-#: src/ui/playlist_generation.rs:97
+#: src/ui/playlist_generation.rs:108
 msgid "Start generation"
 msgstr "生成を開始"
 
-#: src/ui/playlist_generation.rs:112
+#: src/ui/playlist_generation.rs:123
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
@@ -3718,80 +3726,96 @@ msgstr ""
 "バッチごとに進捗が保存されます。終了すると、次回の起動まで処理が一時停止しま"
 "す。"
 
-#: src/ui/playlist_generation.rs:140
+#: src/ui/playlist_generation.rs:200
+msgid "Year"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:210
+msgid "Month"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:222
+msgid "Day"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:250
+msgid "Any"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:401
 msgid "Playlist generations"
 msgstr "プレイリストの生成履歴"
 
-#: src/ui/playlist_generation.rs:145
+#: src/ui/playlist_generation.rs:406
 msgid "Reading followed artists"
 msgstr "フォロー中のアーティストを読み込み中"
 
-#: src/ui/playlist_generation.rs:146
+#: src/ui/playlist_generation.rs:407
 msgid "Reading artist releases"
 msgstr "アーティストのリリースを読み込み中"
 
-#: src/ui/playlist_generation.rs:147
+#: src/ui/playlist_generation.rs:408
 msgid "Checking release tracks and likes"
 msgstr "収録曲とお気に入りを確認中"
 
-#: src/ui/playlist_generation.rs:148
+#: src/ui/playlist_generation.rs:409
 msgid "Reading saved albums"
 msgstr "保存済みアルバムを読み込み中"
 
-#: src/ui/playlist_generation.rs:149
+#: src/ui/playlist_generation.rs:410
 msgid "Reading liked songs"
 msgstr "お気に入りの曲を読み込み中"
 
-#: src/ui/playlist_generation.rs:150
+#: src/ui/playlist_generation.rs:411
 msgid "Creating playlist"
 msgstr "プレイリストを作成中"
 
-#: src/ui/playlist_generation.rs:151
+#: src/ui/playlist_generation.rs:412
 msgid "Adding songs"
 msgstr "曲を追加中"
 
-#: src/ui/playlist_generation.rs:152
+#: src/ui/playlist_generation.rs:413
 msgid "Finished"
 msgstr "終了"
 
-#: src/ui/playlist_generation.rs:155
+#: src/ui/playlist_generation.rs:416
 msgid "Pending"
 msgstr "待機中"
 
-#: src/ui/playlist_generation.rs:155
+#: src/ui/playlist_generation.rs:416
 msgid "Running"
 msgstr "実行中"
 
-#: src/ui/playlist_generation.rs:156
+#: src/ui/playlist_generation.rs:417
 msgid "Paused"
 msgstr "一時停止中"
 
-#: src/ui/playlist_generation.rs:156
+#: src/ui/playlist_generation.rs:417
 msgid "Retrying"
 msgstr "再試行待ち"
 
-#: src/ui/playlist_generation.rs:157
+#: src/ui/playlist_generation.rs:418
 msgid "Completed"
 msgstr "完了"
 
-#: src/ui/playlist_generation.rs:157
+#: src/ui/playlist_generation.rs:418
 msgid "Failed"
 msgstr "失敗"
 
-#: src/ui/playlist_generation.rs:158
+#: src/ui/playlist_generation.rs:419
 msgid "Cancelled"
 msgstr "キャンセル済み"
 
-#: src/ui/playlist_generation.rs:162
+#: src/ui/playlist_generation.rs:423
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "アーティスト：{artists}/{total}"
 
-#: src/ui/playlist_generation.rs:168
+#: src/ui/playlist_generation.rs:429
 msgid "Discovering total work…"
 msgstr "作業の総量を確認中…"
 
-#: src/ui/playlist_generation.rs:170
+#: src/ui/playlist_generation.rs:431
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -3800,14 +3824,25 @@ msgstr ""
 "分析済み：{analyzed}/{total} · アルバム：{albums} · 選択済み：{selected} · 追"
 "加済み：{added}"
 
-#: src/ui/playlist_generation.rs:175
+#: src/ui/playlist_generation.rs:436
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "経過時間：{elapsed} · 推定残り時間：{remaining}"
 
-#: src/ui/playlist_generation.rs:182
+#: src/ui/playlist_generation.rs:443
 msgid "Resume"
 msgstr "再開"
+
+#~ msgid "Period: YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all releases."
+#~ msgstr ""
+#~ "期間：YYYY、MM/YYYY または DD/MM/YYYY。すべてのリリースを対象にする場合は"
+#~ "空欄にしてください。"
+
+#~ msgid ""
+#~ "Period (UTC): YYYY, MM/YYYY or DD/MM/YYYY. Leave blank for all songs."
+#~ msgstr ""
+#~ "期間（UTC）：YYYY、MM/YYYY または DD/MM/YYYY。すべての曲を対象にする場合は"
+#~ "空欄にしてください。"
 
 #~ msgid ""
 #~ "Use a personal Development Mode app for a separate API quota. The shared "
