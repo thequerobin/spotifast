@@ -430,6 +430,13 @@ pub struct App {
     /// Local playback is authorized and the engine is connected.
     pub local_ready: bool,
     pub local_playback: LocalPlayback,
+    pub soloist_status: crate::soloist::Status,
+    pub soloist_audio: bool,
+    pub soloist_onboarding: crate::settings::SoloistOnboarding,
+    pub soloist_key: String,
+    pub soloist_device_id: Option<String>,
+    pub soloist_update: Option<String>,
+    soloist_select: bool,
     pub local: LocalState,
     pub remote: Option<RemoteSnapshot>,
     remote_polled_at: Instant,
@@ -1002,6 +1009,7 @@ impl App {
             applied_proxy
         };
         let session = SessionState::load(&dirs.session_file());
+        let soloist_onboarding = session.soloist_onboarding.restore(settings.soloist_enabled);
         let wake = waker.clone();
         let media_controls = options
             .media_controls
@@ -1110,6 +1118,13 @@ impl App {
             local_transfer_sequence: None,
             local_ready: false,
             local_playback: LocalPlayback::Unavailable,
+            soloist_status: crate::soloist::Status::Off,
+            soloist_audio: false,
+            soloist_onboarding,
+            soloist_key: String::new(),
+            soloist_device_id: None,
+            soloist_update: None,
+            soloist_select: false,
             local: LocalState::default(),
             remote: None,
             remote_polled_at: Instant::now() - REMOTE_POLL_UNSEEN,
@@ -1545,6 +1560,17 @@ impl App {
         matches!(self.auth, AuthStatus::Connected { .. })
     }
 
+    pub fn show_soloist_onboarding(&self) -> bool {
+        self.soloist_onboarding != crate::settings::SoloistOnboarding::Complete
+            && crate::soloist::install::supported()
+            && self.is_connected()
+            && self.user.as_ref().is_some_and(|user| {
+                user.product
+                    .as_deref()
+                    .is_none_or(|product| product == "premium")
+            })
+    }
+
     pub fn user_id(&self) -> Option<&str> {
         self.user.as_ref().map(|user| user.id.as_str())
     }
@@ -1707,6 +1733,52 @@ impl App {
             Target::Local
         } else {
             Target::Remote(None)
+        }
+    }
+
+    /// Soloist's own local process still uses the remote command path and
+    /// queue capabilities. Its private audio route is tracked separately.
+    pub fn targets_own_soloist(&self) -> bool {
+        matches!(self.target(), Target::Remote(Some(id)) if self.soloist_device_id.as_ref() == Some(&id))
+    }
+
+    /// The built-in sink or a verified private route from our Soloist child.
+    pub fn audio_processing_available(&self) -> bool {
+        !self.settings.soloist_enabled || self.soloist_audio
+    }
+
+    pub fn visualizer_sounding(&self, now: Option<&NowPlaying>) -> bool {
+        now.is_some_and(|now| {
+            (now.playing || now.loading)
+                && (now.local || (self.soloist_audio && self.targets_own_soloist()))
+        })
+    }
+
+    pub fn visualizer_lag(&self) -> usize {
+        if self.soloist_audio && self.targets_own_soloist() {
+            0
+        } else {
+            crate::vis::LAG
+        }
+    }
+
+    /// A running child is not usable until its Connect device has been
+    /// verified against the signed-in account. Never fall through to the
+    /// built-in player while the chosen player is starting or needs help.
+    pub fn soloist_waiting(&self) -> bool {
+        self.settings.soloist_enabled
+            && !(matches!(self.soloist_status, crate::soloist::Status::Ready { .. })
+                && self.soloist_device_id.is_some())
+    }
+
+    pub fn soloist_wait_message(&self) -> Cow<'static, str> {
+        use crate::soloist::Status;
+        match self.soloist_status {
+            Status::Starting | Status::Off => gettext(self.locale, "Starting Soloist…"),
+            Status::Downloading { .. } => gettext(self.locale, "Downloading Soloist from Spotify…"),
+            Status::Ready { .. } => gettext(self.locale, "Verifying Soloist…"),
+            Status::Pairing { .. } => gettext(self.locale, "3. Pair once in Spotify"),
+            Status::NeedsKey | Status::Failed(_) => gettext(self.locale, "Soloist needs attention"),
         }
     }
 
@@ -2552,6 +2624,7 @@ impl App {
                 } => {
                     self.cover_chosen(&id, request, result);
                 }
+                Event::Soloist(update) => self.on_soloist(update),
                 Event::Auth(status) => self.handle_auth(status),
                 Event::Playback(status) => self.handle_playback(status),
                 Event::NetworkStatus(reachable) => {
@@ -2806,10 +2879,97 @@ impl App {
         }
     }
 
+    fn clear_soloist_target(&mut self) {
+        let Some(id) = self.soloist_device_id.take() else {
+            return;
+        };
+        if self.selected_device.as_deref() == Some(id.as_str()) {
+            self.selected_device = None;
+        }
+        if self
+            .remote
+            .as_ref()
+            .and_then(|remote| remote.state.device.as_ref())
+            .and_then(|device| device.id.as_deref())
+            == Some(id.as_str())
+        {
+            self.remote = None;
+            self.remote_poll_seq += 1;
+            self.remote_poll_pending = false;
+        }
+    }
+
+    fn on_soloist(&mut self, update: crate::soloist::Update) {
+        use crate::soloist::{Status, Update};
+        match update {
+            Update::Status(status) => {
+                let ready = matches!(status, Status::Ready { .. });
+                if matches!(status, Status::Ready { .. } | Status::Pairing { .. }) { self.soloist_key.clear(); }
+                if !ready {
+                    self.soloist_audio = false;
+                    self.clear_soloist_target();
+                    self.backend.send(Command::SoloistDevice(None));
+                }
+                if let Status::Ready { version, .. } = &status && self.soloist_update.as_ref() == Some(version) { self.soloist_update = None; }
+                self.soloist_status = status;
+                if ready {
+                    self.devices_fetched_at = None;
+                    self.refresh_devices();
+                }
+            }
+            Update::Audio(available) => self.soloist_audio = available && self.settings.soloist_enabled && matches!(self.soloist_status, Status::Ready { .. }),
+            Update::Changed { queue } => {
+                if self.soloist_device_id.is_some() {
+                    self.poll_remote_soon();
+                    if queue { self.queue_fetched_at = None; }
+                }
+            }
+            Update::UpdateReady(version) => self.soloist_update = Some(version),
+            Update::UpdateFailed => self.toast_error(gettext(self.locale, "Soloist could not download its renewal. It will retry tomorrow; the current build is still installed.")),
+        }
+    }
+
+    fn bind_soloist_device(&mut self) {
+        let crate::soloist::Status::Ready { name, .. } = &self.soloist_status else {
+            return;
+        };
+        // Authenticated Web API discovery proves the paired player belongs to
+        // the account signed in here. Reject ambiguous names and missing IDs.
+        let matching: Vec<_> = self
+            .devices
+            .iter()
+            .filter(|device| device.name == *name && device.id.is_some())
+            .collect();
+        let device = (matching.len() == 1).then(|| matching[0].clone());
+        let newly_bound = self.soloist_device_id.is_none();
+        self.soloist_device_id = device.as_ref().and_then(|device| device.id.clone());
+        self.backend.send(Command::SoloistDevice(device));
+        if newly_bound && let Some(id) = self.soloist_device_id.clone() {
+            if std::mem::take(&mut self.soloist_select) {
+                let play = self.now_playing().is_some_and(|now| now.playing);
+                self.transfer_remote(id, play);
+            } else if !self.local.is_active()
+                && self.selected_device.is_none()
+                && self
+                    .remote_fresh()
+                    .is_none_or(|remote| !remote.state.is_playing)
+            {
+                self.selected_device = Some(id);
+            }
+            self.poll_remote_soon();
+        }
+    }
+
     fn handle_auth(&mut self, status: AuthStatus) {
         match &status {
             AuthStatus::Connected { .. } => {
                 self.sign_in_url = None;
+                if self.settings.soloist_enabled {
+                    self.backend.send(Command::Soloist {
+                        enabled: true,
+                        key: None,
+                    });
+                }
                 self.reset_data();
                 // `Me` follows and reads the cache, even for the same
                 // account signing in again.
@@ -2820,6 +2980,12 @@ impl App {
             }
             AuthStatus::WaitingForBrowser { url } => self.sign_in_url = Some(url.clone()),
             AuthStatus::SignedOut => {
+                self.soloist_key.clear();
+                self.soloist_device_id = None;
+                self.soloist_status = crate::soloist::Status::Off;
+                self.soloist_audio = false;
+                self.soloist_update = None;
+                self.soloist_select = false;
                 if matches!(self.dialog, Some(Dialog::PersonalAppIntro)) {
                     self.dialog = None;
                 }
@@ -3909,7 +4075,9 @@ impl App {
                 self.remote_recheck_at = None;
                 self.poll_remote(true);
             }
-            if self.show_devices
+            if (self.show_devices
+                || (matches!(self.soloist_status, crate::soloist::Status::Ready { .. })
+                    && self.soloist_device_id.is_none()))
                 && !self.devices_loading
                 && self
                     .devices_fetched_at
@@ -6907,6 +7075,7 @@ impl App {
                 match result {
                     Ok(devices) => {
                         self.devices = devices;
+                        self.bind_soloist_device();
                         self.control_devices_stale = true;
                         if let Some((name, since)) = self.pending_transfer_to.clone() {
                             // The receiver's own id keeps another device of the
@@ -9224,6 +9393,9 @@ impl App {
     /// in one ordered exchange: two independent requests race, and shuffle
     /// sometimes lost.
     fn play_request(&mut self, request: PlayRequest, shuffle_first: bool) {
+        if self.soloist_waiting() {
+            return;
+        }
         // Whatever starts now outranks a play-search still in flight.
         self.supersede_play_search();
         // A play from a row names its row again after this.
@@ -9247,6 +9419,10 @@ impl App {
     }
 
     fn start_play(&mut self, request: PlayRequest, shuffle_first: bool) {
+        if self.soloist_waiting() {
+            self.clear_play_pending();
+            return;
+        }
         // Shuffle applies across contexts until disabled. A selected row still
         // starts first; otherwise choose a random starting track.
         let mut request = request;
@@ -11015,6 +11191,44 @@ impl App {
     /// Apply one queued UI action after drawing, updating optimistic local state
     /// and scheduling any backend work or preference persistence it requires.
     pub(crate) fn apply(&mut self, action: Action, ctx: &egui::Context) {
+        // Covers buttons, row double-clicks, keyboard/media shortcuts and IPC
+        // before any optimistic state or queued request can change.
+        if self.soloist_waiting()
+            && matches!(
+                &action,
+                Action::PlayContext { .. }
+                    | Action::PlaySearch { .. }
+                    | Action::PlaySearchMatch { .. }
+                    | Action::PlayEpisode { .. }
+                    | Action::PlayUris { .. }
+                    | Action::PlayFromRow { .. }
+                    | Action::ShufflePlay(_)
+                    | Action::TogglePlay
+                    | Action::Next
+                    | Action::Previous
+                    | Action::Seek(_)
+                    | Action::SeekBy(_)
+                    | Action::SetVolume(_)
+                    | Action::PreviewVolume(_)
+                    | Action::VolumeBy(_)
+                    | Action::ToggleMute
+                    | Action::ToggleShuffle
+                    | Action::CycleRepeat
+                    | Action::SetShuffle(_)
+                    | Action::SetRepeat(_)
+                    | Action::Transfer(_)
+                    | Action::ActivateReceiver(_)
+                    | Action::AddToQueue { .. }
+                    | Action::QueueMany { .. }
+                    | Action::PlayNext { .. }
+                    | Action::MoveInQueue { .. }
+                    | Action::InsertInQueue { .. }
+                    | Action::RemoveFromQueue { .. }
+                    | Action::ClearQueue
+            )
+        {
+            return;
+        }
         if matches!(
             &action,
             Action::Open(_)
@@ -12092,6 +12306,56 @@ impl App {
                     self.apply(Action::RestartEngine, ctx);
                 }
             }
+            Action::StartSoloistSetup => {
+                self.soloist_onboarding = crate::settings::SoloistOnboarding::Setup;
+                self.save_session();
+            }
+            Action::FinishSoloistSetup => {
+                if self.settings.soloist_enabled
+                    && matches!(self.soloist_status, crate::soloist::Status::Ready { .. })
+                    && self.soloist_device_id.is_some()
+                {
+                    self.soloist_onboarding = crate::settings::SoloistOnboarding::Complete;
+                    self.save_session();
+                }
+            }
+            Action::UseBuiltInPlayer => {
+                if self.settings.soloist_enabled {
+                    self.apply(Action::SetSoloist(false), ctx);
+                }
+                self.soloist_onboarding = crate::settings::SoloistOnboarding::Complete;
+                self.save_session();
+                self.apply(Action::EnablePlayback, ctx);
+            }
+            Action::SetSoloist(enabled) => {
+                if enabled && self.settings.soloist_enabled && !self.soloist_waiting() {
+                    return;
+                }
+                self.clear_soloist_target();
+                self.queued_play = None;
+                self.clear_play_pending();
+                self.supersede_play_search();
+                self.settings.soloist_enabled = enabled;
+                self.soloist_audio = false;
+                self.mark_settings_dirty();
+                self.soloist_select = enabled;
+                self.soloist_update = None;
+                let key = if enabled {
+                    self.soloist_key.trim().to_owned()
+                } else {
+                    std::mem::take(&mut self.soloist_key)
+                };
+                self.soloist_status = if enabled {
+                    crate::soloist::Status::Starting
+                } else {
+                    crate::soloist::Status::Off
+                };
+                self.backend.send(Command::Soloist {
+                    enabled,
+                    key: (!key.trim().is_empty()).then_some(key),
+                });
+            }
+            Action::RetrySoloist => self.apply(Action::SetSoloist(true), ctx),
             Action::RestartEngine => {
                 self.save_settings();
                 let config = engine_config(
@@ -13271,6 +13535,7 @@ impl App {
         }
         if !self.offline {
             let session = SessionState {
+                soloist_onboarding: self.soloist_onboarding,
                 device_history: self.device_history.clone(),
                 last_page: Some(self.page().encode()),
                 recent_contexts: self.recent_contexts.clone(),
@@ -21110,6 +21375,236 @@ mod tests {
         app.check_tray_wait(started + TRAY_WAIT, false);
         assert!(!app.wants_show);
         app.backend.shutdown();
+    }
+
+    #[test]
+    fn soloist_verification_blocks_playback_until_binding_and_after_failure() {
+        use crate::soloist::{Status, Update};
+        let mut app = test_app("soloist-verification");
+        let ctx = egui::Context::default();
+        app.backend.set_offline(true);
+        app.auth = AuthStatus::Connected {
+            username: "listener".into(),
+        };
+        app.settings.soloist_enabled = true;
+        app.local_ready = true; // A saved librespot grant must not bypass the check.
+        let ready = Status::Ready {
+            name: "owned".into(),
+            version: "test".into(),
+            expires: u64::MAX,
+        };
+        for status in [
+            Status::Off,
+            Status::Starting,
+            Status::Downloading {
+                received: 1,
+                total: 2,
+            },
+            Status::Pairing {
+                name: "owned".into(),
+                version: "test".into(),
+            },
+            ready.clone(),
+            Status::NeedsKey,
+            Status::Failed("unavailable".into()),
+        ] {
+            app.on_soloist(Update::Status(status));
+            assert!(app.soloist_waiting());
+            app.queued_play = Some(PlayRequest::tracks(vec!["spotify:track:old".into()]));
+            app.replay_queued_play();
+            for action in [
+                Action::PlayUris {
+                    uris: vec!["spotify:track:test".into()],
+                    index: 0,
+                },
+                Action::PlayFromRow {
+                    context: RowContext::Uris(vec!["spotify:track:test".into()].into()),
+                    uri: "spotify:track:test".into(),
+                    index: 0,
+                },
+                Action::TogglePlay,
+                Action::Next,
+                Action::Previous,
+                Action::Transfer("other".into()),
+                Action::ToggleShuffle,
+            ] {
+                app.apply(action, &ctx);
+            }
+            assert!(app.intent_track.is_none());
+            assert!(app.played_row.is_none());
+            assert!(!app.any_play_pending());
+            assert!(app.optimistic_playing.is_none());
+            assert!(app.selected_device.is_none());
+            assert!(!app.shuffle_wanted);
+            assert!(app.backend.take_remote_play_requests().is_empty());
+        }
+        app.on_soloist(Update::Status(ready));
+        assert_eq!(app.soloist_wait_message(), "Verifying Soloist…");
+        app.devices = vec![Device {
+            id: Some("own".into()),
+            name: "owned".into(),
+            ..Default::default()
+        }];
+        app.bind_soloist_device();
+        assert!(!app.soloist_waiting());
+        app.apply(Action::ToggleShuffle, &ctx);
+        assert!(app.shuffle_wanted);
+        app.on_soloist(Update::Status(Status::Starting));
+        assert!(app.soloist_waiting());
+        app.apply(Action::Open(Page::Settings), &ctx);
+        assert_eq!(app.page(), &Page::Settings);
+        app.apply(Action::SetSoloist(false), &ctx);
+        assert!(!app.soloist_waiting());
+        app.backend.shutdown();
+    }
+
+    #[test]
+    fn soloist_audio_capability_is_cleared_on_restart_and_disable() {
+        use crate::soloist::{Status, Update};
+        let mut app = test_app("soloist-audio-capability");
+        app.backend.set_offline(true);
+        app.settings.soloist_enabled = true;
+        assert!(!app.audio_processing_available());
+        app.on_soloist(Update::Audio(true));
+        assert!(
+            !app.soloist_audio,
+            "an unready child cannot enable processing"
+        );
+        app.on_soloist(Update::Status(Status::Ready {
+            name: "owned".into(),
+            version: "test".into(),
+            expires: u64::MAX,
+        }));
+        app.on_soloist(Update::Audio(true));
+        assert!(app.audio_processing_available());
+        app.on_soloist(Update::Status(Status::Starting));
+        assert!(!app.audio_processing_available());
+        app.settings.soloist_enabled = false;
+        app.on_soloist(Update::Audio(true));
+        assert!(
+            !app.soloist_audio,
+            "late events cannot restore a stopped route"
+        );
+        assert!(
+            app.audio_processing_available(),
+            "built-in player remains available"
+        );
+        app.backend.shutdown();
+    }
+
+    #[test]
+    fn soloist_binding_requires_one_exact_device_in_the_signed_in_account() {
+        let mut app = test_app("soloist-bind");
+        app.soloist_status = crate::soloist::Status::Ready {
+            name: "Spotifast Soloist (specific)".into(),
+            version: "test".into(),
+            expires: u64::MAX,
+        };
+        app.devices = vec![Device {
+            id: Some("unrelated".into()),
+            name: "Spotifast Soloist".into(),
+            ..Default::default()
+        }];
+        app.bind_soloist_device();
+        assert!(app.soloist_device_id.is_none());
+        let own = Device {
+            id: Some("own".into()),
+            name: "Spotifast Soloist (specific)".into(),
+            ..Default::default()
+        };
+        app.devices.push(own.clone());
+        app.bind_soloist_device();
+        assert_eq!(app.soloist_device_id.as_deref(), Some("own"));
+        app.devices.push(Device {
+            id: Some("duplicate-name".into()),
+            ..own
+        });
+        app.bind_soloist_device();
+        assert!(app.soloist_device_id.is_none());
+    }
+
+    #[test]
+    fn soloist_onboarding_keeps_the_choice_and_requires_verified_pairing() {
+        use crate::settings::SoloistOnboarding;
+        let mut app = test_app("soloist-onboarding");
+        let ctx = egui::Context::default();
+        app.auth = AuthStatus::Connected {
+            username: "listener".into(),
+        };
+        app.user = Some(crate::api::models::User {
+            product: Some("premium".into()),
+            ..Default::default()
+        });
+        app.soloist_onboarding = SoloistOnboarding::Welcome;
+        assert_eq!(
+            app.show_soloist_onboarding(),
+            crate::soloist::install::supported()
+        );
+        app.user.as_mut().unwrap().product = Some("free".into());
+        assert!(!app.show_soloist_onboarding());
+        app.user.as_mut().unwrap().product = Some("premium".into());
+        app.apply(Action::StartSoloistSetup, &ctx);
+        app.settings.soloist_enabled = true;
+        app.apply(Action::FinishSoloistSetup, &ctx);
+        assert_eq!(app.soloist_onboarding, SoloistOnboarding::Setup);
+        app.soloist_status = crate::soloist::Status::Ready {
+            name: "ours".into(),
+            version: "1".into(),
+            expires: u64::MAX,
+        };
+        app.apply(Action::FinishSoloistSetup, &ctx);
+        assert_eq!(
+            app.soloist_onboarding,
+            SoloistOnboarding::Setup,
+            "the account is not verified yet"
+        );
+        app.soloist_device_id = Some("verified".into());
+        app.apply(Action::FinishSoloistSetup, &ctx);
+        assert!(!app.show_soloist_onboarding());
+        app.flush_files();
+        assert_eq!(
+            SessionState::load(&app.dirs.session_file()).soloist_onboarding,
+            SoloistOnboarding::Complete
+        );
+
+        app.apply(Action::StartSoloistSetup, &ctx);
+        app.local_ready = true;
+        app.apply(Action::UseBuiltInPlayer, &ctx);
+        assert!(!app.settings.soloist_enabled);
+        assert!(!app.show_soloist_onboarding());
+        assert!(app.soloist_device_id.is_none());
+        app.flush_files();
+        assert_eq!(
+            SessionState::load(&app.dirs.session_file()).soloist_onboarding,
+            SoloistOnboarding::Complete
+        );
+        app.backend.shutdown();
+    }
+
+    #[test]
+    fn stopping_soloist_clears_its_stale_snapshot_but_keeps_other_players() {
+        let mut app = test_app("soloist-stop");
+        for id in ["soloist", "speaker"] {
+            app.soloist_device_id = Some("soloist".into());
+            app.selected_device = Some(id.into());
+            app.remote = Some(RemoteSnapshot {
+                state: PlaybackState {
+                    device: Some(Device {
+                        id: Some(id.into()),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                },
+                received_at: Instant::now(),
+            });
+            let seq = app.remote_poll_seq;
+            app.on_soloist(crate::soloist::Update::Status(
+                crate::soloist::Status::Failed("stopped".into()),
+            ));
+            assert_eq!(app.remote.is_some(), id == "speaker");
+            assert_eq!(app.selected_device.is_some(), id == "speaker");
+            assert_eq!(app.remote_poll_seq, seq + u64::from(id == "soloist"));
+        }
     }
 
     fn test_app(name: &str) -> App {

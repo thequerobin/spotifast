@@ -58,6 +58,12 @@ app. [Make It Even Faster](/make-it-even-faster/#shared-app) explains why.
 
 ## Enable playback on this computer
 
+Source builds from `main` (not yet released) lead with **Set up Soloist** after
+sign-in, including the first launch after updating. Follow the
+[Soloist setup](/soloist/) or choose **Use the built-in player** for the
+playback described below. Your choice is remembered. Soloist setup appears
+only on platforms Spotify supports and is skipped for Spotify Free accounts.
+
 **Playing music requires Spotify Premium.** To listen on this computer,
 open the device menu in the bottom player bar and select **Set up playback
 here**, or find the same option in Settings.

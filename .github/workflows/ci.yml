@@ -177,7 +177,8 @@ jobs:
         run: mbx test --locked --all-targets --all-features
       - name: Native credential store (dummy grants)
         if: runner.os == 'Windows' || runner.os == 'macOS'
-        timeout-minutes: 2
+        # Switching feature sets can relink the test binary on a cold runner.
+        timeout-minutes: 5
         run: mbx test --locked --lib credentials::tests::native_store_round_trip -- --ignored --exact
       - name: Documentation tests
         run: mbx test --locked --all-features --doc

@@ -690,3 +690,16 @@ existing user files are preserved. Selecting Dark or Light is sufficient to stop
 cache of completed artist/year searches and complete artist catalogs. It
 contains release metadata only. Recent results expire after 15 minutes and
 historical years after 24 hours; job checkpoints are stored separately.
+
+## Spotify Soloist
+
+**Settings → Spotify Soloist** offers the optional Spotify player. The
+`soloist_enabled` preference defaults to false. Its personal key lives in the
+system credential store, never in settings. Under the state directory,
+`soloist/builds/` holds downloaded executables, license notices and build
+records; `soloist/accounts/` holds private, account-scoped pairing state and a
+bounded audio cache. `soloist/instance-id` holds a random installation identity
+so computers with the same account and directory layout get distinct player
+names. Turning Soloist off keeps these for next time. Sign-out
+deletes its key and pairing state. See [Soloist setup](/soloist/) for platform
+support, expiry renewal, networking and audio limitations.

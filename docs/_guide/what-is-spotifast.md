@@ -64,13 +64,14 @@ Spotifast has a limited scope:
 
 - **Playing needs Spotify Premium**, both on this computer and when
   controlling another device. Free accounts can browse and search.
-- Setup asks for two Spotify approvals: one to access your library, another
+- Built-in playback setup asks for two Spotify approvals: one to access your library, another
   to play music on this computer. [How it connects](/how-it-connects/)
   explains why.
-- **Spotify Lossless is not available.** Playback supports up to 320 kbps.
-  The playback software Spotifast uses, librespot, cannot play Spotify's
-  protected lossless audio. Spotifast will reconsider this if
-  [librespot adds lawful support](https://github.com/librespot-org/librespot/issues/1583).
+- **The built-in player supports up to 320 kbps.** librespot cannot play
+  Spotify Lossless. Source builds from `main` also offer the optional
+  [Soloist player](/soloist/), which uses Spotify's own implementation with
+  lossless support. This is not included in v0.14.2. Soloist does not report
+  the delivered audio format or supply audio to Spotifast's EQ and visualisers.
 - No video podcasts or social features.
 - Spotifast is an **unofficial** app. Changes at Spotify can temporarily
   break features until Spotifast is updated.

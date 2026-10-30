@@ -7,10 +7,11 @@ These instructions add implementation constraints for coding agents.
 
 - Keep Spotifast a small native Spotify client. Do not add a browser engine,
   telemetry, a hosted backend, or alternate sources for Spotify audio.
-- Playback capabilities come from librespot. Do not advertise or implement a
-  capability merely because its name appears in a protobuf or enum. In
-  particular, do not pursue Spotify Lossless or DRM circumvention unless
-  lawful support first lands upstream.
+- Built-in playback capabilities come from librespot. The explicitly approved
+  optional Soloist integration uses Spotify's own player and documented API.
+  Do not advertise a capability merely because its name appears in a protobuf
+  or enum. Do not bypass DRM or claim a delivered lossless format Soloist does
+  not report.
 - Do not broaden a task into adjacent features or a general refactor. Preserve
   existing user behaviour unless the task explicitly changes it.
 - Do not add a setting without the maintainer's approval in the issue first;

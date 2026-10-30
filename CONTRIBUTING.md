@@ -1,7 +1,8 @@
 # Contributing to Spotifast
 
 Spotifast is a native Spotify client. Changes should improve the
-desktop app without adding a browser, fallback services, or another backend.
+desktop app without adding a browser or fallback audio services. Playback uses
+Spotify Soloist through guided setup, with librespot as the built-in alternative.
 
 ## Before opening an issue
 
@@ -16,9 +17,9 @@ project.
 Some boundaries come from Spotify or from upstream libraries:
 
 - Local playback requires Spotify Premium because librespot requires it.
-- Spotify Lossless is not available through librespot. Spotifast will
-  reconsider it if librespot gains lawful upstream support; proposals that
-  depend on bypassing Spotify's DRM are out of scope.
+- Spotify Lossless is not available through librespot. The optional Soloist
+  integration uses Spotify's own player. Proposals that depend on bypassing
+  Spotify's DRM are out of scope.
 - Spotify tracks must come from Spotify. Substituting audio from YouTube,
   Piped, `yt-dlp`, or another catalogue is out of scope.
 - Spotifast will not embed a browser engine, add telemetry, or introduce a
@@ -69,7 +70,7 @@ implementation and regression tests live in the Copilot Triage repository.
    are product features. Keep the UI thread free of network and disk waits.
 2. **Focused.** Prefer a complete, coherent workflow over a collection of
    settings, modes, and speculative features.
-3. **Honest integrations.** Use Spotify's Web API and librespot for what they
+3. **Honest integrations.** Use Spotify's Web API, librespot and Soloist for what they
    support. Do not scrape, impersonate capabilities, bypass technical
    protections, or silently replace one service with another.
 4. **Cross-platform by default.** Linux, macOS, and Windows are supported
