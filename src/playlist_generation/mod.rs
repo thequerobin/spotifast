@@ -8,6 +8,9 @@ pub mod release_cache;
 mod release_tests;
 pub mod releases;
 #[cfg(test)]
+mod saved_album_tests;
+pub mod saved_albums;
+#[cfg(test)]
 mod tests;
 
 use crate::api::models::{SavedTrack, Track};
@@ -28,6 +31,7 @@ pub struct Field {
 pub enum Source {
     LikedTracks,
     FollowedReleases,
+    SavedAlbumTracks,
 }
 
 pub struct Kind {
@@ -74,6 +78,16 @@ pub static KINDS: &[Kind] = &[
             }
             Ok(())
         },
+        select: |_, _, _| true,
+    },
+    Kind {
+        id: "unliked-saved-albums",
+        label: "Músicas Não Curtidas de Álbuns Salvos",
+        prefix: "Álbuns Salvos - Não Curtidas",
+        source: Source::SavedAlbumTracks,
+        needs_albums: true,
+        fields: &[],
+        validate: |_| Ok(()),
         select: |_, _, _| true,
     },
 ];

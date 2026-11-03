@@ -1,8 +1,36 @@
 ---
 title: Playlist Generation
-description: MCANS and unliked followed-artist releases with resumable desktop jobs.
+description: Liked songs, unliked saved-album tracks and followed-artist releases with resumable desktop jobs.
 nav_order: 12
 ---
+
+## Unliked songs from saved albums
+
+In **Create a playlist**, select **Músicas Não Curtidas de Álbuns Salvos**.
+With both years set to **Any**, this mode reads all saved albums and includes
+their playable songs that are not individually liked. It does not depend on
+followed artists. A saved album does not mean every song on it is liked.
+
+An optional period filters the album's **saved date in UTC**, not its release
+date. Albums outside the period are discarded before any track or membership
+requests. With no period, albums without a saved timestamp remain eligible.
+The suggested name is **Álbuns Salvos - Não Curtidas - {period}** and is editable.
+
+Saved albums are read 50 to a page, then each selected album's tracks are read
+40 to a page. Playable song URIs are checked against Spotify's liked-song
+membership in batches of at most 40. A track page is committed only after its
+complete membership response succeeds. Local/unavailable tracks, malformed
+IDs and duplicate URIs/recording keys are skipped. Different editions without
+shared recording metadata cannot always be recognized as the same recording.
+Membership reflects the time of the check; keep albums and likes stable
+during generation for consistent results.
+
+Album discovery offsets, the remaining album queue, save timestamps, track
+offsets, selected songs and insertion batches are saved in the job. Pause,
+resume, quota waits, restart recovery and interrupted playlist writes use the
+same worker as the other modes. History shows albums read and songs analyzed,
+selected and added. No matches completes without creating an empty playlist.
+Results use newest album-save time first, retaining track order for ties.
 
 ## Unliked releases from followed artists (MNCAS)
 
@@ -123,7 +151,8 @@ restored merely because their generation remains in history.
 
 ## Periods and names
 
-MCANS uses **UTC** for like timestamps. MNCAS uses release calendar dates.
+MCANS uses **UTC** for like timestamps. The saved-album mode uses **UTC** for
+album-save timestamps. MNCAS uses release calendar dates.
 Use the **Year**, **Month**, **Day** selectors, in that order, for each
 endpoint. **Any** year removes that endpoint; selecting a year enables the
 optional month, and selecting a month enables the optional day. Clearing a
@@ -139,7 +168,8 @@ includes January 1, 2024 through June 30, 2025, inclusive. An end alone
 has no lower bound. Both years set to **Any** means no filter. Invalid dates,
 non-leap February 29 and reversed intervals are refused before starting.
 
-The suggested name is `MCANS - {period}` or `MNCAS - {period}`, with slashes replaced by hyphens,
+Suggested names use `MCANS - {period}`, `MNCAS - {period}` or
+`Álbuns Salvos - Não Curtidas - {period}`, with slashes replaced by hyphens,
 ` a ` between endpoints and `Todas` for an unfiltered job. A custom name
 is retained when the period changes. Names must contain 1 to 100 characters.
 
@@ -220,8 +250,8 @@ Permissions errors remain visible and may require signing in again.
 ## Extending selection
 
 `src/playlist_generation/mod.rs` contains the small strategy registry.
-`Source` selects a durable discovery pipeline: liked tracks or followed
-releases. Selection predicates receive a `Track`, shared parameters and
+`Source` selects a durable discovery pipeline: liked tracks, saved-album
+tracks or followed releases. Selection predicates receive a `Track`, shared parameters and
 relevant library state independently of the date filter.
 For another liked-song selection, implement its predicate and add a `Kind`:
 
@@ -257,6 +287,7 @@ the registry is not a general workflow framework.
 | `src/playlist_generation/period.rs` | Calendar validation, normalized boundaries and UTC filtering |
 | `src/playlist_generation/jobs.rs` | Durable jobs, state transitions, scheduling, retries, checkpoints, reconciliation and timing |
 | `src/playlist_generation/releases.rs`, `src/playlist_generation/release_tests.rs` | Followed release discovery, membership checks and recovery regression tests |
+| `src/playlist_generation/saved_albums.rs`, `src/playlist_generation/saved_album_tests.rs` | Saved-album date filtering, unliked tracks, pagination and restart regression tests |
 | `src/playlist_generation/tests.rs` | 26 selection, date, pagination, HTTP, interruption and recovery tests |
 | `src/ui/playlist_generation.rs` | Native generation form, progress, task controls and history |
 | `src/backend.rs` | Starts the job actor on the existing runtime and exposes its handle |

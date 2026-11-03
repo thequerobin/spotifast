@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-11-03 14:02-0300\n"
+"POT-Creation-Date: 2026-11-03 14:32-0300\n"
 "PO-Revision-Date: 2026-10-06 18:00+0300\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Ukrainian\n"
@@ -50,7 +50,7 @@ msgid "Recently played"
 msgstr "Нещодавно прослухані"
 
 #: src/ui/sidebar.rs:358 src/ui/dialogs.rs:383 src/ui/dialogs.rs:540
-#: src/ui/playlist_generation.rs:95
+#: src/ui/playlist_generation.rs:105
 msgid "Name"
 msgstr "Назва"
 
@@ -270,7 +270,7 @@ msgid "Loading…"
 msgstr "Завантаження…"
 
 #: src/ui/player_bar.rs:800 src/ui/friends.rs:208 src/ui/collection.rs:371
-#: src/ui/playlist_generation.rs:360
+#: src/ui/playlist_generation.rs:373
 msgid "Pause"
 msgstr "Призупинити"
 
@@ -341,7 +341,7 @@ msgstr "Нещодавні"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:81
 #: src/ui/friends.rs:65 src/ui/mod.rs:685 src/window.rs:35
-#: src/ui/playlist_generation.rs:132
+#: src/ui/playlist_generation.rs:144
 msgid "Close"
 msgstr "Закрити"
 
@@ -559,7 +559,7 @@ msgid "Artist and song title"
 msgstr "Виконавець і назва пісні"
 
 #: src/ui/widgets.rs:1234 src/ui/widgets.rs:1346 src/ui/prerelease.rs:271
-#: src/ui/playlist_generation.rs:369
+#: src/ui/playlist_generation.rs:382
 msgid "Open in Spotify"
 msgstr "Відкрити в Spotify"
 
@@ -3044,7 +3044,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "«{name}» більше не показуватиметься у вашій бібліотеці."
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:266 src/ui/playlist_generation.rs:362
+#: src/ui/dialogs.rs:623 src/ui/login.rs:266 src/ui/playlist_generation.rs:375
 msgid "Cancel"
 msgstr "Скасувати"
 
@@ -3130,7 +3130,7 @@ msgid "My playlist"
 msgstr "Мій плейліст"
 
 #: src/ui/dialogs.rs:398 src/ui/dialogs.rs:401 src/ui/dialogs.rs:588
-#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:98
+#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:108
 msgid "Public playlist"
 msgstr "Публічний плейліст"
 
@@ -4253,15 +4253,25 @@ msgstr ""
 "Використовує дати випуску альбомів і синглів та виключає вподобані "
 "композиції. Включає лише композиції виконавців, на яких ви підписані."
 
-#: src/ui/playlist_generation.rs:55
+#: src/ui/playlist_generation.rs:59
+msgid ""
+"Includes unliked songs from saved albums. Dates refer to when albums were "
+"saved."
+msgstr ""
+
+#: src/ui/playlist_generation.rs:63
 msgid "Release period"
 msgstr "Період випуску"
 
-#: src/ui/playlist_generation.rs:57
+#: src/ui/playlist_generation.rs:65
+msgid "Saved albums period (UTC)"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:67
 msgid "Liked songs period (UTC)"
 msgstr "Період вподобаних треків (UTC)"
 
-#: src/ui/playlist_generation.rs:61
+#: src/ui/playlist_generation.rs:71
 msgid ""
 "Select a year, then optionally a month and day. Leave both years as Any for "
 "all dates. A start alone selects that whole period."
@@ -4269,15 +4279,15 @@ msgstr ""
 "Виберіть рік, а потім за потреби місяць і день. Залиште обидва роки як Будь-"
 "який для всіх дат. Лише початок вибирає весь цей період."
 
-#: src/ui/playlist_generation.rs:68
+#: src/ui/playlist_generation.rs:78
 msgid "From"
 msgstr "Від"
 
-#: src/ui/playlist_generation.rs:76
+#: src/ui/playlist_generation.rs:86
 msgid "To"
 msgstr "До"
 
-#: src/ui/playlist_generation.rs:108
+#: src/ui/playlist_generation.rs:118
 msgid ""
 "Estimated API cost: high and variable (artists, releases and track pages). "
 "Cached discoveries reduce repeated work."
@@ -4285,7 +4295,13 @@ msgstr ""
 "Оцінка споживання API: висока й змінна (виконавці, релізи та сторінки "
 "треків). Кеш зменшує повторні запити."
 
-#: src/ui/playlist_generation.rs:110
+#: src/ui/playlist_generation.rs:120
+msgid ""
+"Estimated API cost: variable; saved album pages, track pages and liked-song "
+"checks, plus playlist batches."
+msgstr ""
+
+#: src/ui/playlist_generation.rs:122
 msgid ""
 "Estimated API cost: medium; about one request per 50 library entries, plus "
 "playlist batches. Exact size is not known yet."
@@ -4293,11 +4309,11 @@ msgstr ""
 "Оцінка споживання API: середня; приблизно один запит на 50 елементів "
 "бібліотеки та пакети плейліста. Точний обсяг ще невідомий."
 
-#: src/ui/playlist_generation.rs:115
+#: src/ui/playlist_generation.rs:127
 msgid "Start generation"
 msgstr "Почати створення"
 
-#: src/ui/playlist_generation.rs:130
+#: src/ui/playlist_generation.rs:142
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
@@ -4305,109 +4321,113 @@ msgstr ""
 "Прогрес зберігається після кожної партії. Вихід призупиняє обробку до "
 "наступного запуску."
 
-#: src/ui/playlist_generation.rs:145
+#: src/ui/playlist_generation.rs:157
 msgid "Include compilations"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:219
+#: src/ui/playlist_generation.rs:231
 msgid "Year"
 msgstr "Рік"
 
-#: src/ui/playlist_generation.rs:229
+#: src/ui/playlist_generation.rs:241
 msgid "Month"
 msgstr "Місяць"
 
-#: src/ui/playlist_generation.rs:241
+#: src/ui/playlist_generation.rs:253
 msgid "Day"
 msgstr "День"
 
-#: src/ui/playlist_generation.rs:269
+#: src/ui/playlist_generation.rs:281
 msgid "Any"
 msgstr "Будь-який"
 
-#: src/ui/playlist_generation.rs:309
+#: src/ui/playlist_generation.rs:321
 msgid "Playlist generations"
 msgstr "Створення плейлистів"
 
-#: src/ui/playlist_generation.rs:314
+#: src/ui/playlist_generation.rs:326
 msgid "Reading followed artists"
 msgstr "Читання виконавців із підписок"
 
-#: src/ui/playlist_generation.rs:315
+#: src/ui/playlist_generation.rs:327
 msgid "Finding releases for the period"
 msgstr "Пошук релізів за період"
 
-#: src/ui/playlist_generation.rs:316
+#: src/ui/playlist_generation.rs:328
 msgid "Checking release tracks and likes"
 msgstr "Перевірка композицій і вподобань"
 
-#: src/ui/playlist_generation.rs:317
+#: src/ui/playlist_generation.rs:329
+msgid "Checking saved album tracks and likes"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:330
 msgid "Reading saved albums"
 msgstr "Читання збережених альбомів"
 
-#: src/ui/playlist_generation.rs:318
+#: src/ui/playlist_generation.rs:331
 msgid "Reading liked songs"
 msgstr "Читання вподобаних композицій"
 
-#: src/ui/playlist_generation.rs:319
+#: src/ui/playlist_generation.rs:332
 msgid "Creating playlist"
 msgstr "Створення плейлиста"
 
-#: src/ui/playlist_generation.rs:320
+#: src/ui/playlist_generation.rs:333
 msgid "Adding songs"
 msgstr "Додавання композицій"
 
-#: src/ui/playlist_generation.rs:321
+#: src/ui/playlist_generation.rs:334
 msgid "Finished"
 msgstr "Завершено"
 
-#: src/ui/playlist_generation.rs:324
+#: src/ui/playlist_generation.rs:337
 msgid "Pending"
 msgstr "Очікування"
 
-#: src/ui/playlist_generation.rs:324
+#: src/ui/playlist_generation.rs:337
 msgid "Running"
 msgstr "Виконується"
 
-#: src/ui/playlist_generation.rs:325
+#: src/ui/playlist_generation.rs:338
 msgid "Paused"
 msgstr "Призупинено"
 
-#: src/ui/playlist_generation.rs:325
+#: src/ui/playlist_generation.rs:338
 msgid "Paused: Spotify quota"
 msgstr "Призупинено: квота Spotify"
 
-#: src/ui/playlist_generation.rs:325
+#: src/ui/playlist_generation.rs:338
 msgid "Retrying"
 msgstr "Повторна спроба"
 
-#: src/ui/playlist_generation.rs:326
+#: src/ui/playlist_generation.rs:339
 msgid "Completed"
 msgstr "Готово"
 
-#: src/ui/playlist_generation.rs:326
+#: src/ui/playlist_generation.rs:339
 msgid "Failed"
 msgstr "Помилка"
 
-#: src/ui/playlist_generation.rs:327
+#: src/ui/playlist_generation.rs:340
 msgid "Cancelled"
 msgstr "Скасовано"
 
-#: src/ui/playlist_generation.rs:331
+#: src/ui/playlist_generation.rs:344
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "Виконавці: {artists}/{total}"
 
-#: src/ui/playlist_generation.rs:337
+#: src/ui/playlist_generation.rs:350
 msgid "Discovering total work…"
 msgstr "Визначення загального обсягу роботи…"
 
-#: src/ui/playlist_generation.rs:340
+#: src/ui/playlist_generation.rs:353
 #, rust-format
 msgid "Unique releases checked: {checked} · Within period: {matched}"
 msgstr "Перевірено унікальних релізів: {checked} · У періоді: {matched}"
 
-#: src/ui/playlist_generation.rs:343
+#: src/ui/playlist_generation.rs:356
 #, rust-format
 msgid ""
 "Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
@@ -4415,7 +4435,7 @@ msgstr ""
 "Проаналізовано треків: {analyzed}/{total} · Вибрано: {selected} · Додано: "
 "{added}"
 
-#: src/ui/playlist_generation.rs:348
+#: src/ui/playlist_generation.rs:361
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -4424,48 +4444,48 @@ msgstr ""
 "Перевірено: {analyzed}/{total} · Альбоми: {albums} · Вибрано: {selected} · "
 "Додано: {added}"
 
-#: src/ui/playlist_generation.rs:354
+#: src/ui/playlist_generation.rs:367
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "Минуло: {elapsed} · Приблизно залишилося: {remaining}"
 
-#: src/ui/playlist_generation.rs:361
+#: src/ui/playlist_generation.rs:374
 msgid "Resume"
 msgstr "Продовжити"
 
-#: src/ui/playlist_generation.rs:381
+#: src/ui/playlist_generation.rs:394
 msgid "API cost manager"
 msgstr "Керування споживанням API"
 
-#: src/ui/playlist_generation.rs:383
+#: src/ui/playlist_generation.rs:396
 msgid "Official remaining quota: not provided by Spotify"
 msgstr "Офіційна залишкова квота: Spotify не надає"
 
-#: src/ui/playlist_generation.rs:384
+#: src/ui/playlist_generation.rs:397
 msgid "Requests in the last 30 seconds / local budget"
 msgstr "Запити за останні 30 секунд / локальний бюджет"
 
-#: src/ui/playlist_generation.rs:385
+#: src/ui/playlist_generation.rs:398
 msgid "Effective dispatch rate (last 30 seconds)"
 msgstr "Фактична швидкість надсилання (останні 30 секунд)"
 
-#: src/ui/playlist_generation.rs:386
+#: src/ui/playlist_generation.rs:399
 msgid "Queued (high / medium / low)"
 msgstr "Черга (високий / середній / низький)"
 
-#: src/ui/playlist_generation.rs:387
+#: src/ui/playlist_generation.rs:400
 msgid "In flight"
 msgstr "Виконується"
 
-#: src/ui/playlist_generation.rs:388
+#: src/ui/playlist_generation.rs:401
 msgid "Global cooldown remaining"
 msgstr "Залишок глобального очікування"
 
-#: src/ui/playlist_generation.rs:390
+#: src/ui/playlist_generation.rs:403
 msgid "Catalog cache hits / reads"
 msgstr "Влучання в кеш / читання каталогу"
 
-#: src/ui/playlist_generation.rs:399
+#: src/ui/playlist_generation.rs:412
 msgid ""
 "Limits and cost are local estimates. Other applications and devices can "
 "consume Spotify quota too."
@@ -4473,7 +4493,7 @@ msgstr ""
 "Обмеження та споживання є локальними оцінками. Інші програми й пристрої "
 "також можуть споживати квоту Spotify."
 
-#: src/ui/playlist_generation.rs:417
+#: src/ui/playlist_generation.rs:430
 msgid ""
 "Spotify quota exhausted. Jobs remain checkpointed. No reset time is known. "
 "Check the developer dashboard before trying again."
@@ -4481,15 +4501,15 @@ msgstr ""
 "Квоту Spotify вичерпано. Прогрес збережено. Час оновлення невідомий. Перед "
 "повторною спробою перевірте панель розробника."
 
-#: src/ui/playlist_generation.rs:419
+#: src/ui/playlist_generation.rs:432
 msgid "Spotify developer dashboard"
 msgstr "Панель розробника Spotify"
 
-#: src/ui/playlist_generation.rs:422
+#: src/ui/playlist_generation.rs:435
 msgid "Allow quota recheck"
 msgstr "Дозволити повторну перевірку квоти"
 
-#: src/ui/playlist_generation.rs:427
+#: src/ui/playlist_generation.rs:440
 msgid ""
 "Then resume paused jobs. A new quota rejection will pause requests again."
 msgstr ""

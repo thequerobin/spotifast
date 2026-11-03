@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-11-03 14:02-0300\n"
+"POT-Creation-Date: 2026-11-03 14:32-0300\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Traditional Chinese\n"
@@ -49,7 +49,7 @@ msgid "Recently played"
 msgstr "最近播放"
 
 #: src/ui/sidebar.rs:358 src/ui/dialogs.rs:383 src/ui/dialogs.rs:540
-#: src/ui/playlist_generation.rs:95
+#: src/ui/playlist_generation.rs:105
 msgid "Name"
 msgstr "名稱"
 
@@ -261,7 +261,7 @@ msgid "Loading…"
 msgstr "載入中…"
 
 #: src/ui/player_bar.rs:800 src/ui/friends.rs:208 src/ui/collection.rs:371
-#: src/ui/playlist_generation.rs:360
+#: src/ui/playlist_generation.rs:373
 msgid "Pause"
 msgstr "暫停"
 
@@ -332,7 +332,7 @@ msgstr "最近播放"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:81
 #: src/ui/friends.rs:65 src/ui/mod.rs:685 src/window.rs:35
-#: src/ui/playlist_generation.rs:132
+#: src/ui/playlist_generation.rs:144
 msgid "Close"
 msgstr "關閉"
 
@@ -550,7 +550,7 @@ msgid "Artist and song title"
 msgstr "藝人和歌曲名稱"
 
 #: src/ui/widgets.rs:1234 src/ui/widgets.rs:1346 src/ui/prerelease.rs:271
-#: src/ui/playlist_generation.rs:369
+#: src/ui/playlist_generation.rs:382
 msgid "Open in Spotify"
 msgstr "在 Spotify 中開啟"
 
@@ -2903,7 +2903,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "「{name}」將不再顯示於你的音樂庫。"
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:266 src/ui/playlist_generation.rs:362
+#: src/ui/dialogs.rs:623 src/ui/login.rs:266 src/ui/playlist_generation.rs:375
 msgid "Cancel"
 msgstr "取消"
 
@@ -2983,7 +2983,7 @@ msgid "My playlist"
 msgstr "我的播放清單"
 
 #: src/ui/dialogs.rs:398 src/ui/dialogs.rs:401 src/ui/dialogs.rs:588
-#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:98
+#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:108
 msgid "Public playlist"
 msgstr "公開播放清單"
 
@@ -4071,15 +4071,25 @@ msgid ""
 "followed artists are included."
 msgstr "使用專輯和單曲的發行日期，並排除喜歡的歌曲。僅包含你追蹤的藝人的曲目。"
 
-#: src/ui/playlist_generation.rs:55
+#: src/ui/playlist_generation.rs:59
+msgid ""
+"Includes unliked songs from saved albums. Dates refer to when albums were "
+"saved."
+msgstr ""
+
+#: src/ui/playlist_generation.rs:63
 msgid "Release period"
 msgstr "發行時間範圍"
 
-#: src/ui/playlist_generation.rs:57
+#: src/ui/playlist_generation.rs:65
+msgid "Saved albums period (UTC)"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:67
 msgid "Liked songs period (UTC)"
 msgstr "已按讚歌曲的時間範圍（UTC）"
 
-#: src/ui/playlist_generation.rs:61
+#: src/ui/playlist_generation.rs:71
 msgid ""
 "Select a year, then optionally a month and day. Leave both years as Any for "
 "all dates. A start alone selects that whole period."
@@ -4087,22 +4097,28 @@ msgstr ""
 "選擇年份，再視需要選擇月份和日期。將兩個年份都設為「全部」即可包含所有日期。"
 "僅設定開始時間會選取該完整時段。"
 
-#: src/ui/playlist_generation.rs:68
+#: src/ui/playlist_generation.rs:78
 msgid "From"
 msgstr "從"
 
-#: src/ui/playlist_generation.rs:76
+#: src/ui/playlist_generation.rs:86
 msgid "To"
 msgstr "到"
 
-#: src/ui/playlist_generation.rs:108
+#: src/ui/playlist_generation.rs:118
 msgid ""
 "Estimated API cost: high and variable (artists, releases and track pages). "
 "Cached discoveries reduce repeated work."
 msgstr ""
 "預估 API 用量：較高且不固定（藝人、發行作品和歌曲分頁）。快取可減少重複查詢。"
 
-#: src/ui/playlist_generation.rs:110
+#: src/ui/playlist_generation.rs:120
+msgid ""
+"Estimated API cost: variable; saved album pages, track pages and liked-song "
+"checks, plus playlist batches."
+msgstr ""
+
+#: src/ui/playlist_generation.rs:122
 msgid ""
 "Estimated API cost: medium; about one request per 50 library entries, plus "
 "playlist batches. Exact size is not known yet."
@@ -4110,125 +4126,129 @@ msgstr ""
 "預估 API 用量：中等；每 50 個音樂庫項目約需一次請求，另加播放清單的批次請求。"
 "確切數量尚不確定。"
 
-#: src/ui/playlist_generation.rs:115
+#: src/ui/playlist_generation.rs:127
 msgid "Start generation"
 msgstr "開始產生"
 
-#: src/ui/playlist_generation.rs:130
+#: src/ui/playlist_generation.rs:142
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
 msgstr "每批完成後都會儲存進度。結束應用程式會暫停處理，下次啟動時繼續。"
 
-#: src/ui/playlist_generation.rs:145
+#: src/ui/playlist_generation.rs:157
 msgid "Include compilations"
 msgstr ""
 
-#: src/ui/playlist_generation.rs:219
+#: src/ui/playlist_generation.rs:231
 msgid "Year"
 msgstr "年"
 
-#: src/ui/playlist_generation.rs:229
+#: src/ui/playlist_generation.rs:241
 msgid "Month"
 msgstr "月"
 
-#: src/ui/playlist_generation.rs:241
+#: src/ui/playlist_generation.rs:253
 msgid "Day"
 msgstr "日"
 
-#: src/ui/playlist_generation.rs:269
+#: src/ui/playlist_generation.rs:281
 msgid "Any"
 msgstr "全部"
 
-#: src/ui/playlist_generation.rs:309
+#: src/ui/playlist_generation.rs:321
 msgid "Playlist generations"
 msgstr "播放清單產生記錄"
 
-#: src/ui/playlist_generation.rs:314
+#: src/ui/playlist_generation.rs:326
 msgid "Reading followed artists"
 msgstr "正在讀取追蹤的藝人"
 
-#: src/ui/playlist_generation.rs:315
+#: src/ui/playlist_generation.rs:327
 msgid "Finding releases for the period"
 msgstr "正在尋找時段內的發行作品"
 
-#: src/ui/playlist_generation.rs:316
+#: src/ui/playlist_generation.rs:328
 msgid "Checking release tracks and likes"
 msgstr "正在檢查曲目和喜歡狀態"
 
-#: src/ui/playlist_generation.rs:317
+#: src/ui/playlist_generation.rs:329
+msgid "Checking saved album tracks and likes"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:330
 msgid "Reading saved albums"
 msgstr "正在讀取已儲存的專輯"
 
-#: src/ui/playlist_generation.rs:318
+#: src/ui/playlist_generation.rs:331
 msgid "Reading liked songs"
 msgstr "正在讀取喜歡的歌曲"
 
-#: src/ui/playlist_generation.rs:319
+#: src/ui/playlist_generation.rs:332
 msgid "Creating playlist"
 msgstr "正在建立播放清單"
 
-#: src/ui/playlist_generation.rs:320
+#: src/ui/playlist_generation.rs:333
 msgid "Adding songs"
 msgstr "正在加入歌曲"
 
-#: src/ui/playlist_generation.rs:321
+#: src/ui/playlist_generation.rs:334
 msgid "Finished"
 msgstr "已結束"
 
-#: src/ui/playlist_generation.rs:324
+#: src/ui/playlist_generation.rs:337
 msgid "Pending"
 msgstr "等待中"
 
-#: src/ui/playlist_generation.rs:324
+#: src/ui/playlist_generation.rs:337
 msgid "Running"
 msgstr "執行中"
 
-#: src/ui/playlist_generation.rs:325
+#: src/ui/playlist_generation.rs:338
 msgid "Paused"
 msgstr "已暫停"
 
-#: src/ui/playlist_generation.rs:325
+#: src/ui/playlist_generation.rs:338
 msgid "Paused: Spotify quota"
 msgstr "已暫停：Spotify 配額"
 
-#: src/ui/playlist_generation.rs:325
+#: src/ui/playlist_generation.rs:338
 msgid "Retrying"
 msgstr "正在重試"
 
-#: src/ui/playlist_generation.rs:326
+#: src/ui/playlist_generation.rs:339
 msgid "Completed"
 msgstr "已完成"
 
-#: src/ui/playlist_generation.rs:326
+#: src/ui/playlist_generation.rs:339
 msgid "Failed"
 msgstr "失敗"
 
-#: src/ui/playlist_generation.rs:327
+#: src/ui/playlist_generation.rs:340
 msgid "Cancelled"
 msgstr "已取消"
 
-#: src/ui/playlist_generation.rs:331
+#: src/ui/playlist_generation.rs:344
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "藝人：{artists}/{total}"
 
-#: src/ui/playlist_generation.rs:337
+#: src/ui/playlist_generation.rs:350
 msgid "Discovering total work…"
 msgstr "正在計算總工作量…"
 
-#: src/ui/playlist_generation.rs:340
+#: src/ui/playlist_generation.rs:353
 #, rust-format
 msgid "Unique releases checked: {checked} · Within period: {matched}"
 msgstr "已檢查的不重複發行作品：{checked} · 時段內：{matched}"
 
-#: src/ui/playlist_generation.rs:343
+#: src/ui/playlist_generation.rs:356
 #, rust-format
 msgid ""
 "Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
 msgstr "已分析歌曲：{analyzed}/{total} · 已選取：{selected} · 已新增：{added}"
 
-#: src/ui/playlist_generation.rs:348
+#: src/ui/playlist_generation.rs:361
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -4237,69 +4257,69 @@ msgstr ""
 "已分析：{analyzed}/{total} · 專輯：{albums} · 已選：{selected} · 已加入："
 "{added}"
 
-#: src/ui/playlist_generation.rs:354
+#: src/ui/playlist_generation.rs:367
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "已用時間：{elapsed} · 預估剩餘時間：{remaining}"
 
-#: src/ui/playlist_generation.rs:361
+#: src/ui/playlist_generation.rs:374
 msgid "Resume"
 msgstr "繼續"
 
-#: src/ui/playlist_generation.rs:381
+#: src/ui/playlist_generation.rs:394
 msgid "API cost manager"
 msgstr "API 用量管理員"
 
-#: src/ui/playlist_generation.rs:383
+#: src/ui/playlist_generation.rs:396
 msgid "Official remaining quota: not provided by Spotify"
 msgstr "官方剩餘配額：Spotify 未提供"
 
-#: src/ui/playlist_generation.rs:384
+#: src/ui/playlist_generation.rs:397
 msgid "Requests in the last 30 seconds / local budget"
 msgstr "最近 30 秒的請求數 / 本機預算"
 
-#: src/ui/playlist_generation.rs:385
+#: src/ui/playlist_generation.rs:398
 msgid "Effective dispatch rate (last 30 seconds)"
 msgstr "實際傳送速率（最近 30 秒）"
 
-#: src/ui/playlist_generation.rs:386
+#: src/ui/playlist_generation.rs:399
 msgid "Queued (high / medium / low)"
 msgstr "佇列（高 / 中 / 低）"
 
-#: src/ui/playlist_generation.rs:387
+#: src/ui/playlist_generation.rs:400
 msgid "In flight"
 msgstr "執行中"
 
-#: src/ui/playlist_generation.rs:388
+#: src/ui/playlist_generation.rs:401
 msgid "Global cooldown remaining"
 msgstr "剩餘全域等待時間"
 
-#: src/ui/playlist_generation.rs:390
+#: src/ui/playlist_generation.rs:403
 msgid "Catalog cache hits / reads"
 msgstr "快取命中 / 曲庫查詢"
 
-#: src/ui/playlist_generation.rs:399
+#: src/ui/playlist_generation.rs:412
 msgid ""
 "Limits and cost are local estimates. Other applications and devices can "
 "consume Spotify quota too."
 msgstr "限制和用量均為本機估算。其他應用程式和裝置也可能消耗 Spotify 配額。"
 
-#: src/ui/playlist_generation.rs:417
+#: src/ui/playlist_generation.rs:430
 msgid ""
 "Spotify quota exhausted. Jobs remain checkpointed. No reset time is known. "
 "Check the developer dashboard before trying again."
 msgstr ""
 "Spotify 配額已用盡。進度已儲存。配額更新時間未知。重試前請檢查開發者控制台。"
 
-#: src/ui/playlist_generation.rs:419
+#: src/ui/playlist_generation.rs:432
 msgid "Spotify developer dashboard"
 msgstr "Spotify 開發者控制台"
 
-#: src/ui/playlist_generation.rs:422
+#: src/ui/playlist_generation.rs:435
 msgid "Allow quota recheck"
 msgstr "允許重新檢查配額"
 
-#: src/ui/playlist_generation.rs:427
+#: src/ui/playlist_generation.rs:440
 msgid ""
 "Then resume paused jobs. A new quota rejection will pause requests again."
 msgstr "接著恢復已暫停的工作。若再次因配額遭拒，請求將再次暫停。"

@@ -51,8 +51,18 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
         ui.add_space(8.0);
     }
     let release_dates = kind(&draft.kind).is_ok_and(|kind| kind.source == Source::FollowedReleases);
+    let saved_album_dates =
+        kind(&draft.kind).is_ok_and(|kind| kind.source == Source::SavedAlbumTracks);
+    if saved_album_dates {
+        ui.label(gettext(
+            locale,
+            "Includes unliked songs from saved albums. Dates refer to when albums were saved.",
+        ));
+    }
     ui.label(if release_dates {
         gettext(locale, "Release period")
+    } else if saved_album_dates {
+        gettext(locale, "Saved albums period (UTC)")
     } else {
         gettext(locale, "Liked songs period (UTC)")
     });
@@ -106,6 +116,8 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
     ui.add_space(12.0);
     ui.small(if release_dates {
         gettext(locale, "Estimated API cost: high and variable (artists, releases and track pages). Cached discoveries reduce repeated work.")
+    } else if saved_album_dates {
+        gettext(locale, "Estimated API cost: variable; saved album pages, track pages and liked-song checks, plus playlist batches.")
     } else {
         gettext(locale, "Estimated API cost: medium; about one request per 50 library entries, plus playlist batches. Exact size is not known yet.")
     });
@@ -314,6 +326,7 @@ pub fn history(app: &mut App, ui: &mut egui::Ui) {
                     Stage::FollowedArtists => gettext(locale, "Reading followed artists"),
                     Stage::ArtistReleases => gettext(locale, "Finding releases for the period"),
                     Stage::ReleaseTracks => gettext(locale, "Checking release tracks and likes"),
+                    Stage::SavedAlbumTracks => gettext(locale, "Checking saved album tracks and likes"),
                     Stage::Albums => gettext(locale, "Reading saved albums"),
                     Stage::Tracks => gettext(locale, "Reading liked songs"),
                     Stage::Create => gettext(locale, "Creating playlist"),
@@ -587,12 +600,13 @@ mod compilation_option_tests {
                     let before = parameters
                         .get(crate::playlist_generation::INCLUDE_COMPILATIONS)
                         .is_some_and(|v| v == "true");
-                    let _ = ctx.run_ui(input, |ui| {
+                    let mut output = ctx.run_ui(input, |ui| {
                         let right = ui.max_rect().right();
                         let response = compilation_option(ui, Locale::English, &mut parameters);
                         center = response.rect.center();
                         assert!(response.rect.right() <= right + 0.5);
                     });
+                    output.textures_delta.clear();
                     let after =
                         parameters[crate::playlist_generation::INCLUDE_COMPILATIONS] == "true";
                     assert_eq!(after, if click { !before } else { false });

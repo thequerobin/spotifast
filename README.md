@@ -207,6 +207,9 @@ Licensed under the [MIT License](LICENSE).
 ## Playlist generation
 MCANS playlist generation selects liked songs whose albums are not saved,
 with optional calendar periods, editable names and resumable desktop jobs.
+**Músicas Não Curtidas de Álbuns Salvos** reads the songs of your saved albums
+and includes only those you have not liked. Optional periods use the album's
+saved date in UTC. Duplicates and unavailable tracks are skipped.
 MNCAS selects unliked songs from followed artists by album/single release
 date, with the same persistent progress and recovery. **Include compilations**
 is off by default: the artist catalog is filtered before fetching tracks.
