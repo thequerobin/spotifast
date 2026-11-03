@@ -4235,7 +4235,7 @@ msgstr ""
 msgid ""
 "Includes unliked songs from saved albums. Dates refer to when albums were "
 "saved."
-msgstr ""
+msgstr "Incluye canciones sin Me gusta de los álbumes guardados. Las fechas indican cuándo se guardaron los álbumes."
 
 #: src/ui/playlist_generation.rs:63
 msgid "Release period"
@@ -4243,7 +4243,7 @@ msgstr "Período de lanzamiento"
 
 #: src/ui/playlist_generation.rs:65
 msgid "Saved albums period (UTC)"
-msgstr ""
+msgstr "Período de álbumes guardados (UTC)"
 
 #: src/ui/playlist_generation.rs:67
 msgid "Liked songs period (UTC)"
@@ -4278,7 +4278,7 @@ msgstr ""
 msgid ""
 "Estimated API cost: variable; saved album pages, track pages and liked-song "
 "checks, plus playlist batches."
-msgstr ""
+msgstr "Coste estimado de la API: variable; páginas de álbumes guardados y canciones, comprobaciones de Me gusta y lotes de la playlist."
 
 #: src/ui/playlist_generation.rs:122
 msgid ""
@@ -4302,7 +4302,7 @@ msgstr ""
 
 #: src/ui/playlist_generation.rs:157
 msgid "Include compilations"
-msgstr ""
+msgstr "Incluir recopilatorios"
 
 #: src/ui/playlist_generation.rs:231
 msgid "Year"
@@ -4338,7 +4338,7 @@ msgstr "Comprobando canciones y Me gusta"
 
 #: src/ui/playlist_generation.rs:329
 msgid "Checking saved album tracks and likes"
-msgstr ""
+msgstr "Comprobando canciones de álbumes guardados y Me gusta"
 
 #: src/ui/playlist_generation.rs:330
 msgid "Reading saved albums"

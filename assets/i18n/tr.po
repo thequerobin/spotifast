@@ -4222,7 +4222,7 @@ msgstr ""
 msgid ""
 "Includes unliked songs from saved albums. Dates refer to when albums were "
 "saved."
-msgstr ""
+msgstr "Kaydedilen albümlerdeki beğenilmeyen şarkıları içerir. Tarihler, albümlerin kaydedildiği zamanı belirtir."
 
 #: src/ui/playlist_generation.rs:63
 msgid "Release period"
@@ -4230,7 +4230,7 @@ msgstr "Yayın dönemi"
 
 #: src/ui/playlist_generation.rs:65
 msgid "Saved albums period (UTC)"
-msgstr ""
+msgstr "Albüm kaydetme dönemi (UTC)"
 
 #: src/ui/playlist_generation.rs:67
 msgid "Liked songs period (UTC)"
@@ -4265,7 +4265,7 @@ msgstr ""
 msgid ""
 "Estimated API cost: variable; saved album pages, track pages and liked-song "
 "checks, plus playlist batches."
-msgstr ""
+msgstr "Tahmini API maliyeti: değişken; kayıtlı albüm ve parça sayfaları, beğeni kontrolleri ve çalma listesine toplu eklemeler."
 
 #: src/ui/playlist_generation.rs:122
 msgid ""
@@ -4289,7 +4289,7 @@ msgstr ""
 
 #: src/ui/playlist_generation.rs:157
 msgid "Include compilations"
-msgstr ""
+msgstr "Derlemeleri dahil et"
 
 #: src/ui/playlist_generation.rs:231
 msgid "Year"
@@ -4325,7 +4325,7 @@ msgstr "Şarkılar ve beğeniler kontrol ediliyor"
 
 #: src/ui/playlist_generation.rs:329
 msgid "Checking saved album tracks and likes"
-msgstr ""
+msgstr "Kaydedilen albümlerin parçaları ve beğeniler kontrol ediliyor"
 
 #: src/ui/playlist_generation.rs:330
 msgid "Reading saved albums"

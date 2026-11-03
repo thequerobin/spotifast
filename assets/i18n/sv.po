@@ -4194,7 +4194,7 @@ msgstr ""
 msgid ""
 "Includes unliked songs from saved albums. Dates refer to when albums were "
 "saved."
-msgstr ""
+msgstr "Innehåller låtar som inte gillats från sparade album. Datumen avser när albumen sparades."
 
 #: src/ui/playlist_generation.rs:63
 msgid "Release period"
@@ -4202,7 +4202,7 @@ msgstr "Utgivningsperiod"
 
 #: src/ui/playlist_generation.rs:65
 msgid "Saved albums period (UTC)"
-msgstr ""
+msgstr "Period för sparade album (UTC)"
 
 #: src/ui/playlist_generation.rs:67
 msgid "Liked songs period (UTC)"
@@ -4236,7 +4236,7 @@ msgstr ""
 msgid ""
 "Estimated API cost: variable; saved album pages, track pages and liked-song "
 "checks, plus playlist batches."
-msgstr ""
+msgstr "Uppskattad API-kostnad: varierande; sidor med sparade album och låtar, kontroller av gillade låtar och spellistebatcher."
 
 #: src/ui/playlist_generation.rs:122
 msgid ""
@@ -4260,7 +4260,7 @@ msgstr ""
 
 #: src/ui/playlist_generation.rs:157
 msgid "Include compilations"
-msgstr ""
+msgstr "Inkludera samlingsalbum"
 
 #: src/ui/playlist_generation.rs:231
 msgid "Year"
@@ -4296,7 +4296,7 @@ msgstr "Kontrollerar låtar och gillanden"
 
 #: src/ui/playlist_generation.rs:329
 msgid "Checking saved album tracks and likes"
-msgstr ""
+msgstr "Kontrollerar låtar i sparade album och gillamarkeringar"
 
 #: src/ui/playlist_generation.rs:330
 msgid "Reading saved albums"

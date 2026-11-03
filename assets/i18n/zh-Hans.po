@@ -4069,7 +4069,7 @@ msgstr "使用专辑和单曲的发行日期，并排除喜欢的歌曲。仅包
 msgid ""
 "Includes unliked songs from saved albums. Dates refer to when albums were "
 "saved."
-msgstr ""
+msgstr "包含已保存专辑中尚未点赞的歌曲。日期指保存专辑的日期。"
 
 #: src/ui/playlist_generation.rs:63
 msgid "Release period"
@@ -4077,7 +4077,7 @@ msgstr "发行时间范围"
 
 #: src/ui/playlist_generation.rs:65
 msgid "Saved albums period (UTC)"
-msgstr ""
+msgstr "专辑保存时间范围（UTC）"
 
 #: src/ui/playlist_generation.rs:67
 msgid "Liked songs period (UTC)"
@@ -4110,7 +4110,7 @@ msgstr ""
 msgid ""
 "Estimated API cost: variable; saved album pages, track pages and liked-song "
 "checks, plus playlist batches."
-msgstr ""
+msgstr "预计 API 开销：不固定；包括已保存专辑和歌曲的分页请求、点赞状态检查以及播放列表批量添加。"
 
 #: src/ui/playlist_generation.rs:122
 msgid ""
@@ -4132,7 +4132,7 @@ msgstr "每批完成后都会保存进度。退出应用会暂停处理，下次
 
 #: src/ui/playlist_generation.rs:157
 msgid "Include compilations"
-msgstr ""
+msgstr "包含合辑"
 
 #: src/ui/playlist_generation.rs:231
 msgid "Year"
@@ -4168,7 +4168,7 @@ msgstr "正在检查曲目和喜欢状态"
 
 #: src/ui/playlist_generation.rs:329
 msgid "Checking saved album tracks and likes"
-msgstr ""
+msgstr "正在检查已保存专辑的歌曲和点赞状态"
 
 #: src/ui/playlist_generation.rs:330
 msgid "Reading saved albums"

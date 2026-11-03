@@ -4226,7 +4226,7 @@ msgstr ""
 msgid ""
 "Includes unliked songs from saved albums. Dates refer to when albums were "
 "saved."
-msgstr ""
+msgstr "Bevat nummers zonder vind-ik-leuk uit opgeslagen albums. De datums verwijzen naar wanneer de albums zijn opgeslagen."
 
 #: src/ui/playlist_generation.rs:63
 msgid "Release period"
@@ -4234,7 +4234,7 @@ msgstr "Uitgaveperiode"
 
 #: src/ui/playlist_generation.rs:65
 msgid "Saved albums period (UTC)"
-msgstr ""
+msgstr "Periode van opgeslagen albums (UTC)"
 
 #: src/ui/playlist_generation.rs:67
 msgid "Liked songs period (UTC)"
@@ -4268,7 +4268,7 @@ msgstr ""
 msgid ""
 "Estimated API cost: variable; saved album pages, track pages and liked-song "
 "checks, plus playlist batches."
-msgstr ""
+msgstr "Geschatte API-kosten: variabel; pagina's met opgeslagen albums en nummers, controles op vind-ik-leuks en playlistbatches."
 
 #: src/ui/playlist_generation.rs:122
 msgid ""
@@ -4292,7 +4292,7 @@ msgstr ""
 
 #: src/ui/playlist_generation.rs:157
 msgid "Include compilations"
-msgstr ""
+msgstr "Compilaties opnemen"
 
 #: src/ui/playlist_generation.rs:231
 msgid "Year"
@@ -4328,7 +4328,7 @@ msgstr "Nummers en likes controleren"
 
 #: src/ui/playlist_generation.rs:329
 msgid "Checking saved album tracks and likes"
-msgstr ""
+msgstr "Nummers uit opgeslagen albums en vind-ik-leuks controleren"
 
 #: src/ui/playlist_generation.rs:330
 msgid "Reading saved albums"

@@ -4154,7 +4154,7 @@ msgstr ""
 msgid ""
 "Includes unliked songs from saved albums. Dates refer to when albums were "
 "saved."
-msgstr ""
+msgstr "저장한 앨범에서 좋아요를 표시하지 않은 곡을 포함합니다. 날짜는 앨범을 저장한 날짜를 기준으로 합니다."
 
 #: src/ui/playlist_generation.rs:63
 msgid "Release period"
@@ -4162,7 +4162,7 @@ msgstr "발매 기간"
 
 #: src/ui/playlist_generation.rs:65
 msgid "Saved albums period (UTC)"
-msgstr ""
+msgstr "앨범 저장 기간 (UTC)"
 
 #: src/ui/playlist_generation.rs:67
 msgid "Liked songs period (UTC)"
@@ -4196,7 +4196,7 @@ msgstr ""
 msgid ""
 "Estimated API cost: variable; saved album pages, track pages and liked-song "
 "checks, plus playlist batches."
-msgstr ""
+msgstr "예상 API 비용: 가변적입니다. 저장한 앨범 및 곡 페이지, 좋아요 확인과 플레이리스트 일괄 추가가 포함됩니다."
 
 #: src/ui/playlist_generation.rs:122
 msgid ""
@@ -4220,7 +4220,7 @@ msgstr ""
 
 #: src/ui/playlist_generation.rs:157
 msgid "Include compilations"
-msgstr ""
+msgstr "컴필레이션 포함"
 
 #: src/ui/playlist_generation.rs:231
 msgid "Year"
@@ -4256,7 +4256,7 @@ msgstr "수록곡과 좋아요 확인 중"
 
 #: src/ui/playlist_generation.rs:329
 msgid "Checking saved album tracks and likes"
-msgstr ""
+msgstr "저장한 앨범의 곡과 좋아요 확인 중"
 
 #: src/ui/playlist_generation.rs:330
 msgid "Reading saved albums"

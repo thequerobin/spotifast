@@ -4257,7 +4257,7 @@ msgstr ""
 msgid ""
 "Includes unliked songs from saved albums. Dates refer to when albums were "
 "saved."
-msgstr ""
+msgstr "Містить невподобані композиції зі збережених альбомів. Дати стосуються часу збереження альбомів."
 
 #: src/ui/playlist_generation.rs:63
 msgid "Release period"
@@ -4265,7 +4265,7 @@ msgstr "Період випуску"
 
 #: src/ui/playlist_generation.rs:65
 msgid "Saved albums period (UTC)"
-msgstr ""
+msgstr "Період збереження альбомів (UTC)"
 
 #: src/ui/playlist_generation.rs:67
 msgid "Liked songs period (UTC)"
@@ -4299,7 +4299,7 @@ msgstr ""
 msgid ""
 "Estimated API cost: variable; saved album pages, track pages and liked-song "
 "checks, plus playlist batches."
-msgstr ""
+msgstr "Орієнтовні витрати API: змінні; сторінки збережених альбомів і композицій, перевірки вподобань та пакетне додавання до списку відтворення."
 
 #: src/ui/playlist_generation.rs:122
 msgid ""
@@ -4323,7 +4323,7 @@ msgstr ""
 
 #: src/ui/playlist_generation.rs:157
 msgid "Include compilations"
-msgstr ""
+msgstr "Включати збірки"
 
 #: src/ui/playlist_generation.rs:231
 msgid "Year"
@@ -4359,7 +4359,7 @@ msgstr "Перевірка композицій і вподобань"
 
 #: src/ui/playlist_generation.rs:329
 msgid "Checking saved album tracks and likes"
-msgstr ""
+msgstr "Перевірка композицій збережених альбомів і вподобань"
 
 #: src/ui/playlist_generation.rs:330
 msgid "Reading saved albums"
