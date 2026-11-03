@@ -2,6 +2,10 @@ name: Windows portable
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/windows-portable.yml'
 
 permissions:
   contents: read
