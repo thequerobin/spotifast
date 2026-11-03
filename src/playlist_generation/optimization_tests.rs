@@ -13,6 +13,9 @@ fn job() -> jobs::Job {
         false,
     )
     .unwrap();
+    // Indexed track discovery is retained when compilations are requested.
+    job.set_start_parameters([(super::INCLUDE_COMPILATIONS.into(), "true".into())].into())
+        .unwrap();
     releases::apply(
         &mut job,
         releases::Outcome::Artists(CursorPage {
@@ -255,6 +258,15 @@ async fn cache_survives_restart_is_account_scoped_and_reapplies_the_requested_we
     let mut other = job();
     other.account = "other".into();
     assert!(release_cache::read(&root, &other).await.is_none());
+    let mut without_compilations = job();
+    without_compilations
+        .parameters
+        .insert(super::INCLUDE_COMPILATIONS.into(), "false".into());
+    assert!(
+        release_cache::read(&root, &without_compilations)
+            .await
+            .is_none()
+    );
     let mut resumed = crash(&job());
     resumed.releases.search_offset = 10;
     assert!(release_cache::read(&root, &resumed).await.is_none());
@@ -377,4 +389,35 @@ async fn full_catalog_cache_is_complete_deduplicated_and_restart_safe() {
     assert_eq!(next.view().albums_checked, 2);
     assert_eq!(next.releases.albums.len(), 1);
     tokio::fs::remove_dir_all(root).await.unwrap();
+}
+
+#[test]
+fn indexed_results_apply_the_compilation_choice_before_queuing_tracks() {
+    for included in [false, true] {
+        let mut job = job();
+        job.parameters
+            .insert(super::INCLUDE_COMPILATIONS.into(), included.to_string());
+        let mut compilation = track("song", "followed", "compilation", "2025-03-15");
+        compilation.album.as_mut().unwrap().album_type = Some("compilation".into());
+        releases::apply(
+            &mut job,
+            releases::Outcome::Search(Page::whole(vec![
+                compilation,
+                track("regularsong", "followed", "regular", "2025-03-16"),
+            ])),
+        )
+        .unwrap();
+        assert_eq!(job.releases.albums.len(), if included { 2 } else { 1 });
+        assert_eq!(job.releases.albums.back().unwrap().id, "regular");
+        let cache = job.releases.pending_cache.as_ref().unwrap();
+        assert!(
+            cache
+                .releases
+                .iter()
+                .any(|release| release.id == "compilation" && release.compilation)
+        );
+        let restored = crash(&job);
+        assert_eq!(restored.releases.albums.len(), job.releases.albums.len());
+        assert_eq!(restored.include_compilations(), included);
+    }
 }

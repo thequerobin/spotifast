@@ -10,10 +10,26 @@ Select **Músicas Não Curtidas de Artistas Seguidos (MNCAS)** in the existing
 playlist creation form. The default name is `MNCAS - {period}` and remains
 editable. Leaving both years as **Any** includes all available releases.
 
+**Include compilations** starts unchecked. With it unchecked, discovery uses
+the artist's album catalog instead of track search, omits the `compilation`
+group from the request, and drops albums identified by Spotify as compilations
+before reading their tracks or checking their liked status. Regular albums in
+`appears_on` remain eligible, preserving credited collaborations. Spotify may
+still return compilation metadata in that group; those entries are discarded
+without fetching their songs. The date range is applied to the remaining albums.
+This avoids paging through one search result per track on compilation-heavy
+catalogs, but a large catalog can still require many metadata pages.
+
+Check **Include compilations** to retain the broader discovery described below,
+including artist/year track search for bounded periods. The choice is saved in
+each job and survives restarts. Jobs created before this option keep their
+original inclusion behavior; create a new job to exclude compilations.
+
 This mode pages through **all** followed artists (not the Home shelf's
-50-artist fallback). New jobs with a closed period spanning at most five
-calendar years search tracks by quoted artist name and each requested year.
-The artist's Spotify **ID**, not its name, must occur in the track credits.
+50-artist fallback). When compilations are included, new jobs with a closed
+period spanning at most five calendar years search tracks by quoted artist
+name and each requested year. The artist's Spotify **ID**, not its name, must
+occur in the track credits in either mode.
 Each returned album/single is deduplicated and filtered against the requested
 month/day interval before its tracks are inspected. Searching tracks also
 finds credited collaborations and appearances on compilations. Saved-album
@@ -32,11 +48,14 @@ ordering. A track must credit at least one followed artist to be selected.
 
 Complete artist/year query results and complete artist catalogs are cached
 under `playlist-generations/release-catalog-cache/`. Cache keys include the
-Spotify account, artist ID and discovery year (or catalog mode). They store
-only release IDs, dates and track counts, never credentials or liked-song
-membership. The requested month/day filter is reapplied when reusing them.
-The current/future year and full catalogs expire after 15 minutes; previous
-years expire after 24 hours. Only fully paginated results are cached, including
+Spotify account, artist ID, compilation choice and discovery year (or catalog
+mode). They store only release IDs, dates, track counts and compilation
+classification, never credentials or liked-song membership. The requested
+month/day filter is reapplied when reusing them.
+The cache format was versioned so older entries without release types cannot
+bypass the compilation filter. The current/future year and full catalogs expire
+after 15 minutes; previous years expire after 24 hours. Only fully paginated
+results are cached, including
 empty results. Mid-query progress remains in the durable job checkpoint.
 Corrupt, oversized or expired cache files are ignored. Startup removes expired
 files and retains at most 4,096 existing cache entries; individual entries are

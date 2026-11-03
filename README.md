@@ -208,8 +208,10 @@ Licensed under the [MIT License](LICENSE).
 MCANS playlist generation selects liked songs whose albums are not saved,
 with optional calendar periods, editable names and resumable desktop jobs.
 MNCAS selects unliked songs from followed artists by album/single release
-date, with the same persistent progress and recovery. Bounded periods use
-artist/year discovery and a persistent cache scoped to the Spotify account.
+date, with the same persistent progress and recovery. **Include compilations**
+is off by default: the artist catalog is filtered before fetching tracks.
+Opting in also enables artist/year discovery for bounded periods. Discovery
+caches are scoped to the Spotify account and compilation choice.
 Progress distinguishes unique releases consulted from releases within the period.
 See [playlist generation and recovery](docs/_reference/playlist-generation.md).
 

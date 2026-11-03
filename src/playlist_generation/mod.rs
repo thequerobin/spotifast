@@ -16,6 +16,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 pub type Parameters = BTreeMap<String, String>;
 
+pub const INCLUDE_COMPILATIONS: &str = "include_compilations";
+
 pub struct Field {
     pub key: &'static str,
     pub label: &'static str,
@@ -63,7 +65,15 @@ pub static KINDS: &[Kind] = &[
         source: Source::FollowedReleases,
         needs_albums: false,
         fields: &[],
-        validate: |_| Ok(()),
+        validate: |parameters| {
+            if parameters
+                .get(INCLUDE_COMPILATIONS)
+                .is_some_and(|value| !matches!(value.as_str(), "true" | "false"))
+            {
+                return Err("Invalid compilation option".into());
+            }
+            Ok(())
+        },
         select: |_, _, _| true,
     },
 ];

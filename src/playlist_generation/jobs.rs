@@ -127,14 +127,18 @@ impl Job {
         if name.trim().is_empty() || name.chars().count() > 100 {
             return Err("Use a playlist name between 1 and 100 characters".into());
         }
-        let release_scan = releases::Scan::for_period(&period);
+        let parameters = if strategy.source == Source::FollowedReleases {
+            Parameters::from([(super::INCLUDE_COMPILATIONS.into(), "false".into())])
+        } else {
+            Parameters::new()
+        };
         Ok(Self {
             version: 1,
             id: format!("{:032x}", rand::random::<u128>()),
             account,
             kind: kind_id,
             period,
-            parameters: Parameters::new(),
+            parameters,
             name,
             public,
             created_at: now(),
@@ -161,13 +165,36 @@ impl Job {
             albums_offset: 0,
             tracks_offset: 0,
             albums: BTreeSet::new(),
-            releases: release_scan,
+            releases: releases::Scan::default(),
             candidates: Vec::new(),
             added: BTreeSet::new(),
             create_intent: false,
             pending_batch: Vec::new(),
             batches_completed: 0,
         })
+    }
+
+    /// Old checkpoints did not have this option and included compilations.
+    /// New jobs always store an explicit false unless the user opts in.
+    pub fn include_compilations(&self) -> bool {
+        self.parameters
+            .get(super::INCLUDE_COMPILATIONS)
+            .is_none_or(|value| value == "true")
+    }
+
+    /// Configure a new job before any discovery cursor or selection exists.
+    pub(super) fn set_start_parameters(&mut self, parameters: Parameters) -> Result<(), String> {
+        let strategy = kind(&self.kind)?;
+        (strategy.validate)(&parameters)?;
+        self.parameters.extend(parameters);
+        if strategy.source == Source::FollowedReleases {
+            self.releases = if self.include_compilations() {
+                releases::Scan::for_period(&self.period)
+            } else {
+                releases::Scan::default()
+            };
+        }
+        Ok(())
     }
 
     pub fn view(&self) -> View {
@@ -771,13 +798,10 @@ pub async fn run(
                     }
                     match Job::new(account, kind, period, name, public) {
                         Ok(mut job) => {
-                            if let Err(error) =
-                                super::kind(&job.kind).and_then(|kind| (kind.validate)(&parameters))
-                            {
+                            if let Err(error) = job.set_start_parameters(parameters) {
                                 handle.publish(&jobs, Some(error), &waker);
                                 continue;
                             }
-                            job.parameters = parameters;
                             jobs.push(job);
                             Some(jobs.len() - 1)
                         }

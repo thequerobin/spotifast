@@ -62,6 +62,7 @@ fn tracks_job(count: u32) -> Job {
         id: "release".into(),
         date: "2025-03-15".into(),
         tracks: Some(count),
+        compilation: false,
     });
     job.stage = Stage::ReleaseTracks;
     job
@@ -281,6 +282,7 @@ fn duplicate_tracks_across_releases_are_not_selected_twice() {
         id: "second".into(),
         date: "2025-03-20".into(),
         tracks: Some(1),
+        compilation: false,
     });
     for _ in 0..2 {
         releases::apply(
@@ -455,4 +457,93 @@ async fn runtime_discovers_followed_releases_checks_likes_and_creates_the_playli
     assert_eq!(restored[0].added.len(), 1);
     assert_eq!(restored[0].state, State::Completed);
     tokio::fs::remove_dir_all(root).await.unwrap();
+}
+
+#[test]
+fn new_jobs_exclude_compilations_but_legacy_checkpoints_keep_their_choice() {
+    let mut new = job();
+    assert!(!new.include_compilations());
+    assert!(new.releases.search_query().is_none());
+    assert!(!new.releases.optimized);
+    assert!(!crash(&new).include_compilations());
+    new.set_start_parameters(Default::default()).unwrap();
+    assert!(!new.include_compilations());
+    assert!(
+        new.set_start_parameters([(super::INCLUDE_COMPILATIONS.into(), "yes".into())].into())
+            .is_err()
+    );
+    new.set_start_parameters([(super::INCLUDE_COMPILATIONS.into(), "true".into())].into())
+        .unwrap();
+    assert!(new.releases.optimized);
+    assert!(crash(&new).include_compilations());
+    let mut legacy = serde_json::to_value(new).unwrap();
+    legacy["parameters"].as_object_mut().unwrap().clear();
+    let restored: Job = serde_json::from_value(legacy).unwrap();
+    assert!(restored.include_compilations());
+}
+
+#[test]
+fn catalog_excludes_compilations_before_track_fetches_and_keeps_regular_collaborations() {
+    for included in [false, true] {
+        let mut job = job();
+        job.parameters
+            .insert(super::INCLUDE_COMPILATIONS.into(), included.to_string());
+        job.releases.artists.push("followed".into());
+        job.releases.artist_ids.insert("followed".into());
+        job.stage = Stage::ArtistReleases;
+        let mut regular = album("regular", "2025-03-15", 2);
+        regular.album_type = Some("album".into());
+        regular.album_group = Some("appears_on".into());
+        let mut compilation = album("compilation", "2025-03-16", 99);
+        compilation.album_type = Some("compilation".into());
+        // A compilation can be returned as an appearance on another artist's release.
+        compilation.album_group = Some("appears_on".into());
+        releases::apply(
+            &mut job,
+            Outcome::Albums(Page::whole(vec![regular, compilation])),
+        )
+        .unwrap();
+        let restored = crash(&job);
+        assert_eq!(restored.releases.albums.len(), if included { 2 } else { 1 });
+        assert_eq!(restored.releases.albums[0].id, "regular");
+        assert_eq!(restored.tracks_total, Some(if included { 101 } else { 2 }));
+        assert_eq!(restored.include_compilations(), included);
+    }
+}
+
+#[tokio::test]
+async fn catalog_request_omits_compilation_group_and_never_loads_excluded_tracks() {
+    for included in [false, true] {
+        let mut job = job();
+        job.parameters
+            .insert(super::INCLUDE_COMPILATIONS.into(), included.to_string());
+        job.releases.artists.push("followed".into());
+        job.releases.artist_ids.insert("followed".into());
+        job.stage = Stage::ArtistReleases;
+        let mut compilation = album("compilation", "2025-03-16", 99);
+        compilation.album_type = Some("compilation".into());
+        let groups = if included {
+            "GET /artists/followed/albums?include_groups=album%2Csingle%2Cappears_on%2Ccompilation&"
+        } else {
+            "GET /artists/followed/albums?include_groups=album%2Csingle%2Cappears_on&"
+        };
+        let (client, server) = super::tests::server(vec![(
+            groups,
+            "200 OK",
+            serde_json::to_string(&Page::whole(vec![compilation])).unwrap(),
+        )])
+        .await;
+        let outcome = releases::execute(&client, &job, &releases::Step::Albums)
+            .await
+            .unwrap();
+        releases::apply(&mut job, outcome).unwrap();
+        if included {
+            assert_eq!(job.stage, Stage::ReleaseTracks);
+        } else {
+            assert_eq!(job.stage, Stage::Create);
+            assert!(job.releases.albums.is_empty());
+            assert!(matches!(jobs::prepare(&mut job), jobs::Step::Finish));
+        }
+        server.await.unwrap();
+    }
 }

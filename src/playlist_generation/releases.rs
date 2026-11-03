@@ -12,12 +12,15 @@ pub struct Release {
     pub id: String,
     pub date: String,
     pub tracks: Option<u32>,
+    #[serde(default)]
+    pub compilation: bool,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Scan {
-    // Legacy checkpoints keep their original catalog traversal. New jobs use
-    // indexed discovery only for a bounded calendar interval.
+    // Legacy checkpoints keep their original traversal. New jobs use indexed
+    // discovery only for bounded intervals when compilations are included;
+    // track search cannot exclude compilation releases on the server.
     #[serde(default)]
     pub optimized: bool,
     #[serde(default)]
@@ -138,7 +141,9 @@ fn accept(job: &mut Job, releases: Vec<Release>) {
             continue;
         }
         job.albums_checked += 1;
-        if job.period.overlaps_release(&release.date) {
+        if job.period.overlaps_release(&release.date)
+            && (job.include_compilations() || !release.compilation)
+        {
             job.releases.matched += 1;
             job.releases.albums.push_back(release);
         }
@@ -237,7 +242,11 @@ pub async fn execute(client: &ApiClient, job: &Job, step: &Step) -> Result<Outco
                 client
                     .artist_albums(
                         artist,
-                        "album,single,appears_on,compilation",
+                        if job.include_compilations() {
+                            "album,single,appears_on,compilation"
+                        } else {
+                            "album,single,appears_on"
+                        },
                         scan.album_offset,
                         50,
                     )
@@ -398,6 +407,8 @@ pub fn apply(job: &mut Job, outcome: Outcome) -> Result<(), ApiError> {
                     id: album.id.clone(),
                     date: date.clone(),
                     tracks: album.total_tracks,
+                    compilation: album.album_type.as_deref() == Some("compilation")
+                        || album.album_group.as_deref() == Some("compilation"),
                 });
             }
             job.releases.search_total = Some(page.total);
@@ -405,7 +416,8 @@ pub fn apply(job: &mut Job, outcome: Outcome) -> Result<(), ApiError> {
             for release in releases {
                 if let Some(previous) = job.releases.buffer.iter().find(|old| old.id == release.id)
                 {
-                    if previous.date != release.date {
+                    if previous.date != release.date || previous.compilation != release.compilation
+                    {
                         fallback(job);
                         return Ok(());
                     }
@@ -450,6 +462,8 @@ pub fn apply(job: &mut Job, outcome: Outcome) -> Result<(), ApiError> {
                         .filter(|date| Period::release_period(date).is_some())
                         .unwrap_or_default();
                     Release {
+                        compilation: album.album_type.as_deref() == Some("compilation")
+                            || album.album_group.as_deref() == Some("compilation"),
                         id: album.id,
                         date,
                         tracks: album.total_tracks,

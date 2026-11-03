@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-10-30 10:39-0300\n"
+"POT-Creation-Date: 2026-11-03 14:02-0300\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Japanese\n"
@@ -49,7 +49,7 @@ msgid "Recently played"
 msgstr "最近再生した順"
 
 #: src/ui/sidebar.rs:358 src/ui/dialogs.rs:383 src/ui/dialogs.rs:540
-#: src/ui/playlist_generation.rs:93
+#: src/ui/playlist_generation.rs:95
 msgid "Name"
 msgstr "名前順"
 
@@ -261,7 +261,7 @@ msgid "Loading…"
 msgstr "読み込み中…"
 
 #: src/ui/player_bar.rs:800 src/ui/friends.rs:208 src/ui/collection.rs:371
-#: src/ui/playlist_generation.rs:346
+#: src/ui/playlist_generation.rs:360
 msgid "Pause"
 msgstr "一時停止"
 
@@ -332,7 +332,7 @@ msgstr "履歴"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:81
 #: src/ui/friends.rs:65 src/ui/mod.rs:685 src/window.rs:35
-#: src/ui/playlist_generation.rs:130
+#: src/ui/playlist_generation.rs:132
 msgid "Close"
 msgstr "閉じる"
 
@@ -550,7 +550,7 @@ msgid "Artist and song title"
 msgstr "アーティスト名と曲名"
 
 #: src/ui/widgets.rs:1234 src/ui/widgets.rs:1346 src/ui/prerelease.rs:271
-#: src/ui/playlist_generation.rs:355
+#: src/ui/playlist_generation.rs:369
 msgid "Open in Spotify"
 msgstr "Spotifyで開く"
 
@@ -3004,7 +3004,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "「{name}」はマイライブラリに表示されなくなります。"
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:266 src/ui/playlist_generation.rs:348
+#: src/ui/dialogs.rs:623 src/ui/login.rs:266 src/ui/playlist_generation.rs:362
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -3086,7 +3086,7 @@ msgid "My playlist"
 msgstr "マイプレイリスト"
 
 #: src/ui/dialogs.rs:398 src/ui/dialogs.rs:401 src/ui/dialogs.rs:588
-#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:96
+#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:98
 msgid "Public playlist"
 msgstr "公開プレイリスト"
 
@@ -4192,15 +4192,15 @@ msgstr ""
 "アルバムやシングルの発売日を使い、お気に入りの曲を除外します。フォロー中の"
 "アーティストの曲のみ含めます。"
 
-#: src/ui/playlist_generation.rs:53
+#: src/ui/playlist_generation.rs:55
 msgid "Release period"
 msgstr "リリース期間"
 
-#: src/ui/playlist_generation.rs:55
+#: src/ui/playlist_generation.rs:57
 msgid "Liked songs period (UTC)"
 msgstr "「いいね」した曲の期間（UTC）"
 
-#: src/ui/playlist_generation.rs:59
+#: src/ui/playlist_generation.rs:61
 msgid ""
 "Select a year, then optionally a month and day. Leave both years as Any for "
 "all dates. A start alone selects that whole period."
@@ -4208,15 +4208,15 @@ msgstr ""
 "年を選択し、必要に応じて月と日を指定します。両方の年を「すべて」にすると全日"
 "付が対象になります。開始のみを指定すると、その期間全体を選択します。"
 
-#: src/ui/playlist_generation.rs:66
+#: src/ui/playlist_generation.rs:68
 msgid "From"
 msgstr "開始"
 
-#: src/ui/playlist_generation.rs:74
+#: src/ui/playlist_generation.rs:76
 msgid "To"
 msgstr "終了"
 
-#: src/ui/playlist_generation.rs:106
+#: src/ui/playlist_generation.rs:108
 msgid ""
 "Estimated API cost: high and variable (artists, releases and track pages). "
 "Cached discoveries reduce repeated work."
@@ -4224,7 +4224,7 @@ msgstr ""
 "API使用量の目安：高く、変動します（アーティスト、リリース、曲のページ）。"
 "キャッシュで重複取得を減らします。"
 
-#: src/ui/playlist_generation.rs:108
+#: src/ui/playlist_generation.rs:110
 msgid ""
 "Estimated API cost: medium; about one request per 50 library entries, plus "
 "playlist batches. Exact size is not known yet."
@@ -4232,11 +4232,11 @@ msgstr ""
 "API使用量の目安：中程度。ライブラリ50件ごとに約1回のリクエストと、プレイリス"
 "トへの一括追加が必要です。正確な件数はまだ不明です。"
 
-#: src/ui/playlist_generation.rs:113
+#: src/ui/playlist_generation.rs:115
 msgid "Start generation"
 msgstr "生成を開始"
 
-#: src/ui/playlist_generation.rs:128
+#: src/ui/playlist_generation.rs:130
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
@@ -4244,111 +4244,115 @@ msgstr ""
 "バッチごとに進捗が保存されます。終了すると、次回の起動まで処理が一時停止しま"
 "す。"
 
-#: src/ui/playlist_generation.rs:205
+#: src/ui/playlist_generation.rs:145
+msgid "Include compilations"
+msgstr ""
+
+#: src/ui/playlist_generation.rs:219
 msgid "Year"
 msgstr "年"
 
-#: src/ui/playlist_generation.rs:215
+#: src/ui/playlist_generation.rs:229
 msgid "Month"
 msgstr "月"
 
-#: src/ui/playlist_generation.rs:227
+#: src/ui/playlist_generation.rs:241
 msgid "Day"
 msgstr "日"
 
-#: src/ui/playlist_generation.rs:255
+#: src/ui/playlist_generation.rs:269
 msgid "Any"
 msgstr "すべて"
 
-#: src/ui/playlist_generation.rs:295
+#: src/ui/playlist_generation.rs:309
 msgid "Playlist generations"
 msgstr "プレイリストの生成履歴"
 
-#: src/ui/playlist_generation.rs:300
+#: src/ui/playlist_generation.rs:314
 msgid "Reading followed artists"
 msgstr "フォロー中のアーティストを読み込み中"
 
-#: src/ui/playlist_generation.rs:301
+#: src/ui/playlist_generation.rs:315
 msgid "Finding releases for the period"
 msgstr "期間内のリリースを検索中"
 
-#: src/ui/playlist_generation.rs:302
+#: src/ui/playlist_generation.rs:316
 msgid "Checking release tracks and likes"
 msgstr "収録曲とお気に入りを確認中"
 
-#: src/ui/playlist_generation.rs:303
+#: src/ui/playlist_generation.rs:317
 msgid "Reading saved albums"
 msgstr "保存済みアルバムを読み込み中"
 
-#: src/ui/playlist_generation.rs:304
+#: src/ui/playlist_generation.rs:318
 msgid "Reading liked songs"
 msgstr "お気に入りの曲を読み込み中"
 
-#: src/ui/playlist_generation.rs:305
+#: src/ui/playlist_generation.rs:319
 msgid "Creating playlist"
 msgstr "プレイリストを作成中"
 
-#: src/ui/playlist_generation.rs:306
+#: src/ui/playlist_generation.rs:320
 msgid "Adding songs"
 msgstr "曲を追加中"
 
-#: src/ui/playlist_generation.rs:307
+#: src/ui/playlist_generation.rs:321
 msgid "Finished"
 msgstr "終了"
 
-#: src/ui/playlist_generation.rs:310
+#: src/ui/playlist_generation.rs:324
 msgid "Pending"
 msgstr "待機中"
 
-#: src/ui/playlist_generation.rs:310
+#: src/ui/playlist_generation.rs:324
 msgid "Running"
 msgstr "実行中"
 
-#: src/ui/playlist_generation.rs:311
+#: src/ui/playlist_generation.rs:325
 msgid "Paused"
 msgstr "一時停止中"
 
-#: src/ui/playlist_generation.rs:311
+#: src/ui/playlist_generation.rs:325
 msgid "Paused: Spotify quota"
 msgstr "一時停止：Spotifyの利用枠"
 
-#: src/ui/playlist_generation.rs:311
+#: src/ui/playlist_generation.rs:325
 msgid "Retrying"
 msgstr "再試行待ち"
 
-#: src/ui/playlist_generation.rs:312
+#: src/ui/playlist_generation.rs:326
 msgid "Completed"
 msgstr "完了"
 
-#: src/ui/playlist_generation.rs:312
+#: src/ui/playlist_generation.rs:326
 msgid "Failed"
 msgstr "失敗"
 
-#: src/ui/playlist_generation.rs:313
+#: src/ui/playlist_generation.rs:327
 msgid "Cancelled"
 msgstr "キャンセル済み"
 
-#: src/ui/playlist_generation.rs:317
+#: src/ui/playlist_generation.rs:331
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "アーティスト：{artists}/{total}"
 
-#: src/ui/playlist_generation.rs:323
+#: src/ui/playlist_generation.rs:337
 msgid "Discovering total work…"
 msgstr "作業の総量を確認中…"
 
-#: src/ui/playlist_generation.rs:326
+#: src/ui/playlist_generation.rs:340
 #, rust-format
 msgid "Unique releases checked: {checked} · Within period: {matched}"
 msgstr "確認済みの固有リリース：{checked} · 期間内：{matched}"
 
-#: src/ui/playlist_generation.rs:329
+#: src/ui/playlist_generation.rs:343
 #, rust-format
 msgid ""
 "Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
 msgstr "解析済みの曲：{analyzed}/{total} · 選択：{selected} · 追加：{added}"
 
-#: src/ui/playlist_generation.rs:334
+#: src/ui/playlist_generation.rs:348
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -4357,48 +4361,48 @@ msgstr ""
 "分析済み：{analyzed}/{total} · アルバム：{albums} · 選択済み：{selected} · 追"
 "加済み：{added}"
 
-#: src/ui/playlist_generation.rs:340
+#: src/ui/playlist_generation.rs:354
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "経過時間：{elapsed} · 推定残り時間：{remaining}"
 
-#: src/ui/playlist_generation.rs:347
+#: src/ui/playlist_generation.rs:361
 msgid "Resume"
 msgstr "再開"
 
-#: src/ui/playlist_generation.rs:367
+#: src/ui/playlist_generation.rs:381
 msgid "API cost manager"
 msgstr "API使用量管理"
 
-#: src/ui/playlist_generation.rs:369
+#: src/ui/playlist_generation.rs:383
 msgid "Official remaining quota: not provided by Spotify"
 msgstr "公式の残り利用枠：Spotifyから提供されていません"
 
-#: src/ui/playlist_generation.rs:370
+#: src/ui/playlist_generation.rs:384
 msgid "Requests in the last 30 seconds / local budget"
 msgstr "直近30秒のリクエスト数 / ローカル予算"
 
-#: src/ui/playlist_generation.rs:371
+#: src/ui/playlist_generation.rs:385
 msgid "Effective dispatch rate (last 30 seconds)"
 msgstr "実際の送信レート（直近30秒）"
 
-#: src/ui/playlist_generation.rs:372
+#: src/ui/playlist_generation.rs:386
 msgid "Queued (high / medium / low)"
 msgstr "待機列（高 / 中 / 低）"
 
-#: src/ui/playlist_generation.rs:373
+#: src/ui/playlist_generation.rs:387
 msgid "In flight"
 msgstr "実行中"
 
-#: src/ui/playlist_generation.rs:374
+#: src/ui/playlist_generation.rs:388
 msgid "Global cooldown remaining"
 msgstr "全体の待機時間の残り"
 
-#: src/ui/playlist_generation.rs:376
+#: src/ui/playlist_generation.rs:390
 msgid "Catalog cache hits / reads"
 msgstr "キャッシュヒット / カタログ参照"
 
-#: src/ui/playlist_generation.rs:385
+#: src/ui/playlist_generation.rs:399
 msgid ""
 "Limits and cost are local estimates. Other applications and devices can "
 "consume Spotify quota too."
@@ -4406,7 +4410,7 @@ msgstr ""
 "制限と使用量はローカルの推定値です。他のアプリや端末もSpotifyの利用枠を消費す"
 "る場合があります。"
 
-#: src/ui/playlist_generation.rs:403
+#: src/ui/playlist_generation.rs:417
 msgid ""
 "Spotify quota exhausted. Jobs remain checkpointed. No reset time is known. "
 "Check the developer dashboard before trying again."
@@ -4414,15 +4418,15 @@ msgstr ""
 "Spotifyの利用枠を使い切りました。進捗は保存されています。更新時刻は不明です。"
 "再試行する前に開発者ダッシュボードを確認してください。"
 
-#: src/ui/playlist_generation.rs:405
+#: src/ui/playlist_generation.rs:419
 msgid "Spotify developer dashboard"
 msgstr "Spotify開発者ダッシュボード"
 
-#: src/ui/playlist_generation.rs:408
+#: src/ui/playlist_generation.rs:422
 msgid "Allow quota recheck"
 msgstr "利用枠の再確認を許可"
 
-#: src/ui/playlist_generation.rs:413
+#: src/ui/playlist_generation.rs:427
 msgid ""
 "Then resume paused jobs. A new quota rejection will pause requests again."
 msgstr ""

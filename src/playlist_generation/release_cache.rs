@@ -21,6 +21,7 @@ struct Key {
     account: String,
     artist: String,
     year: Option<u16>,
+    include_compilations: bool,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -30,12 +31,13 @@ struct Entry {
     releases: Vec<Release>,
 }
 
-fn key(account: &str, artist: &str, year: Option<u16>) -> Key {
+fn key(account: &str, artist: &str, year: Option<u16>, include_compilations: bool) -> Key {
     Key {
-        version: 1,
+        version: 2,
         account: account.into(),
         artist: artist.into(),
         year,
+        include_compilations,
     }
 }
 
@@ -70,7 +72,7 @@ fn fresh(entry: &Entry, key: &Key, time: u64) -> bool {
 
 pub async fn read(root: &Path, job: &Job) -> Option<Outcome> {
     let (artist, year) = job.releases.cache_key()?;
-    let key = key(&job.account, &artist, year);
+    let key = key(&job.account, &artist, year, job.include_compilations());
     let path = path(root, &key)?;
     if tokio::fs::metadata(&path).await.ok()?.len() > MAX_BYTES {
         return None;
@@ -84,7 +86,12 @@ pub async fn flush(root: &Path, job: &mut Job) {
     let Some(write) = job.releases.pending_cache.take() else {
         return;
     };
-    let key = key(&job.account, &write.artist, write.year);
+    let key = key(
+        &job.account,
+        &write.artist,
+        write.year,
+        job.include_compilations(),
+    );
     let Some(path) = path(root, &key) else {
         return;
     };
@@ -148,9 +155,9 @@ mod tests {
 
     #[test]
     fn expiry_future_timestamps_and_cache_key_tampering_are_rejected() {
-        let expected_key = key("account", "artist", None);
+        let expected_key = key("account", "artist", None, false);
         let mut entry = Entry {
-            key: key("account", "artist", None),
+            key: key("account", "artist", None, false),
             stored_at: 1000,
             releases: Vec::new(),
         };
@@ -159,5 +166,23 @@ mod tests {
         assert!(!fresh(&entry, &expected_key, 999));
         entry.key.account = "another".into();
         assert!(!fresh(&entry, &expected_key, 1001));
+    }
+}
+
+#[cfg(test)]
+mod compilation_cache_tests {
+    use super::*;
+
+    #[test]
+    fn compilation_choices_and_untyped_legacy_entries_cannot_share_cache_paths() {
+        let with = key("listener", "artist", Some(2025), true);
+        let without = key("listener", "artist", Some(2025), false);
+        assert_ne!(
+            path(Path::new("cache"), &with),
+            path(Path::new("cache"), &without)
+        );
+        let legacy =
+            serde_json::json!({"version":1,"account":"listener","artist":"artist","year":2025});
+        assert!(serde_json::from_value::<Key>(legacy).is_err());
     }
 }

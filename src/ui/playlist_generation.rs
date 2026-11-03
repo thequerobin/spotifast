@@ -47,6 +47,8 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
     }
     if kind(&draft.kind).is_ok_and(|kind| kind.source == Source::FollowedReleases) {
         ui.label(gettext(locale, "Uses album/single release dates and excludes liked songs. Only tracks by followed artists are included."));
+        compilation_option(ui, locale, &mut draft.parameters);
+        ui.add_space(8.0);
     }
     let release_dates = kind(&draft.kind).is_ok_and(|kind| kind.source == Source::FollowedReleases);
     ui.label(if release_dates {
@@ -131,6 +133,18 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
         app.actions.push(Action::CloseDialog);
     }
     false
+}
+
+fn compilation_option(
+    ui: &mut egui::Ui,
+    locale: Locale,
+    parameters: &mut Parameters,
+) -> egui::Response {
+    let key = crate::playlist_generation::INCLUDE_COMPILATIONS;
+    let mut included = parameters.get(key).is_some_and(|value| value == "true");
+    let response = ui.checkbox(&mut included, gettext(locale, "Include compilations"));
+    parameters.insert(key.into(), included.to_string());
+    response
 }
 
 /// UI order is year/month/day; persisted periods retain their existing format.
@@ -524,5 +538,66 @@ mod date_selector_tests {
         date.year = None;
         date.normalize();
         assert_eq!(date, DateSelection::default());
+    }
+}
+
+#[cfg(test)]
+mod compilation_option_tests {
+    use super::*;
+
+    #[test]
+    fn checkbox_defaults_off_and_user_can_enable_and_disable_it() {
+        for width in [280.0, 420.0] {
+            for dark in [false, true] {
+                let ctx = egui::Context::default();
+                ctx.set_visuals(if dark {
+                    egui::Visuals::dark()
+                } else {
+                    egui::Visuals::light()
+                });
+                let mut parameters = Parameters::new();
+                let mut center = egui::Pos2::ZERO;
+                for click in [false, true, true] {
+                    let input = egui::RawInput {
+                        screen_rect: Some(egui::Rect::from_min_size(
+                            egui::Pos2::ZERO,
+                            egui::vec2(width, 200.0),
+                        )),
+                        events: if click {
+                            vec![
+                                egui::Event::PointerMoved(center),
+                                egui::Event::PointerButton {
+                                    pos: center,
+                                    button: egui::PointerButton::Primary,
+                                    pressed: true,
+                                    modifiers: Default::default(),
+                                },
+                                egui::Event::PointerButton {
+                                    pos: center,
+                                    button: egui::PointerButton::Primary,
+                                    pressed: false,
+                                    modifiers: Default::default(),
+                                },
+                            ]
+                        } else {
+                            Vec::new()
+                        },
+                        ..Default::default()
+                    };
+                    let before = parameters
+                        .get(crate::playlist_generation::INCLUDE_COMPILATIONS)
+                        .is_some_and(|v| v == "true");
+                    let _ = ctx.run_ui(input, |ui| {
+                        let right = ui.max_rect().right();
+                        let response = compilation_option(ui, Locale::English, &mut parameters);
+                        center = response.rect.center();
+                        assert!(response.rect.right() <= right + 0.5);
+                    });
+                    let after =
+                        parameters[crate::playlist_generation::INCLUDE_COMPILATIONS] == "true";
+                    assert_eq!(after, if click { !before } else { false });
+                }
+            }
+        }
     }
 }
