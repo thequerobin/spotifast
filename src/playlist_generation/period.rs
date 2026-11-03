@@ -145,11 +145,11 @@ impl Period {
         let start = self.start.trim().replace('/', "-");
         let end = self.end.trim().replace('/', "-");
         match (start.is_empty(), end.is_empty()) {
-            (true, true) => "Todas".into(),
+            (true, true) => "All".into(),
             (false, true) => start,
-            (true, false) => format!("até {end}"),
+            (true, false) => format!("Through {end}"),
             _ if start == end => start,
-            _ => format!("{start} a {end}"),
+            _ => format!("{start} to {end}"),
         }
     }
 }

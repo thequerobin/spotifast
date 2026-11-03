@@ -205,13 +205,14 @@ Spotify is a trademark of Spotify AB.
 Licensed under the [MIT License](LICENSE).
 
 ## Playlist generation
-MCANS playlist generation selects liked songs whose albums are not saved,
-with optional calendar periods, editable names and resumable desktop jobs.
-**Músicas Não Curtidas de Álbuns Salvos** reads the songs of your saved albums
+**Liked Songs from Unsaved Albums (LSUA)** selects liked songs whose albums
+are not saved, with optional calendar periods, editable names and resumable jobs.
+**Unliked Songs from Saved Albums (USSA)** reads the songs of your saved albums
 and includes only those you have not liked. Optional periods use the album's
 saved date in UTC. Duplicates and unavailable tracks are skipped.
-MNCAS selects unliked songs from followed artists by album/single release
-date, with the same persistent progress and recovery. **Include compilations**
+**Unliked Songs from Followed Artists (USFA)** selects unliked songs from
+followed artists by album/single release date, with the same persistent progress
+and recovery. **Include compilations**
 is off by default: the artist catalog is filtered before fetching tracks.
 Opting in also enables artist/year discovery for bounded periods. Discovery
 caches are scoped to the Spotify account and compilation choice.

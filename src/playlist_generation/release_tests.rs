@@ -93,11 +93,11 @@ fn release_calendar_precision_and_inclusive_intersections() {
     assert!(!Period::default().overlaps_release("unknown"));
     assert_eq!(
         default_name("unliked-followed-releases", &Period::default()).unwrap(),
-        "MNCAS - Todas"
+        "USFA - All"
     );
     assert_eq!(
         default_name("unliked-followed-releases", &period).unwrap(),
-        "MNCAS - 15-03-2025 a 20-03-2025"
+        "USFA - 15-03-2025 to 20-03-2025"
     );
 }
 

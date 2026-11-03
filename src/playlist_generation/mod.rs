@@ -48,8 +48,8 @@ pub struct Kind {
 pub static KINDS: &[Kind] = &[
     Kind {
         id: "mcans",
-        label: "Músicas Curtidas de Álbuns Não Salvos (MCANS)",
-        prefix: "MCANS",
+        label: "Liked Songs from Unsaved Albums (LSUA)",
+        prefix: "LSUA",
         source: Source::LikedTracks,
         needs_albums: true,
         fields: &[],
@@ -64,8 +64,8 @@ pub static KINDS: &[Kind] = &[
     },
     Kind {
         id: "unliked-followed-releases",
-        label: "Músicas Não Curtidas de Artistas Seguidos (MNCAS)",
-        prefix: "MNCAS",
+        label: "Unliked Songs from Followed Artists (USFA)",
+        prefix: "USFA",
         source: Source::FollowedReleases,
         needs_albums: false,
         fields: &[],
@@ -82,8 +82,8 @@ pub static KINDS: &[Kind] = &[
     },
     Kind {
         id: "unliked-saved-albums",
-        label: "Músicas Não Curtidas de Álbuns Salvos",
-        prefix: "Álbuns Salvos - Não Curtidas",
+        label: "Unliked Songs from Saved Albums (USSA)",
+        prefix: "USSA",
         source: Source::SavedAlbumTracks,
         needs_albums: true,
         fields: &[],

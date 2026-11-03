@@ -4,9 +4,9 @@ description: Liked songs, unliked saved-album tracks and followed-artist release
 nav_order: 12
 ---
 
-## Unliked songs from saved albums
+## Unliked songs from saved albums (USSA)
 
-In **Create a playlist**, select **Músicas Não Curtidas de Álbuns Salvos**.
+In **Create a playlist**, select **Unliked Songs from Saved Albums (USSA)**.
 With both years set to **Any**, this mode reads all saved albums and includes
 their playable songs that are not individually liked. It does not depend on
 followed artists. A saved album does not mean every song on it is liked.
@@ -14,7 +14,7 @@ followed artists. A saved album does not mean every song on it is liked.
 An optional period filters the album's **saved date in UTC**, not its release
 date. Albums outside the period are discarded before any track or membership
 requests. With no period, albums without a saved timestamp remain eligible.
-The suggested name is **Álbuns Salvos - Não Curtidas - {period}** and is editable.
+The suggested name is **USSA - {period}** and is editable.
 
 Saved albums are read 50 to a page, then each selected album's tracks are read
 40 to a page. Playable song URIs are checked against Spotify's liked-song
@@ -32,10 +32,10 @@ same worker as the other modes. History shows albums read and songs analyzed,
 selected and added. No matches completes without creating an empty playlist.
 Results use newest album-save time first, retaining track order for ties.
 
-## Unliked releases from followed artists (MNCAS)
+## Unliked releases from followed artists (USFA)
 
-Select **Músicas Não Curtidas de Artistas Seguidos (MNCAS)** in the existing
-playlist creation form. The default name is `MNCAS - {period}` and remains
+Select **Unliked Songs from Followed Artists (USFA)** in the existing
+playlist creation form. The default name is `USFA - {period}` and remains
 editable. Leaving both years as **Any** includes all available releases.
 
 **Include compilations** starts unchecked. With it unchecked, discovery uses
@@ -115,23 +115,23 @@ skipped. Keep follows and likes stable during a run for consistent results.
 The followed-artist cursor, artist index, release-page offset, unique album
 queue, track offset and selected songs are checkpointed after each page.
 HTTP 429, network retries, pause/resume, playlist reconciliation and library
-synchronization use the same worker as MCANS. The history identifies each
+synchronization use the same worker as LSUA. The history identifies each
 discovery stage and shows artists processed, releases scanned and tracks
 analyzed. Discovery has indeterminate progress until the actual workload is
 known. Large catalogues can take substantial time and API requests, even
 when a narrow date range excludes most tracks.
 
-## Creating an MCANS playlist
+## Creating an LSUA playlist
 
-Open **Create a playlist** using the plus in Your Library, select **Músicas
-Curtidas de Álbuns Não Salvos (MCANS)**, enter an optional period, edit the
+Open **Create a playlist** using the plus in Your Library, select **Liked Songs
+from Unsaved Albums (LSUA)**, enter an optional period, edit the
 suggested name and choose **Start generation**. The manual playlist form is
 still available in the same selector. Generation history appears below the
 form, including after restarting Spotifast. Pause, resume and cancel operate
 on individual jobs. Cancelling keeps any playlist and songs already created
 in Spotify; it does not delete remote content. Cancelled jobs remain in history.
 
-MCANS reads all saved albums and liked songs through the existing verified
+LSUA reads all saved albums and liked songs through the existing verified
 Web API grant. It excludes a liked song only when that song's album ID is
 in the saved-album library. Liking another song never saves its album for
 this comparison. Different editions have different Spotify album IDs and
@@ -151,8 +151,8 @@ restored merely because their generation remains in history.
 
 ## Periods and names
 
-MCANS uses **UTC** for like timestamps. The saved-album mode uses **UTC** for
-album-save timestamps. MNCAS uses release calendar dates.
+LSUA uses **UTC** for like timestamps. USSA uses **UTC** for
+album-save timestamps. USFA uses release calendar dates.
 Use the **Year**, **Month**, **Day** selectors, in that order, for each
 endpoint. **Any** year removes that endpoint; selecting a year enables the
 optional month, and selecting a month enables the optional day. Clearing a
@@ -168,9 +168,9 @@ includes January 1, 2024 through June 30, 2025, inclusive. An end alone
 has no lower bound. Both years set to **Any** means no filter. Invalid dates,
 non-leap February 29 and reversed intervals are refused before starting.
 
-Suggested names use `MCANS - {period}`, `MNCAS - {period}` or
-`Álbuns Salvos - Não Curtidas - {period}`, with slashes replaced by hyphens,
-` a ` between endpoints and `Todas` for an unfiltered job. A custom name
+Suggested names use `LSUA - {period}`, `USFA - {period}` or `USSA - {period}`.
+Dates use hyphens in place of slashes. The period uses ` to ` between endpoints,
+`Through` for an end-only period, and `All` for an unfiltered job. A custom name
 is retained when the period changes. Names must contain 1 to 100 characters.
 
 ## Execution and recovery
@@ -311,7 +311,7 @@ Checked against the current official documentation:
   numerical allowance. Respect its response and `Retry-After`.
 - [Development Mode changes](https://developer.spotify.com/documentation/web-api/tutorials/february-2026-migration-guide)
   require Premium for the app owner and limit newly added accounts. These
-  are Spotify account/app restrictions, not limits imposed by MCANS.
+  are Spotify account/app restrictions, not limits imposed by LSUA.
 
 The existing OAuth scopes already include `user-library-read`,
 `playlist-read-private`, `playlist-modify-private` and `playlist-modify-public`.

@@ -54,7 +54,7 @@ fn saved_album_period_uses_saved_time_in_utc_and_survives_paginated_restart() {
     job.period.start = "03/2025".into();
     assert_eq!(
         default_name("unliked-saved-albums", &Period::default()).unwrap(),
-        "Álbuns Salvos - Não Curtidas - Todas"
+        "USSA - All"
     );
     assert_eq!(job.stage, Stage::Albums);
     assert!(matches!(jobs::prepare(&mut job), Step::Albums));

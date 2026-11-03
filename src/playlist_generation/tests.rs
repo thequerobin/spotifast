@@ -117,17 +117,18 @@ fn invalid_dates_and_reversed_ranges() {
 #[test]
 fn default_names_preserve_precision() {
     for (start, end, expected) in [
-        ("", "", "Todas"),
+        ("", "", "All"),
+        ("", "03/2025", "Through 03-2025"),
         ("2025", "", "2025"),
         ("03/2025", "", "03-2025"),
         ("15/03/2025", "", "15-03-2025"),
-        ("2023", "2025", "2023 a 2025"),
-        ("03/2025", "08/2025", "03-2025 a 08-2025"),
-        ("15/03/2025", "20/08/2025", "15-03-2025 a 20-08-2025"),
+        ("2023", "2025", "2023 to 2025"),
+        ("03/2025", "08/2025", "03-2025 to 08-2025"),
+        ("15/03/2025", "20/08/2025", "15-03-2025 to 20-08-2025"),
     ] {
         assert_eq!(
             default_name("mcans", &period(start, end)).unwrap(),
-            format!("MCANS - {expected}")
+            format!("LSUA - {expected}")
         );
     }
     assert!(default_name("unknown", &Period::default()).is_err());
