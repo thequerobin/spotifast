@@ -66,7 +66,7 @@ pub fn show(app: &mut App, ui: &mut egui::Ui) {
             // Its empty space is the visualizer's control, as Winamp's
             // visualizer was: a click moves to the next mode. The controls
             // drawn after it take their own clicks.
-            if app.settings.player_bar_vis_click && app.audio_processing_available() {
+            if app.settings.player_bar_vis_click && app.visualizers_available() {
                 let empty = ui.interact(
                     behind,
                     ui.id().with("player-bar-visualizer"),
@@ -769,10 +769,14 @@ fn transport(app: &mut App, ui: &mut egui::Ui, now: Option<&NowPlaying>, region:
 
     let disc = slot(widths[2]);
     if loading || app.any_play_pending() {
-        ui.painter()
-            .circle_filled(disc.center(), 18.0, palette.text);
         let mut cell = centered(ui, disc);
-        theme::spinner(&mut cell, 22.0, palette.window);
+        theme::circle_spinner(
+            &mut cell,
+            36.0,
+            palette.text,
+            palette.window,
+            &gettext(app.locale, "Loading…"),
+        );
     } else {
         let icon = if playing {
             Icon::PauseFilled
@@ -913,6 +917,16 @@ fn transport(app: &mut App, ui: &mut egui::Ui, now: Option<&NowPlaying>, region:
     );
 }
 
+/// What the right of the bar always holds, in points: the volume slider and
+/// its button, the devices, queue and lyrics buttons, and the gaps.
+const EXTRAS_WIDTH: f32 = 92.0 + 4.0 * (18.0 + theme::ICON_BUTTON_PAD) + 4.0 * 6.0 + 4.0;
+
+/// Whether the full screen button has room beside the rest, keeping clear of
+/// the transport, with `room` points to the right of it.
+fn full_screen_button_fits(room: f32) -> bool {
+    room >= EXTRAS_WIDTH + 18.0 + theme::ICON_BUTTON_PAD + 6.0 + TRANSPORT_GAP
+}
+
 fn extras(app: &mut App, ui: &mut egui::Ui, now: Option<&NowPlaying>, transport_right: f32) {
     let palette = app.palette;
     ui.spacing_mut().item_spacing.x = 6.0;
@@ -927,6 +941,20 @@ fn extras(app: &mut App, ui: &mut egui::Ui, now: Option<&NowPlaying>, transport_
     // volume changes from other apps: show their volume but don't offer to
     // change it.
     let adjustable = !app.soloist_waiting() && now.is_none_or(|now| now.can_set_volume);
+    // The bar's last control, right of the volume, like Spotify's. It gives
+    // way before anything else, once Listening activity has; **F** stays.
+    let room = ui.max_rect().right() - transport_right;
+    if full_screen_button_fits(room) {
+        let inside = app.lyrics_fullscreen.is_some();
+        let (icon, tip) = if inside {
+            (Icon::Shrink, gettext(app.locale, "Leave full screen (Esc)"))
+        } else {
+            (Icon::Expand, gettext(app.locale, "Full screen lyrics"))
+        };
+        if theme::icon_button(ui, icon, 18.0, palette.secondary, palette.text, &tip).clicked() {
+            app.actions.push(Action::SetLyricsFullscreen(!inside));
+        }
+    }
     let controls = ui.add_enabled_ui(adjustable, |ui| {
         match thin_slider(
             ui,
@@ -939,11 +967,8 @@ fn extras(app: &mut App, ui: &mut egui::Ui, now: Option<&NowPlaying>, transport_
         ) {
             SliderEvent::Dragging(value) => {
                 app.volume_preview = Some(value);
-                // Local volume is cheap to apply continuously; remote goes on release.
-                if now.is_none_or(|now| now.local) {
-                    app.actions
-                        .push(Action::PreviewVolume((value * 100.0).round() as u8));
-                }
+                app.actions
+                    .push(Action::PreviewVolume((value * 100.0).round() as u8));
             }
             SliderEvent::Committed(value) => {
                 app.volume_preview = None;
@@ -1256,5 +1281,12 @@ mod player_bar_tint_tests {
 
         let accent = Color32::from_rgb(30, 215, 96);
         assert_eq!(vis_colours(None, accent, true).len(), 2);
+    }
+
+    /// A window too narrow for it loses the button, not the volume.
+    #[test]
+    fn the_full_screen_button_goes_when_the_bar_is_tight() {
+        assert!(full_screen_button_fits(320.0));
+        assert!(!full_screen_button_fits(200.0));
     }
 }

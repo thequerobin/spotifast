@@ -57,7 +57,9 @@ struct Cli {
     /// `library-list-narrow`, `library-list-wide`, `library-grid`, `library-grid-narrow`,
     /// `library-grid-wide`, `waiting-for-browser`, `sign-in-returning`, `sign-in-malformed`,
     /// `sign-in-shared-retired`, `sign-in-unknown-client`, `sign-in-not-allowed`,
-    /// `shared-grant`, or `own-app`.
+    /// `shared-grant`, or `own-app`. `wmp-skin=PATH` wears a Windows Media
+    /// Player skin, and `wmp-run=SCRIPT` runs script in it once it starts
+    /// (`|` for a comma), to open a drawer or view for a capture.
     #[cfg(feature = "demo")]
     #[arg(long)]
     demo_show: Option<String>,
@@ -450,6 +452,7 @@ pub(crate) fn run() -> eframe::Result<()> {
         None => paths::AppDirs::discover(),
     };
     let dirs = folders.dirs.clone();
+    let window_file = folders.window_file();
     let dirs_ready = dirs.ensure();
     // Launched from a desktop, stderr goes nowhere; keep the run's log where
     // a bug report can find it, and a line per panic in the panic log (with
@@ -636,7 +639,7 @@ pub(crate) fn run() -> eframe::Result<()> {
         };
         #[cfg(not(feature = "demo"))]
         let options = native_options(false, mini, None, geometry);
-        let options = profile_options(options);
+        let options = profile_options(options, window_file.clone());
         #[cfg(windows)]
         let thumbbar_enabled = desktop_surfaces && options.viewport.taskbar != Some(false);
         #[cfg(target_os = "linux")]
@@ -751,7 +754,7 @@ struct MiniWindow {
 impl MiniWindow {
     fn wanted(app: &app::App) -> Option<Self> {
         app.settings.winamp_window.then(|| Self {
-            size: spotifast::ui::winamp::initial_size(&app.settings),
+            size: spotifast::ui::winamp::initial_size(&app.settings, &app.winamp.skin),
             geometry: Geometry {
                 position: app.winamp.geometry.position,
                 ..Geometry::default()
@@ -843,10 +846,8 @@ fn native_options(
     // so it neither reads the main window's geometry nor creates a state file.
     let persistence_path = mini.as_ref().map(|mini| mini.storage_path.clone());
     #[cfg(target_os = "linux")]
-    let persistence_path = persistence_path.or_else(|| {
-        // Keep the native profile path even when Flatpak supplies its app ID.
-        eframe::storage_dir("spotifast").map(|dir| dir.join("app.ron"))
-    });
+    // Keep the native profile path even when Flatpak supplies its app ID.
+    let persistence_path = persistence_path.or_else(paths::installed_window_file);
     #[cfg(target_os = "linux")]
     let app_id = desktop_entry();
     #[cfg(not(target_os = "linux"))]
@@ -925,9 +926,14 @@ fn native_options(
     }
 }
 
-fn profile_options(mut options: eframe::NativeOptions) -> eframe::NativeOptions {
+/// Points the main window at `window_file`, which a portable copy keeps in
+/// its own folder.
+fn profile_options(
+    mut options: eframe::NativeOptions,
+    window_file: Option<std::path::PathBuf>,
+) -> eframe::NativeOptions {
     if options.persist_window {
-        options.persistence_path = eframe::storage_dir("spotifast").map(|dir| dir.join("app.ron"));
+        options.persistence_path = window_file;
     }
     options
 }
@@ -968,16 +974,20 @@ mod native_window_tests {
 
     #[test]
     fn window_geometry_is_kept_without_touching_demo_storage() {
-        let main = profile_options(native_options(false, None, None, Geometry::default()));
-        assert_eq!(
-            main.persistence_path,
-            eframe::storage_dir("spotifast").map(|dir| dir.join("app.ron"))
-        );
-        let demo_path = std::path::PathBuf::from("temporary/demo.ron");
-        let demo = profile_options(demo_native_options(
+        let window_file = std::path::PathBuf::from("spotifast-data/state/app.ron");
+        let main = profile_options(
             native_options(false, None, None, Geometry::default()),
-            demo_path.clone(),
-        ));
+            Some(window_file.clone()),
+        );
+        assert_eq!(main.persistence_path, Some(window_file.clone()));
+        let demo_path = std::path::PathBuf::from("temporary/demo.ron");
+        let demo = profile_options(
+            demo_native_options(
+                native_options(false, None, None, Geometry::default()),
+                demo_path.clone(),
+            ),
+            Some(window_file),
+        );
         assert_eq!(demo.persistence_path, Some(demo_path));
     }
 
@@ -1002,10 +1012,7 @@ mod native_window_tests {
             let id = desktop_entry();
             assert_eq!(main.viewport.app_id.as_deref(), Some(id.as_str()));
             assert_eq!(mini.viewport.app_id, main.viewport.app_id);
-            assert_eq!(
-                main.persistence_path,
-                eframe::storage_dir("spotifast").map(|dir| dir.join("app.ron"))
-            );
+            assert_eq!(main.persistence_path, paths::installed_window_file());
         }
         #[cfg(not(target_os = "linux"))]
         {
@@ -1073,7 +1080,8 @@ mod native_window_tests {
                 skin_scale: Some(2),
                 ..Default::default()
             };
-            let size = spotifast::ui::winamp::initial_size(&settings);
+            let size =
+                spotifast::ui::winamp::initial_size(&settings, &spotifast::skin::Skin::builtin());
             let options = native_options(
                 false,
                 Some(MiniWindow {
@@ -1181,7 +1189,7 @@ mod native_window_tests {
             frame: 0,
             click: false,
         };
-        let frames: Vec<_> = (0..=DemoDrag::REST + DemoDrag::GLIDE + 5)
+        let frames: Vec<_> = (0..=DemoDrag::rest() + DemoDrag::GLIDE + 5)
             .map(|_| drag.events())
             .collect();
         let presses = frames
@@ -1212,7 +1220,7 @@ mod native_window_tests {
             frame: 0,
             click: true,
         };
-        let events: Vec<_> = (0..=DemoDrag::REST + DemoDrag::GLIDE + 5)
+        let events: Vec<_> = (0..=DemoDrag::rest() + DemoDrag::GLIDE + 5)
             .flat_map(|_| click.events())
             .collect();
         let buttons: Vec<bool> = events
@@ -1437,26 +1445,33 @@ struct DemoDrag {
 
 #[cfg(feature = "demo")]
 impl DemoDrag {
-    /// Frames to rest before pressing, so the rows under `from` are laid out.
-    const REST: u32 = 20;
+    /// Frames to rest before pressing, so the rows under `from` are laid
+    /// out. `SPOTIFAST_DEMO_REST` asks for longer, for a skin still loading.
+    fn rest() -> u32 {
+        std::env::var("SPOTIFAST_DEMO_REST")
+            .ok()
+            .and_then(|frames| frames.parse().ok())
+            .unwrap_or(20)
+    }
     /// Frames the glide from `from` to `to` takes.
     const GLIDE: u32 = 20;
 
     fn events(&mut self) -> Vec<egui::Event> {
         let frame = self.frame;
         self.frame = self.frame.saturating_add(1);
-        let pos = if frame <= Self::REST {
+        let rest = Self::rest();
+        let pos = if frame <= rest {
             self.from
         } else {
-            let t = ((frame - Self::REST) as f32 / Self::GLIDE as f32).min(1.0);
+            let t = ((frame - rest) as f32 / Self::GLIDE as f32).min(1.0);
             self.from.lerp(self.to, t)
         };
         let mut events = vec![egui::Event::PointerMoved(pos)];
-        if frame == Self::REST || (self.click && frame == Self::REST + 1) {
+        if frame == rest || (self.click && frame == rest + 1) {
             events.push(egui::Event::PointerButton {
                 pos,
                 button: egui::PointerButton::Primary,
-                pressed: frame == Self::REST,
+                pressed: frame == rest,
                 modifiers: egui::Modifiers::NONE,
             });
         }

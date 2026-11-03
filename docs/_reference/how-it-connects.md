@@ -14,10 +14,11 @@ remain available for playback and library requests.
 
 Spotifast uses separate credentials for Web API access and local playback:
 
-1. **Your own Spotify app**, the personal app, carries the Web API: account,
+1. **Your registration**, the Client ID you get by registering Spotifast with
+   Spotify (the personal app below), carries the Web API: account,
    library, catalogue, search, playlists and playback control. Since 0.14.2
-   it is the only way to sign in. The sign-in screen walks through creating
-   one, and its Client ID is kept in settings
+   it is the only way to sign in. The sign-in screen walks through
+   registering, and the Client ID is kept in settings
    ([Getting Started](/getting-started/#make-a-spotify-app)). Before
    opening the browser, Spotifast asks Spotify's token endpoint whether it
    knows the Client ID, with a code that cannot be valid: an unknown client
@@ -71,8 +72,11 @@ Spotifast uses separate credentials for Web API access and local playback:
    station and reads its songs' details in one batched request.
    Play counts on album pages and an artist's popular songs come from the
    same Pathfinder queries Spotify's own album and artist pages make, with the
-   session's token and an already verified Web API grant. Each album or artist
-   is read once per run, and a read that fails leaves the column out.
+   session's token and an already verified Web API grant. Albums are read once
+   per run; artist overviews are revalidated after ten minutes while viewed. A
+   failed first read leaves the column out; an artist refresh keeps previously
+   received counts visible. The artist query also carries the monthly listeners
+   shown on the artist page.
 
    The **Listening activity** panel also needs this session. While the panel
    is open, and only then, the session reads Spotify's private
@@ -81,6 +85,11 @@ Spotifast uses separate credentials for Web API access and local playback:
    are read once per run and kept in memory. Nothing from the panel is written
    to disk or logged. If the feed fails, the session's older
    `presence-view/v1/buddylist` stands in.
+
+When Soloist plays, **Settings → Spotify Soloist → Spotify access** keeps this separate
+connection available. **Authorize** opens the existing browser approval without
+switching playback to the built-in player. Once connected, missing Made for you,
+listening activity and lyrics can be read again through the session.
 
 Local playback authorization stays separate from the Web API grants. Its
 browser approval requests only the streaming permission and always shows the
@@ -109,6 +118,12 @@ refuse it. A different account's playback
 session never supplies this list.
 An explicitly empty ranking is kept. If a nonempty ranking resolves to no
 tracks, the Web API gets its turn rather than showing a false empty answer.
+If Popular was requested before the session connected and failed, Spotifast
+retries it once when that session becomes ready, including a failure arriving
+after readiness. Successful lists, including empty ones, are kept. A failed
+session-backed retry remains visible rather than starting a retry loop.
+Each request carries an identity that survives page recreation and account
+reset; an older response cannot retry or replace a newer Popular list.
 
 Related artists also prefer the same-account playback session. The existing
 configured HTTP client sends `queryArtistRelated` with the session's Login5
@@ -269,6 +284,10 @@ out, or a reconnection that gives up stops it.
   before downloading the matching binary archive, Windows installer, or universal
   macOS DMG. Spotifast then checks the published SHA-256 digest and the portable
   executable's reported version before offering a restart.
+  Update checks, downloads and the restart handoff reuse their HTTP client and
+  connections. Applying proxy settings replaces that client, even when the
+  policy is unchanged, so System resolves the current proxy again;
+  an invalid replacement blocks requests instead of using the previous route.
   Automatic downloads are optional; installation always waits for your click.
   Checks and downloads do not open the update popup. The green update pill opens
   it on request; closing the popup does not cancel a download.
@@ -379,9 +398,11 @@ Since 0.8.0, manually reloading an edited playlist waits for all
 pending writes and confirmation of the returned Spotify revision before
 requesting replacement rows. Current rows, filtering, sorting, and selection
 stay visible while it loads. Automatic paging also waits for those edits.
-If metadata still reports an older revision after three immediate rechecks,
-or the request fails, the page keeps the edits and offers a retry. Refreshing
-again retries confirmation without losing the local changes. This uses the
+If metadata still reports an older revision, Spotifast reads it again a
+second later, up to three times, and keeps loading meanwhile; if it still lags
+after that, the page keeps the edits and stops loading without an error. If the
+request fails, the page keeps the edits and offers a retry. Refreshing again
+retries confirmation without losing the local changes. This uses the
 existing playlist requests and adds no periodic polling.
 
 ## New releases on Home
@@ -513,6 +534,12 @@ resume, skip, seek, shuffle, repeat, queue) and volume, all sent from this
 computer's Connect device to that one. This needs local playback enabled,
 because the session belongs to it. Playback state is still read from the Web
 API, which reports a restricted device while it plays.
+
+Spotify does not always report a restricted device as such, for example a
+Sonos that another app is already steering when Spotifast starts. When the Web
+API refuses a command for a named device as restricted, Spotifast remembers
+that device as restricted and sends the same command over the Connect route
+once, so later commands go there directly.
 
 Shuffle Play enables shuffle before starting the context, as it does for
 Web API devices. If enabling shuffle fails, playback does not start.
@@ -663,6 +690,21 @@ wait. The song being loaded asks again after each wait, up to three times,
 before Spotifast reports the refusal; the next song's key is not prefetched
 during a wait.
 
+Spotify also pushes the Connect cluster to the session over its existing
+Dealer connection whenever playback changes anywhere. Spotifast reads the
+active device, collection, song, play or pause, shuffle, repeat and the
+active device's volume from each push. A new volume alone is shown straight from the push,
+so a volume turned on the speaker itself follows as Spotify reports it and
+costs no request. When anything else changed for another device, Spotifast
+asks the Web API for playback instead of waiting for its next regular
+poll. If a playback read is already pending, it finishes first; changes
+received after it started are folded into one follow-up. Any read started
+after a push already covers that change. Pushes are ignored when this
+computer is the active device both before and after; position-only updates
+cause no request. Polls caused by pushes are at least a second apart. The
+regular poll continues unchanged as a fallback, and without playback enabled
+there is no session and nothing is pushed.
+
 Local playback has one output on every platform, fastframe-audio: CoreAudio on
 macOS, WASAPI on Windows, and on Linux PipeWire when it is running, otherwise a
 PulseAudio server, otherwise ALSA directly. It talks only to the local sound
@@ -743,6 +785,21 @@ these fields clears it. See [password storage and migration](/settings-and-files
 
 ## Upcoming albums and countdown links
 
+Artist discovery reuses the `queryArtistOverview` request for play counts with
+`includePrerelease: true`. Discovery waits for the same-account local playback
+session to be ready and requires an already verified Web API grant. This also
+applies when Soloist handles playback: its player connection alone does not
+supply the overview. Without both prerequisites, a fresh artist visit can omit
+the countdown card. Its optional `preRelease` supplies the countdown URI,
+title, artwork and release instant. The card is kept in memory per signed-in
+account and cleared on sign-out. Successful overviews, including those without
+a countdown, are revalidated after ten minutes while the artist is viewed. This
+allows newly announced or replacement countdowns to appear without restarting.
+Refreshing the artist asks again; a failed read
+keeps the previous card, and a card past its release instant is not drawn.
+Artists with no popular tracks still request the overview. No library write is
+sent until the listener opens the countdown page and presses Pre-save.
+
 `spotify:prerelease:` and Spotify prerelease share links require the same-account
 local playback session. The session's extended metadata kind 138 resolves the
 prerelease URI to its real album URI, cover, artist and release instant. They
@@ -792,4 +849,19 @@ On Linux with PipeWire, the managed child is given a private input through
 feed the visualizers before volume, then play through the default output.
 Only that child's stream is held at unity gain; its documented volume events
 set the final processed gain. The route is temporary and local, and writes no
-audio to disk. Other platforms retain Soloist's direct output.
+audio to disk. The Mac native-audio route also reroutes the owned child.
+Once its private tap mutes direct output, the loopback API sets source volume
+to 100% and confirms that level from playback state or a volume event.
+Subsequent volume-change events from Spotify update Spotifast's output fader,
+then restore the source to 100%. Reset echoes and state snapshots never
+replace the output fader. Windows capture only observes the direct output,
+so this volume policy is not applied there; the visualizer copy is divided by
+Soloist's own volume gain instead.
+
+Home's **Recommended for you** shelf uses the Web API recommendations endpoint.
+When that endpoint returns HTTP 403 or 404 and no recommendations have loaded,
+the shelf is omitted instead of displaying an error with a Retry button.
+Previously loaded recommendations remain visible. This is not a permanent
+capability decision: refreshing Home tries the request again. Network, sign-in,
+rate-limit and server errors retain their normal error handling. No alternate
+recommendation source is substituted.

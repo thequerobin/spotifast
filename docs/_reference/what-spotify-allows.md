@@ -34,7 +34,7 @@ Spotifast uses the Web API for:
   queue.
 
 Since 0.14.2, Web API requests go through the listener's own Spotify app,
-registered for free in Spotify's developer dashboard
+registered in Spotify's developer dashboard
 ([Getting Started](/getting-started/#make-a-spotify-app)). Spotify grants no
 app the quota to serve everyone: an app in Development Mode lets in at most
 five accounts, and an extension needs a registered business with hundreds of
@@ -97,7 +97,8 @@ clients. Spotifast uses its session for:
   Spotify's own clients, with the session's Login5 bearer and client token.
   It uses the configured HTTP transport and falls back to the Web API, which
   answers only a shared grant from before 0.14.2, if that read is unavailable. A different account's session is never used.
-- **Upcoming album pages.** Prerelease metadata supplies the real album mapping,
+- **Upcoming album pages.** Artist overviews supply countdown cards without a
+  prior pre-save. Prerelease metadata supplies the real album mapping,
   cover and release time. Pathfinder supplies ordered preview rows and explicit
   playability; unpublished rows stay visible without entering playback. The
   session collection service reads pre-save state and writes it only after the
@@ -134,6 +135,8 @@ clients. Spotifast uses its session for:
 - **Play counts** on album pages and an artist's popular songs, from the
   Pathfinder queries Spotify's own pages make. The Web API has none. When
   the read fails, the lists leave the counts out.
+- **Monthly listeners** on an artist page, from the same artist query. The
+  Web API has no such number.
 - **Listening activity**: what the people the account follows are playing,
   from the private feed behind Spotify's own panel. The Web API has no such
   request. Spotify may change this response without notice; when the feed
@@ -168,6 +171,13 @@ the existing Spotify playback requests. Full queue editing and audio access
 remain unavailable through Soloist's documented API. On Linux with PipeWire,
 Spotifast processes its owned Soloist output through the operating system for
 EQ and visualizers; it does not capture the system mix.
+[Native audio support](/soloist/#native-audio) adds process-only Mac
+EQ and visualizers, and Windows visualizers. The Mac route applies Spotifast’s
+output volume after the visualizers and hold Soloist's source at 100% once
+redirected. Spotify/phone volume events change that output level before the
+source is reset, so Spotify's indicator returns to 100%. Windows capture
+comes after source volume, which the visualizers undo, and cannot provide an
+audible EQ route.
 
 ## librespot playback
 
@@ -219,8 +229,8 @@ The Web API and librespot do not provide these features:
 - **One Web API app for every listener.** Spotify no longer extends an app
   beyond Development Mode's five accounts for a project like this one, and
   its desktop client identity is turned away from the Web API with "too many
-  requests". Each listener registers a free app of their own instead, which
-  needs Premium on the account that creates it.
+  requests". Each listener registers Spotifast themselves instead, which
+  needs Premium on the account that registers.
 - **Pins shared with the Spotify app.** Spotify stores pins in its private
   `your-library` service. There is no Web API for it, and librespot does not
   support its protocol. Spotifast's pins are local and are stored in

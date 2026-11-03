@@ -1,0 +1,66 @@
+name: Windows portable
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    timeout-minutes: 90
+    env:
+      CMAKE_GENERATOR: Ninja
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: GLEW for MilkDrop
+        run: vcpkg install glew:x64-windows-static
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Formatting
+        run: cargo fmt --all --check
+      - name: Playlist generation regression tests
+        run: cargo test --locked --lib 'playlist_generation::'
+      - name: API cost manager regression tests
+        run: cargo test --locked --lib 'api::cost::'
+      - name: Generated playlist synchronization regression tests
+        run: cargo test --locked --lib generated_playlist
+      - name: Build Windows executable with MilkDrop
+        run: cargo build --locked --release --bin spotifast
+      - name: Verify and package
+        shell: pwsh
+        run: |
+          $binary = 'target\release\spotifast.exe'
+          $imports = & dumpbin /dependents $binary | Out-String
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($imports -match 'MSVCP[0-9_]*\.dll|VCRUNTIME[0-9_]*\.dll') { throw 'Executable must have a static runtime' }
+          $headers = & dumpbin /headers $binary | Out-String
+          if ($headers -notmatch '8664 machine \(x64\)') { throw 'Expected an x64 executable' }
+          $version = (Select-String -Path Cargo.toml -Pattern '^version = "([^"]+)"').Matches[0].Groups[1].Value
+          $reported = (& $binary --version | Out-String).Trim()
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($reported -ne "spotifast $version") { throw "Unexpected version: $reported" }
+          $shortSha = $env:GITHUB_SHA.Substring(0, 7)
+          $name = "spotifast-v$version-$shortSha-windows-x64"
+          $folder = "dist\$name"
+          New-Item -ItemType Directory -Force $folder | Out-Null
+          Copy-Item $binary, README.md, LICENSE, packaging\spotifast-portable.txt $folder
+          Set-Content -Path "$folder\BUILD.txt" -Value "Commit: $env:GITHUB_SHA`nVersion: $version" -Encoding utf8
+          Compress-Archive -Path $folder -DestinationPath "dist\$name.zip"
+          $hash = (Get-FileHash "dist\$name.zip" -Algorithm SHA256).Hash.ToLowerInvariant()
+          Set-Content -Path "dist\$name.sha256" -Value "$hash  $name.zip" -Encoding ascii
+      - uses: actions/upload-artifact@v7
+        with:
+          name: spotifast-windows-x64
+          path: |
+            dist/*.zip
+            dist/*.sha256
+          if-no-files-found: error
+          retention-days: 30

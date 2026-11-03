@@ -8,7 +8,10 @@ use anyhow::{Context, Result, bail};
 use futures_util::{SinkExt, StreamExt};
 use serde_json::{Value, json};
 use std::{
-    sync::{Arc, RwLock},
+    sync::{
+        Arc, RwLock,
+        atomic::{AtomicU32, Ordering},
+    },
     time::Duration,
 };
 use tokio_tungstenite::{
@@ -34,6 +37,16 @@ pub async fn send(socket: &mut Socket, mut body: Value) -> Result<()> {
     socket.send(Message::Text(body.to_string().into())).await?;
     Ok(())
 }
+pub async fn send_reconnecting(socket: &mut Socket, port: u16, body: Value) -> Result<bool> {
+    if send(socket, body.clone()).await.is_ok() {
+        return Ok(false);
+    }
+    *socket = tokio::time::timeout(Duration::from_secs(5), connect(port))
+        .await
+        .context("Soloist's local API did not reconnect in time")??;
+    send(socket, body).await?;
+    Ok(true)
+}
 pub async fn receive(socket: &mut Socket) -> Result<Value> {
     loop {
         match socket.next().await.context("Soloist disconnected")?? {
@@ -41,6 +54,18 @@ pub async fn receive(socket: &mut Socket) -> Result<Value> {
             Message::Close(_) => bail!("Soloist disconnected"),
             Message::Ping(_) => socket.flush().await?,
             _ => {}
+        }
+    }
+}
+
+pub async fn receive_reconnecting(socket: &mut Socket, port: u16) -> Result<(Option<Value>, bool)> {
+    match receive(socket).await {
+        Ok(message) => Ok((Some(message), false)),
+        Err(_) => {
+            *socket = tokio::time::timeout(Duration::from_secs(5), connect(port))
+                .await
+                .context("Soloist's local API did not reconnect in time")??;
+            Ok((None, true))
         }
     }
 }
@@ -56,6 +81,8 @@ pub struct Client {
     endpoint: Arc<RwLock<Endpoint>>,
     /// Soloist acknowledgements have command names, not request IDs.
     serial: Arc<tokio::sync::Mutex<()>>,
+    /// How far behind Soloist's position the sound is, in our audio route.
+    audio_delay_ms: Arc<AtomicU32>,
 }
 impl Client {
     pub fn bind(&self, device: Option<Device>) {
@@ -74,6 +101,10 @@ impl Client {
             .write()
             .unwrap_or_else(|e| e.into_inner())
             .active = active;
+    }
+    /// Lyrics and the clock follow what is heard, not what Soloist has sent.
+    pub fn audio_delay(&self, ms: u32) {
+        self.audio_delay_ms.store(ms, Ordering::Relaxed);
     }
     pub fn clear(&self) {
         *self.endpoint.write().unwrap_or_else(|e| e.into_inner()) = Endpoint::default();
@@ -97,7 +128,9 @@ impl Client {
                     return None;
                 }
                 let result = state
-                    .and_then(|state| playback(&state, device))
+                    .and_then(|state| {
+                        playback(&state, device, self.audio_delay_ms.load(Ordering::Relaxed))
+                    })
                     .map(Some)
                     .map_err(failure);
                 Some(ApiResponse::PlaybackState { seq: *seq, result })
@@ -326,7 +359,7 @@ fn item(entity: &Value) -> Option<PlayableItem> {
         _ => None,
     }
 }
-fn playback(state: &Value, mut device: Device) -> Result<PlaybackState> {
+fn playback(state: &Value, mut device: Device, delay_ms: u32) -> Result<PlaybackState> {
     let active = state["is_active"]
         .as_bool()
         .context("Missing Soloist activity state")?;
@@ -347,15 +380,17 @@ fn playback(state: &Value, mut device: Device) -> Result<PlaybackState> {
     } else {
         now_ms.saturating_sub(at)
     };
+    let advanced = position_ms.saturating_add((elapsed as f64 * speed) as u64);
+    let heard = if speed > 0.0 {
+        advanced.saturating_sub(u64::from(delay_ms))
+    } else {
+        advanced
+    };
     Ok(PlaybackState {
         device: Some(device),
         item: item(&state["item"]),
         is_playing: active && state["status"] == "playing",
-        progress_ms: Some(
-            position_ms
-                .saturating_add((elapsed as f64 * speed) as u64)
-                .min(u32::MAX as u64) as u32,
-        ),
+        progress_ms: Some(heard.min(u32::MAX as u64) as u32),
         context: context["uri"]
             .as_str()
             .filter(|s| !s.is_empty())
@@ -372,6 +407,21 @@ fn playback(state: &Value, mut device: Device) -> Result<PlaybackState> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    /// A moving position is ahead of what is heard by our queue's delay.
+    #[test]
+    fn a_playing_position_is_held_back_by_the_route_s_delay() {
+        let state =
+            json!({"is_active":true,"status":"playing","position":{"position_ms":2300,"speed":1}});
+        let position = |delay| {
+            playback(&state, Device::default(), delay)
+                .unwrap()
+                .progress_ms
+        };
+        assert_eq!(position(0), Some(2300));
+        assert_eq!(position(70), Some(2230));
+        assert_eq!(position(9000), Some(0));
+    }
+
     #[test]
     fn documented_state_keeps_context_and_metadata() {
         let state = json!({"is_active":true,"status":"playing","volume":52,"position":{"position_ms":2300,"speed":0},"context":{"uri":"spotify:playlist:p","entity_type":"playlist"},"options":{"shuffle":true,"repeat":"track"},"item":{"uri":"spotify:track:t","entity_type":"track","decorations":{"identity":{"name":"Song"},"playback":{"duration_ms":123000},"creators":[{"entity":{"uri":"spotify:artist:a","decorations":{"identity":{"name":"Artist"}}}}]}}});
@@ -381,9 +431,10 @@ mod tests {
                 id: Some("own".into()),
                 ..Default::default()
             },
+            70,
         )
         .unwrap();
-        assert_eq!(got.progress_ms, Some(2300));
+        assert_eq!(got.progress_ms, Some(2300), "paused: nothing is queued");
         assert_eq!(got.context.unwrap().uri, "spotify:playlist:p");
         assert_eq!(got.item.unwrap().name(), "Song");
         assert_eq!(got.repeat_state, "track");
@@ -467,6 +518,62 @@ mod tests {
             }
             server.await.unwrap();
         }
+    }
+    #[tokio::test]
+    async fn event_connection_recovers_after_soloist_drops_it() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let server = tokio::spawn(async move {
+            let (stream, _) = listener.accept().await.unwrap();
+            tokio_tungstenite::accept_async(stream)
+                .await
+                .unwrap()
+                .close(None)
+                .await
+                .unwrap();
+            let (stream, _) = listener.accept().await.unwrap();
+            let mut socket = tokio_tungstenite::accept_async(stream).await.unwrap();
+            socket
+                .send(Message::Text(
+                    json!({"type":"auth_state","logged_in":false})
+                        .to_string()
+                        .into(),
+                ))
+                .await
+                .unwrap();
+        });
+        let mut socket = connect(port).await.unwrap();
+        let (message, reconnected) = receive_reconnecting(&mut socket, port).await.unwrap();
+        assert!(message.is_none());
+        assert!(reconnected);
+        let (message, reconnected) = receive_reconnecting(&mut socket, port).await.unwrap();
+        let message = message.unwrap();
+        assert_eq!(message["type"], "auth_state");
+        assert!(!reconnected);
+        server.await.unwrap();
+    }
+    #[tokio::test]
+    async fn command_connection_recovers_after_soloist_drops_it() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let server = tokio::spawn(async move {
+            let (stream, _) = listener.accept().await.unwrap();
+            let mut socket = tokio_tungstenite::accept_async(stream).await.unwrap();
+            socket.next().await.unwrap().unwrap();
+            let (stream, _) = listener.accept().await.unwrap();
+            let mut socket = tokio_tungstenite::accept_async(stream).await.unwrap();
+            let message = socket.next().await.unwrap().unwrap();
+            let command: Value = serde_json::from_str(message.to_text().unwrap()).unwrap();
+            assert_eq!(command["command"], "get_state");
+        });
+        let mut socket = connect(port).await.unwrap();
+        socket.close(None).await.unwrap();
+        assert!(
+            send_reconnecting(&mut socket, port, json!({"command":"get_state"}))
+                .await
+                .unwrap()
+        );
+        server.await.unwrap();
     }
     #[tokio::test]
     async fn playlist_offsets_and_other_devices_keep_the_existing_route() {
