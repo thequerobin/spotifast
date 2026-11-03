@@ -228,7 +228,17 @@ jobs:
           $payload = "dist\msi-input-$target"
           New-Item -ItemType Directory -Force $payload | Out-Null
           Copy-Item target\debug\spotifast.exe, README.md, LICENSE, packaging\windows\spotifast-installer.txt $payload
-          native-packages build --version $version --target $id --defer-recipes --output "$env:RUNNER_TEMP\spotifast-msi-check"
+          # native-packages accepts only alpha, beta and rc prerelease names.
+          # For this fork's playlists builds, invoke the same MSI builder from
+          # native-packages.yaml directly, retaining the binary's real version.
+          if ($version -match '^\d+\.\d+\.\d+-playlists\.\d+$') {
+            $output = "$env:RUNNER_TEMP\spotifast-msi-check"
+            New-Item -ItemType Directory -Force $output | Out-Null
+            $arch = if ($env:RUNNER_ARCH -eq 'ARM64') { 'arm64' } else { 'amd64' }
+            python packaging\windows\build-msi.py $payload "$output\spotifast-$arch.msi" $version $arch
+          } else {
+            native-packages build --version $version --target $id --defer-recipes --output "$env:RUNNER_TEMP\spotifast-msi-check"
+          }
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       # Installs, updates and removes throwaway copies of the package, with
