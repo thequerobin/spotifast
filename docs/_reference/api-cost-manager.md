@@ -110,8 +110,14 @@ unavailable batch endpoint. Existing ID deduplication stays in the job layer.
 Expand **API cost manager** in playlist creation for recent sends, effective
 rate, current local ceiling, queue by priority, active work, global cooldown,
 quota status, catalog cache hits/reads and per-endpoint 429 rate/quota,
-401/403/5xx, network failure and mean response-header latency counters. Counters
-are process-local and endpoint IDs and query parameters are removed. No remote
+401/403/5xx, network failure and mean response-header latency counters. Catalog
+read counters advance only when an album or artist GET is dispatched,
+including each transport retry. Calls rejected locally by the quota circuit,
+waiting for a cooldown or cancelled before dispatch do not count as network
+reads. Cache hits are counted separately and remain available during a quota
+pause while their cached response is fresh. A cache lookup is not itself a
+Spotify request. Counters are process-local and endpoint IDs and query
+parameters are removed. No remote
 telemetry is sent. Official remaining quota is shown as unavailable. The
 creation form labels preflight cost as an estimate because catalog sizes and
 pagination totals may not be known before the first request.

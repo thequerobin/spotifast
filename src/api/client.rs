@@ -666,6 +666,13 @@ impl ApiClient {
                 let _ = GENERATION_SENT.try_with(|sent| sent.store(true, Ordering::SeqCst));
             }
             let dispatched_at = Instant::now();
+            // Count transport attempts, not cache lookups rejected by the
+            // quota circuit or cancelled while waiting for a dispatch slot.
+            if method == Method::GET
+                && (path.starts_with("/albums/") || path.starts_with("/artists/"))
+            {
+                self.activity.cost.cache_access(false);
+            }
             let response = match request.timeout(Duration::from_secs(30)).send().await {
                 Ok(response) => response,
                 Err(error) => {
@@ -806,8 +813,8 @@ impl ApiClient {
                 .get(&key)
                 .filter(|(at, _)| at.elapsed() < Duration::from_secs(15))
                 .map(|(_, text)| text.clone());
-            self.activity.cost.cache_access(cached.is_some());
             if let Some(text) = cached {
+                self.activity.cost.cache_access(true);
                 text
             } else {
                 let text = self.send(Method::GET, path, query, None).await?;
@@ -2293,6 +2300,106 @@ mod tests {
         server.await.unwrap();
         assert!(client.activity.cost.snapshot().cooldown_seconds >= 3599);
         assert!(client.cooling_down().await);
+    }
+
+    #[tokio::test]
+    async fn quota_rejected_catalog_lookups_do_not_inflate_network_read_counts() {
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let base = format!("http://{}", listener.local_addr().unwrap());
+        let server = tokio::spawn(async move {
+            for body in [
+                "{}",
+                r#"{"error":{"status":429,"reason":"QUOTA_EXCEEDED"}}"#,
+            ] {
+                let (mut socket, _) = listener.accept().await.unwrap();
+                let mut buffer = [0; 4096];
+                assert!(socket.read(&mut buffer).await.unwrap() > 0);
+                let status = if body == "{}" {
+                    "200 OK"
+                } else {
+                    "429 Too Many Requests"
+                };
+                socket.write_all(format!("HTTP/1.1 {status}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}", body.len()).as_bytes()).await.unwrap();
+            }
+            assert!(
+                tokio::time::timeout(Duration::from_millis(100), listener.accept())
+                    .await
+                    .is_err()
+            );
+        });
+        let client = client_with_token(Some(base), "dummy");
+        client.get::<Value>("/albums/cached", &[]).await.unwrap();
+        assert!(matches!(
+            client.get::<Value>("/albums/blocked", &[]).await,
+            Err(ApiError::QuotaExhausted)
+        ));
+        for _ in 0..100 {
+            assert!(matches!(
+                client.get::<Value>("/albums/blocked", &[]).await,
+                Err(ApiError::QuotaExhausted)
+            ));
+        }
+        // A cached answer remains available without spending another request.
+        client.get::<Value>("/albums/cached", &[]).await.unwrap();
+        server.await.unwrap();
+        let snapshot = client.activity.cost.snapshot();
+        assert!(snapshot.quota_blocked);
+        assert_eq!(snapshot.cache_hits, 1);
+        assert_eq!(snapshot.cache_misses, 2);
+        assert_eq!(snapshot.endpoints["GET /albums/{id}"].requests, 2);
+        assert_eq!(snapshot.in_flight, 0);
+        assert_eq!(snapshot.queued, [0; 3]);
+    }
+
+    #[tokio::test]
+    async fn catalog_reads_cancelled_during_cooldown_do_not_count_as_dispatches() {
+        let client = client_with_token(Some("http://127.0.0.1:1".into()), "dummy");
+        client
+            .activity
+            .cost
+            .throttle(false, Duration::from_secs(3600))
+            .await
+            .unwrap();
+        assert!(
+            tokio::time::timeout(
+                Duration::from_millis(30),
+                client.get::<Value>("/albums/waiting", &[])
+            )
+            .await
+            .is_err()
+        );
+        let snapshot = client.activity.cost.snapshot();
+        assert_eq!(snapshot.cache_misses, 0);
+        assert!(snapshot.endpoints.is_empty());
+        assert_eq!(snapshot.recent_requests, 0);
+        assert_eq!(snapshot.in_flight, 0);
+        assert_eq!(snapshot.queued, [0; 3]);
+        assert!(snapshot.cooldown_seconds >= 3599);
+    }
+
+    #[tokio::test]
+    async fn catalog_read_counts_include_each_dispatched_retry() {
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let base = format!("http://{}", listener.local_addr().unwrap());
+        let server = tokio::spawn(async move {
+            for status in ["500 Internal Server Error", "200 OK"] {
+                let (mut socket, _) = listener.accept().await.unwrap();
+                let mut buffer = [0; 4096];
+                assert!(socket.read(&mut buffer).await.unwrap() > 0);
+                socket.write_all(format!("HTTP/1.1 {status}\r\nContent-Length: 2\r\nConnection: close\r\n\r\n{{}}").as_bytes()).await.unwrap();
+            }
+        });
+        let client = client_with_token(Some(base), "dummy");
+        client.get::<Value>("/artists/test", &[]).await.unwrap();
+        server.await.unwrap();
+        let snapshot = client.activity.cost.snapshot();
+        assert_eq!(snapshot.cache_misses, 2);
+        assert_eq!(snapshot.endpoints["GET /artists/{id}"].requests, 2);
+        client.get::<Value>("/artists/test", &[]).await.unwrap();
+        assert_eq!(client.activity.cost.snapshot().cache_hits, 1);
+        assert_eq!(client.activity.cost.snapshot().cache_misses, 2);
     }
 
     #[tokio::test]
