@@ -214,6 +214,8 @@ LSUA and USSA offer **Filter by**: **Date added to library** (the default)
 or **Release date**. Addition means when the song was liked for LSUA or the
 album was saved for USSA. Release dates come from the song's album edition.
 The selected basis is saved with each job for pause and restart recovery.
+USSA reuses eligible track batches already returned with saved albums and
+fetches the remaining pages, reducing catalog calls without truncating albums.
 **Unliked Songs from Followed Artists (USFA)** selects unliked songs from
 followed artists by album/single release date, with the same persistent progress
 and recovery. **Include compilations**

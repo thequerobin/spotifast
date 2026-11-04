@@ -48,6 +48,354 @@ fn page<T>(items: Vec<T>, offset: u32, total: u32, next: bool) -> Page<T> {
     }
 }
 
+fn embedded_album(id: &str, saved_at: &str, tracks: Vec<Track>) -> SavedAlbum {
+    let mut saved = album(id, Some(saved_at), tracks.len() as u32);
+    saved.album.tracks = Some(Page::whole(tracks));
+    saved
+}
+
+#[tokio::test]
+async fn embedded_tracks_stream_between_album_pages_and_survive_restart_without_catalog_calls() {
+    let first = embedded_album(
+        "first",
+        "2025-03-02T00:00:00Z",
+        vec![track("liked"), track("one")],
+    );
+    let second = embedded_album(
+        "second",
+        "2025-03-01T00:00:00Z",
+        vec![track("one"), track("two")],
+    );
+    let (client, server) = super::tests::server(vec![
+        (
+            "GET /me/albums?limit=50&offset=0",
+            "200 OK",
+            serde_json::json!({"items":[{"added_at":first.added_at,"album":first.album}],"offset":0,"limit":1,"total":2,"next":"next"}).to_string(),
+        ),
+        ("GET /me/library/contains?", "200 OK", "[true,false]".into()),
+        (
+            "GET /me/albums?limit=50&offset=1",
+            "200 OK",
+            serde_json::json!({"items":[{"added_at":second.added_at,"album":second.album}],"offset":1,"limit":1,"total":2,"next":null}).to_string(),
+        ),
+        (
+            "GET /me/library/contains?",
+            "200 OK",
+            "[false,false]".into(),
+        ),
+        (
+            "POST /me/playlists",
+            "201 Created",
+            r#"{"id":"generated"}"#.into(),
+        ),
+        (
+            "POST /playlists/generated/items",
+            "201 Created",
+            r#"{"snapshot_id":"saved"}"#.into(),
+        ),
+    ])
+    .await;
+    let mut job = job();
+    for expected in [
+        Stage::Albums,
+        Stage::SavedAlbumTracks,
+        Stage::Albums,
+        Stage::SavedAlbumTracks,
+        Stage::Create,
+        Stage::Add,
+        Stage::Add,
+    ] {
+        assert_eq!(job.stage, expected);
+        let step = jobs::prepare(&mut job);
+        job = crash(&job);
+        let outcome = jobs::execute(&client, &job, &step).await.unwrap();
+        jobs::apply(&mut job, outcome).unwrap();
+        job = crash(&job);
+    }
+    server.await.unwrap();
+    assert_eq!(job.state, State::Completed);
+    assert_eq!(job.albums_checked, 2);
+    assert_eq!(job.analyzed, 4);
+    assert_eq!(job.tracks_total, Some(4));
+    assert_eq!(job.added.len(), 2);
+    assert_eq!(
+        job.candidates
+            .iter()
+            .map(|c| c.uri.as_str())
+            .collect::<Vec<_>>(),
+        vec!["spotify:track:one", "spotify:track:two"]
+    );
+    let metrics = client.cost_manager().snapshot();
+    assert!(!metrics.endpoints.contains_key("GET /albums/{id}/tracks"));
+    assert_eq!(
+        metrics.endpoints.values().map(|m| m.requests).sum::<u64>(),
+        6
+    );
+}
+
+#[tokio::test]
+async fn embedded_first_page_continues_through_all_55_tracks_after_restart() {
+    let mut saved = album("long", None, 55);
+    saved.album.tracks = Some(page(
+        (0..50).map(|n| track(&format!("t{n}"))).collect(),
+        0,
+        55,
+        true,
+    ));
+    let mut job = job();
+    jobs::apply(&mut job, jobs::Outcome::Albums(Page::whole(vec![saved]))).unwrap();
+    assert_eq!(
+        job.saved_album_tracks.albums[0]
+            .prefetched
+            .as_ref()
+            .unwrap()
+            .items
+            .len(),
+        40
+    );
+    let (client, server) = super::tests::server(vec![
+        (
+            "GET /me/library/contains?",
+            "200 OK",
+            serde_json::to_string(&vec![false; 40]).unwrap(),
+        ),
+        (
+            "GET /albums/long/tracks?limit=40&offset=40",
+            "200 OK",
+            serde_json::to_string(&Page {
+                limit: 40,
+                ..page(
+                    (40..55).map(|n| track(&format!("t{n}"))).collect(),
+                    40,
+                    55,
+                    false,
+                )
+            })
+            .unwrap(),
+        ),
+        (
+            "GET /me/library/contains?",
+            "200 OK",
+            serde_json::to_string(&vec![false; 15]).unwrap(),
+        ),
+    ])
+    .await;
+    for offset in [0, 40] {
+        job = crash(&job);
+        assert_eq!(job.saved_album_tracks.track_offset, offset);
+        let step = jobs::prepare(&mut job);
+        let outcome = jobs::execute(&client, &job, &step).await.unwrap();
+        jobs::apply(&mut job, outcome).unwrap();
+        if offset == 0 {
+            assert!(job.saved_album_tracks.albums[0].prefetched.is_none());
+        }
+    }
+    server.await.unwrap();
+    assert_eq!(job.stage, Stage::Create);
+    assert_eq!(job.candidates.len(), 55);
+    assert_eq!(job.analyzed, 55);
+    assert_eq!(job.skipped, 0);
+    assert_eq!(
+        client.cost_manager().snapshot().endpoints["GET /albums/{id}/tracks"].requests,
+        1
+    );
+}
+
+#[test]
+fn incomplete_embedded_pages_fall_back_and_prefetch_payloads_are_bounded() {
+    let base = embedded_album(
+        "test",
+        "2025-01-01T00:00:00Z",
+        vec![track("one"), track("two")],
+    );
+    for mutate in [
+        |saved: &mut SavedAlbum| saved.album.tracks = None,
+        |saved: &mut SavedAlbum| saved.album.tracks.as_mut().unwrap().offset = 1,
+        |saved: &mut SavedAlbum| {
+            saved.album.tracks.as_mut().unwrap().items.pop().unwrap();
+        },
+        |saved: &mut SavedAlbum| saved.album.tracks.as_mut().unwrap().next = Some("next".into()),
+        |saved: &mut SavedAlbum| saved.album.total_tracks = Some(3),
+        |saved: &mut SavedAlbum| {
+            saved.album.tracks.as_mut().unwrap().items[0].name = "x".repeat(128 * 1024)
+        },
+        |saved: &mut SavedAlbum| {
+            saved.album.total_tracks = Some(80);
+            saved.album.tracks = Some(page(
+                (0..20).map(|n| track(&format!("t{n}"))).collect(),
+                0,
+                80,
+                true,
+            ));
+        },
+    ] {
+        let mut saved = base.clone();
+        mutate(&mut saved);
+        let mut job = job();
+        jobs::apply(&mut job, jobs::Outcome::Albums(Page::whole(vec![saved]))).unwrap();
+        assert!(job.saved_album_tracks.albums[0].prefetched.is_none());
+    }
+    let mut job = job();
+    for index in 0..2 {
+        let saved: Vec<_> = (0..50)
+            .map(|n| {
+                embedded_album(
+                    &format!("a{index}b{n}"),
+                    "2025-01-01T00:00:00Z",
+                    vec![track(&format!("t{n}"))],
+                )
+            })
+            .collect();
+        jobs::apply(
+            &mut job,
+            jobs::Outcome::Albums(page(saved, index * 50, 100, index == 0)),
+        )
+        .unwrap();
+    }
+    let job = crash(&job);
+    assert_eq!(
+        job.saved_album_tracks
+            .albums
+            .iter()
+            .filter(|a| a.prefetched.is_some())
+            .count(),
+        50
+    );
+}
+
+#[tokio::test]
+async fn embedded_20_tracks_do_not_truncate_an_80_track_album() {
+    let mut saved = album("partial", None, 80);
+    saved.album.tracks = Some(page(
+        (0..20).map(|n| track(&format!("t{n}"))).collect(),
+        0,
+        80,
+        true,
+    ));
+    let mut job = job();
+    jobs::apply(&mut job, jobs::Outcome::Albums(Page::whole(vec![saved]))).unwrap();
+    assert!(job.saved_album_tracks.albums[0].prefetched.is_none());
+    let mut replies = Vec::new();
+    for offset in [0, 40] {
+        replies.push((
+            if offset == 0 {
+                "GET /albums/partial/tracks?limit=40&offset=0"
+            } else {
+                "GET /albums/partial/tracks?limit=40&offset=40"
+            },
+            "200 OK",
+            serde_json::to_string(&page(
+                (offset..offset + 40)
+                    .map(|n| track(&format!("t{n}")))
+                    .collect(),
+                offset,
+                80,
+                offset == 0,
+            ))
+            .unwrap(),
+        ));
+        replies.push((
+            "GET /me/library/contains?",
+            "200 OK",
+            serde_json::to_string(&vec![false; 40]).unwrap(),
+        ));
+    }
+    let (client, server) = super::tests::server(replies).await;
+    for offset in [0, 40] {
+        job = crash(&job);
+        assert_eq!(job.saved_album_tracks.track_offset, offset);
+        let step = jobs::prepare(&mut job);
+        let outcome = jobs::execute(&client, &job, &step).await.unwrap();
+        jobs::apply(&mut job, outcome).unwrap();
+    }
+    server.await.unwrap();
+    assert_eq!(job.stage, Stage::Create);
+    assert_eq!(job.candidates.len(), 80);
+    assert_eq!(job.analyzed, 80);
+    assert_eq!(job.skipped, 0);
+    assert_eq!(
+        client.cost_manager().snapshot().endpoints["GET /albums/{id}/tracks"].requests,
+        2
+    );
+}
+
+#[tokio::test]
+async fn expired_and_legacy_embedded_tracks_use_normal_pagination() {
+    for timestamp in [
+        None,
+        Some(jobs::now() - 24 * 60 * 60),
+        Some(jobs::now() + 60),
+    ] {
+        let mut job = job();
+        let saved = embedded_album("saved", "2025-01-01T00:00:00Z", vec![track("one")]);
+        jobs::apply(&mut job, jobs::Outcome::Albums(Page::whole(vec![saved]))).unwrap();
+        match timestamp {
+            Some(at) => job.saved_album_tracks.albums[0].prefetched_at = at,
+            None => {
+                let mut legacy = serde_json::to_value(&job).unwrap();
+                let album = legacy["saved_album_tracks"]["albums"][0]
+                    .as_object_mut()
+                    .unwrap();
+                album.remove("prefetched");
+                album.remove("prefetched_at");
+                job = serde_json::from_value(legacy).unwrap();
+            }
+        }
+        let (client, server) = super::tests::server(vec![
+            (
+                "GET /albums/saved/tracks?limit=40&offset=0",
+                "200 OK",
+                serde_json::to_string(&Page::whole(vec![track("one")])).unwrap(),
+            ),
+            ("GET /me/library/contains?", "200 OK", "[false]".into()),
+        ])
+        .await;
+        let step = jobs::prepare(&mut job);
+        let outcome = jobs::execute(&client, &crash(&job), &step).await.unwrap();
+        jobs::apply(&mut job, outcome).unwrap();
+        server.await.unwrap();
+        assert_eq!(job.candidates.len(), 1);
+        assert_eq!(job.stage, Stage::Create);
+    }
+}
+
+#[tokio::test]
+async fn embedded_tracks_survive_a_quota_pause_without_repeating_the_catalog_read() {
+    let mut job = job();
+    let saved = embedded_album("saved", "2025-01-01T00:00:00Z", vec![track("one")]);
+    jobs::apply(&mut job, jobs::Outcome::Albums(Page::whole(vec![saved]))).unwrap();
+    let (client, server) = super::tests::server(vec![(
+        "GET /me/library/contains?",
+        "429 Too Many Requests\r\nRetry-After: 60",
+        r#"{"error":{"status":429,"reason":"QUOTA_EXCEEDED"}}"#.into(),
+    )])
+    .await;
+    let step = jobs::prepare(&mut job);
+    let error = crate::api::client::generation_request(jobs::execute(&client, &job, &step))
+        .await
+        .err()
+        .unwrap();
+    jobs::failed_attempt(&mut job, &step, error);
+    server.await.unwrap();
+    let mut job = crash(&job);
+    assert_eq!(job.state, State::PausedQuota);
+    assert_eq!(job.saved_album_tracks.track_offset, 0);
+    assert!(job.saved_album_tracks.albums[0].prefetched.is_some());
+    assert!(job.candidates.is_empty());
+    // A separate mock transport represents a later retry after quota recovery.
+    let (client, server) = super::tests::server(vec![(
+        "GET /me/library/contains?",
+        "200 OK",
+        "[false]".into(),
+    )])
+    .await;
+    let outcome = jobs::execute(&client, &job, &step).await.unwrap();
+    jobs::apply(&mut job, outcome).unwrap();
+    server.await.unwrap();
+    assert_eq!(job.candidates.len(), 1);
+    assert!(job.saved_album_tracks.albums.is_empty());
+}
+
 #[test]
 fn saved_album_period_uses_saved_time_in_utc_and_survives_paginated_restart() {
     let mut job = job();

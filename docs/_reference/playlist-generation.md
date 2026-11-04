@@ -17,14 +17,28 @@ Albums outside the period are discarded before any track or membership
 requests. With no period, albums without a saved timestamp remain eligible.
 The suggested name is **USSA - {period}** and is editable.
 
-Saved albums are read 50 to a page, then each selected album's tracks are read
-40 to a page. Playable song URIs are checked against Spotify's liked-song
+Saved albums are read 50 to a page. Selected albums on that page are processed
+before fetching the next page of albums. A valid first batch of tracks already
+included in the saved-album response is reused, avoiding one catalog request
+per eligible album. The embedded `tracks` object is paginated: its `items`
+must never be treated as the complete album without checking `total` and `next`.
+Further tracks are fetched in pages of 40. If the embedded page is incomplete,
+inconsistent or too short to replace a full processing batch, normal album-track
+pagination is used from offset zero, without increasing membership calls.
+Playable song URIs are checked against Spotify's liked-song
 membership in batches of at most 40. A track page is committed only after its
 complete membership response succeeds. Local/unavailable tracks, malformed
 IDs and duplicate URIs/recording keys are skipped. Different editions without
 shared recording metadata cannot always be recognized as the same recording.
 Membership reflects the time of the check; keep albums and likes stable
 during generation for consistent results.
+
+Embedded batches are checkpointed for restart and quota recovery, with at most
+50 batches of at most 128 KiB and 40 tracks each. They expire after 24 hours;
+expired or missing batches use fresh catalog reads. Liked-song membership is
+always checked at processing time and is never taken from this metadata cache.
+While more album pages remain, the track total is unknown. The final playlist
+still includes all matching albums and keeps the same ordering and deduplication.
 
 Album discovery offsets, the remaining album queue, save timestamps, track
 offsets, selected songs and insertion batches are saved in the job. Pause,

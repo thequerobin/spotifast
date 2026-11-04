@@ -588,9 +588,10 @@ pub fn apply(job: &mut Job, outcome: Outcome) -> Result<(), ApiError> {
                 .extend(page.items.into_iter().map(|item| item.album.id));
             if let Some(next) = next {
                 job.albums_offset = next;
-            } else if saved_tracks {
+            }
+            if saved_tracks {
                 saved_albums::finish_discovery(job);
-            } else {
+            } else if next.is_none() {
                 job.stage = Stage::Tracks;
             }
         }

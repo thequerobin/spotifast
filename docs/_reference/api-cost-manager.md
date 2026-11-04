@@ -107,6 +107,15 @@ caches and incremental generation checkpoints remain in use. Discovery still
 filters artists/years at the source where supported; this change adds no
 unavailable batch endpoint. Existing ID deduplication stays in the job layer.
 
+USSA also reuses a complete first processing batch from each saved album's
+embedded track page when available. It processes the current saved-album page
+before requesting the next, bounding checkpointed metadata to 50 batches of
+40 tracks and 128 KiB each. Metadata expires after 24 hours and does not cache
+liked-song membership. Partial embedded pages retain normal pagination, so
+large albums are fully scanned. This saves up to one album-track request per
+eligible album while keeping the same membership batch sizes. It reduces
+consumption without claiming that Spotify's undisclosed quota cannot run out.
+
 Expand **API cost manager** in playlist creation for recent sends, effective
 rate, current local ceiling, queue by priority, active work, global cooldown,
 quota status, catalog cache hits/reads and per-endpoint 429 rate/quota,
