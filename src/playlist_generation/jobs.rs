@@ -130,11 +130,13 @@ impl Job {
         if name.trim().is_empty() || name.chars().count() > 100 {
             return Err("Use a playlist name between 1 and 100 characters".into());
         }
-        let parameters = if strategy.source == Source::FollowedReleases {
+        let mut parameters = if strategy.source == Source::FollowedReleases {
             Parameters::from([(super::INCLUDE_COMPILATIONS.into(), "false".into())])
         } else {
             Parameters::new()
         };
+        let date_basis = super::DateBasis::for_source(strategy.source, &parameters);
+        parameters.insert(super::DATE_BASIS.into(), date_basis.value().into());
         Ok(Self {
             version: 1,
             id: format!("{:032x}", rand::random::<u128>()),
@@ -189,6 +191,7 @@ impl Job {
     /// Configure a new job before any discovery cursor or selection exists.
     pub(super) fn set_start_parameters(&mut self, parameters: Parameters) -> Result<(), String> {
         let strategy = kind(&self.kind)?;
+        super::validate_date_basis(strategy.source, &parameters)?;
         (strategy.validate)(&parameters)?;
         self.parameters.extend(parameters);
         if strategy.source == Source::FollowedReleases {

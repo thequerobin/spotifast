@@ -3,7 +3,10 @@ use crate::app::App;
 use crate::i18n::{Locale, gettext};
 use crate::model::Action;
 use crate::playlist_generation::jobs::{Request, Stage, State};
-use crate::playlist_generation::{KINDS, Parameters, Period, Source, default_name, kind};
+use crate::playlist_generation::{
+    DATE_BASIS, DateBasis, KINDS, Parameters, Period, Source, default_name, kind,
+    validate_date_basis,
+};
 
 #[derive(Default)]
 pub struct Draft {
@@ -45,21 +48,22 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
     if draft.kind.is_empty() {
         return true;
     }
-    if kind(&draft.kind).is_ok_and(|kind| kind.source == Source::FollowedReleases) {
+    let source = match kind(&draft.kind) {
+        Ok(kind) => kind.source,
+        Err(_) => return false,
+    };
+    let followed_releases = source == Source::FollowedReleases;
+    if followed_releases {
         ui.label(gettext(locale, "Uses album/single release dates and excludes liked songs. Only tracks by followed artists are included."));
         compilation_option(ui, locale, &mut draft.parameters);
         ui.add_space(8.0);
     }
-    let release_dates = kind(&draft.kind).is_ok_and(|kind| kind.source == Source::FollowedReleases);
-    let saved_album_dates =
-        kind(&draft.kind).is_ok_and(|kind| kind.source == Source::SavedAlbumTracks);
+    let saved_album_dates = source == Source::SavedAlbumTracks;
     if saved_album_dates {
-        ui.label(gettext(
-            locale,
-            "Includes unliked songs from saved albums. Dates refer to when albums were saved.",
-        ));
+        ui.label(gettext(locale, "Includes unliked songs from saved albums."));
     }
-    ui.label(if release_dates {
+    let date_basis = date_basis_option(ui, locale, source, &mut draft.parameters);
+    ui.label(if date_basis == DateBasis::Release {
         gettext(locale, "Release period")
     } else if saved_album_dates {
         gettext(locale, "Saved albums period (UTC)")
@@ -93,6 +97,7 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
             let value = draft.parameters.entry(field.key.to_owned()).or_default();
             ui.add(egui::TextEdit::singleline(value).hint_text(gettext(locale, field.hint)));
         }
+        validate_date_basis(strategy.source, &draft.parameters)?;
         (strategy.validate)(&draft.parameters)?;
         default_name(&draft.kind, &draft.period)
     });
@@ -114,7 +119,7 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
         && draft.name.chars().count() <= 100
         && account.is_some();
     ui.add_space(12.0);
-    ui.small(if release_dates {
+    ui.small(if followed_releases {
         gettext(locale, "Estimated API cost: high and variable (artists, releases and track pages). Cached discoveries reduce repeated work.")
     } else if saved_album_dates {
         gettext(locale, "Estimated API cost: variable; saved album pages, track pages and liked-song checks, plus playlist batches.")
@@ -145,6 +150,44 @@ pub fn creation(app: &mut App, ui: &mut egui::Ui) -> bool {
         app.actions.push(Action::CloseDialog);
     }
     false
+}
+
+fn date_basis_option(
+    ui: &mut egui::Ui,
+    locale: Locale,
+    source: Source,
+    parameters: &mut Parameters,
+) -> DateBasis {
+    if source == Source::FollowedReleases {
+        // A draft may have switched from a library source. An unliked catalog
+        // track has no library timestamp; never carry that choice into this job.
+        parameters.insert(DATE_BASIS.into(), DateBasis::Release.value().into());
+        return DateBasis::Release;
+    }
+    let mut basis = DateBasis::for_source(source, parameters);
+    ui.label(gettext(locale, "Filter by"));
+    egui::ComboBox::from_id_salt("generation-date-basis")
+        .width(ui.available_width())
+        .wrap()
+        .selected_text(match basis {
+            DateBasis::Added => gettext(locale, "Date added to library"),
+            DateBasis::Release => gettext(locale, "Release date"),
+        })
+        .show_ui(ui, |ui| {
+            ui.selectable_value(
+                &mut basis,
+                DateBasis::Added,
+                gettext(locale, "Date added to library"),
+            );
+            ui.selectable_value(
+                &mut basis,
+                DateBasis::Release,
+                gettext(locale, "Release date"),
+            );
+        });
+    parameters.insert(DATE_BASIS.into(), basis.value().into());
+    ui.add_space(8.0);
+    basis
 }
 
 fn compilation_option(
@@ -551,6 +594,100 @@ mod date_selector_tests {
         date.year = None;
         date.normalize();
         assert_eq!(date, DateSelection::default());
+    }
+}
+
+#[cfg(test)]
+mod date_basis_tests {
+    use super::*;
+
+    fn text_rect(shapes: &[egui::epaint::ClippedShape], label: &str) -> egui::Rect {
+        fn find(shape: &egui::Shape, label: &str) -> Option<egui::Rect> {
+            match shape {
+                egui::Shape::Text(text) if text.galley.job.text == label => {
+                    Some(text.galley.rect.translate(text.pos.to_vec2()))
+                }
+                egui::Shape::Vec(shapes) => shapes.iter().find_map(|shape| find(shape, label)),
+                _ => None,
+            }
+        }
+        shapes
+            .iter()
+            .find_map(|shape| find(&shape.shape, label))
+            .unwrap_or_else(|| panic!("Missing {label:?}"))
+    }
+
+    fn click(pos: egui::Pos2) -> Vec<egui::Event> {
+        vec![
+            egui::Event::PointerMoved(pos),
+            egui::Event::PointerButton {
+                pos,
+                button: egui::PointerButton::Primary,
+                pressed: true,
+                modifiers: Default::default(),
+            },
+            egui::Event::PointerButton {
+                pos,
+                button: egui::PointerButton::Primary,
+                pressed: false,
+                modifiers: Default::default(),
+            },
+        ]
+    }
+
+    #[test]
+    fn date_selector_switches_both_library_sources_and_limits_followed_releases() {
+        for width in [280.0, 420.0] {
+            for dark in [false, true] {
+                for locale in [Locale::English, Locale::PortugueseBrazil] {
+                    for source in [Source::LikedTracks, Source::SavedAlbumTracks] {
+                        let ctx = egui::Context::default();
+                        ctx.set_visuals(if dark {
+                            egui::Visuals::dark()
+                        } else {
+                            egui::Visuals::light()
+                        });
+                        let mut parameters = Parameters::new();
+                        let mut frame = |source, events| {
+                            let mut output = ctx.run_ui(
+                                egui::RawInput {
+                                    screen_rect: Some(egui::Rect::from_min_size(
+                                        egui::Pos2::ZERO,
+                                        egui::vec2(width, 240.0),
+                                    )),
+                                    events,
+                                    ..Default::default()
+                                },
+                                |ui| {
+                                    date_basis_option(ui, locale, source, &mut parameters);
+                                },
+                            );
+                            output.textures_delta.clear();
+                            (output.shapes, parameters.get(DATE_BASIS).cloned().unwrap())
+                        };
+                        let added = gettext(locale, "Date added to library");
+                        let release = gettext(locale, "Release date");
+                        let (shapes, value) = frame(source, vec![]);
+                        assert_eq!(value, "added");
+                        let rect = text_rect(&shapes, &added);
+                        assert!(rect.right() <= width);
+                        frame(source, click(rect.center()));
+                        let (shapes, _) = frame(source, vec![]);
+                        let (_, value) =
+                            frame(source, click(text_rect(&shapes, &release).center()));
+                        assert_eq!(value, "release");
+                        let (shapes, _) = frame(source, vec![]);
+                        frame(source, click(text_rect(&shapes, &release).center()));
+                        let (shapes, _) = frame(source, vec![]);
+                        let (_, value) = frame(source, click(text_rect(&shapes, &added).center()));
+                        assert_eq!(value, "added");
+                        let (shapes, value) = frame(Source::FollowedReleases, vec![]);
+                        assert_eq!(value, "release");
+                        assert!(shapes.is_empty());
+                    }
+                }
+            }
+        }
     }
 }
 

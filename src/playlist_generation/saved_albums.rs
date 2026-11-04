@@ -1,6 +1,6 @@
 //! Saved-album discovery and unliked tracks, checkpointed with the parent job.
 use super::jobs::{Candidate, Job, Stage, checked_next};
-use super::{playable, valid_id};
+use super::{DateBasis, Source, playable, valid_id};
 use crate::api::models::{Page, SavedAlbum, Track};
 use crate::api::{ApiClient, ApiError};
 use serde::{Deserialize, Serialize};
@@ -54,8 +54,15 @@ fn checked_page(scan: &Scan, page: &Page<Track>) -> Result<Option<u32>, ApiError
 
 pub(super) fn collect(job: &mut Job, albums: &[SavedAlbum]) {
     let mut seen = job.albums.clone();
+    let date_basis = DateBasis::for_source(Source::SavedAlbumTracks, &job.parameters);
     for saved in albums {
-        if seen.insert(saved.album.id.clone()) && job.period.contains(saved.added_at.as_deref()) {
+        if seen.insert(saved.album.id.clone())
+            && date_basis.matches(
+                &job.period,
+                saved.added_at.as_deref(),
+                saved.album.release_date.as_deref(),
+            )
+        {
             job.saved_album_tracks.albums.push_back(Album {
                 id: saved.album.id.clone(),
                 saved_at: saved

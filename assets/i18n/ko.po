@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-11-03 14:32-0300\n"
+"POT-Creation-Date: 2026-11-04 08:43-0300\n"
 "PO-Revision-Date: 2026-10-15 12:00+0900\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Korean\n"
@@ -49,7 +49,7 @@ msgid "Recently played"
 msgstr "최근"
 
 #: src/ui/sidebar.rs:358 src/ui/dialogs.rs:383 src/ui/dialogs.rs:540
-#: src/ui/playlist_generation.rs:105
+#: src/ui/playlist_generation.rs:110
 msgid "Name"
 msgstr "이름"
 
@@ -261,7 +261,7 @@ msgid "Loading…"
 msgstr "불러오는 중…"
 
 #: src/ui/player_bar.rs:800 src/ui/friends.rs:208 src/ui/collection.rs:371
-#: src/ui/playlist_generation.rs:373
+#: src/ui/playlist_generation.rs:416
 msgid "Pause"
 msgstr "일시정지"
 
@@ -332,7 +332,7 @@ msgstr "최근 항목"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:81
 #: src/ui/friends.rs:65 src/ui/mod.rs:685 src/window.rs:35
-#: src/ui/playlist_generation.rs:144
+#: src/ui/playlist_generation.rs:149
 msgid "Close"
 msgstr "닫기"
 
@@ -550,7 +550,7 @@ msgid "Artist and song title"
 msgstr "아티스트 및 곡 제목"
 
 #: src/ui/widgets.rs:1234 src/ui/widgets.rs:1346 src/ui/prerelease.rs:271
-#: src/ui/playlist_generation.rs:382
+#: src/ui/playlist_generation.rs:425
 msgid "Open in Spotify"
 msgstr "Spotify에서 열기"
 
@@ -2969,7 +2969,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "“{name}”이(가) 더 이상 내 라이브러리에 표시되지 않습니다."
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:266 src/ui/playlist_generation.rs:375
+#: src/ui/dialogs.rs:623 src/ui/login.rs:266 src/ui/playlist_generation.rs:418
 msgid "Cancel"
 msgstr "취소"
 
@@ -3052,7 +3052,7 @@ msgid "My playlist"
 msgstr "내 플레이리스트"
 
 #: src/ui/dialogs.rs:398 src/ui/dialogs.rs:401 src/ui/dialogs.rs:588
-#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:108
+#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:113
 msgid "Public playlist"
 msgstr "공개 플레이리스트"
 
@@ -4138,11 +4138,11 @@ msgstr ""
 "나 가상 머신의 GPU 가속을 켜세요. 자세한 내용을 보려면 {url}을(를) 여시겠습니"
 "까?"
 
-#: src/ui/playlist_generation.rs:27 src/ui/playlist_generation.rs:34
+#: src/ui/playlist_generation.rs:30 src/ui/playlist_generation.rs:37
 msgid "Manual playlist"
 msgstr "수동 재생목록"
 
-#: src/ui/playlist_generation.rs:49
+#: src/ui/playlist_generation.rs:57
 msgid ""
 "Uses album/single release dates and excludes liked songs. Only tracks by "
 "followed artists are included."
@@ -4150,25 +4150,23 @@ msgstr ""
 "앨범 및 싱글 발매일을 사용하며 좋아요 표시한 곡을 제외합니다. 팔로우한 아티스"
 "트의 곡만 포함합니다."
 
-#: src/ui/playlist_generation.rs:59
-msgid ""
-"Includes unliked songs from saved albums. Dates refer to when albums were "
-"saved."
-msgstr "저장한 앨범에서 좋아요를 표시하지 않은 곡을 포함합니다. 날짜는 앨범을 저장한 날짜를 기준으로 합니다."
-
 #: src/ui/playlist_generation.rs:63
+msgid "Includes unliked songs from saved albums."
+msgstr "저장한 앨범에서 좋아요를 누르지 않은 곡을 포함합니다."
+
+#: src/ui/playlist_generation.rs:67
 msgid "Release period"
 msgstr "발매 기간"
 
-#: src/ui/playlist_generation.rs:65
+#: src/ui/playlist_generation.rs:69
 msgid "Saved albums period (UTC)"
 msgstr "앨범 저장 기간 (UTC)"
 
-#: src/ui/playlist_generation.rs:67
+#: src/ui/playlist_generation.rs:71
 msgid "Liked songs period (UTC)"
 msgstr "좋아요 표시한 곡의 기간 (UTC)"
 
-#: src/ui/playlist_generation.rs:71
+#: src/ui/playlist_generation.rs:75
 msgid ""
 "Select a year, then optionally a month and day. Leave both years as Any for "
 "all dates. A start alone selects that whole period."
@@ -4176,15 +4174,15 @@ msgstr ""
 "연도를 선택한 다음 필요하면 월과 일을 지정하세요. 두 연도를 모두 전체로 두면 "
 "모든 날짜를 포함합니다. 시작만 지정하면 해당 기간 전체를 선택합니다."
 
-#: src/ui/playlist_generation.rs:78
+#: src/ui/playlist_generation.rs:82
 msgid "From"
 msgstr "시작"
 
-#: src/ui/playlist_generation.rs:86
+#: src/ui/playlist_generation.rs:90
 msgid "To"
 msgstr "종료"
 
-#: src/ui/playlist_generation.rs:118
+#: src/ui/playlist_generation.rs:123
 msgid ""
 "Estimated API cost: high and variable (artists, releases and track pages). "
 "Cached discoveries reduce repeated work."
@@ -4192,13 +4190,15 @@ msgstr ""
 "예상 API 사용량: 높고 가변적입니다(아티스트, 발매 및 곡 페이지). 캐시는 반복 "
 "조회를 줄입니다."
 
-#: src/ui/playlist_generation.rs:120
+#: src/ui/playlist_generation.rs:125
 msgid ""
 "Estimated API cost: variable; saved album pages, track pages and liked-song "
 "checks, plus playlist batches."
-msgstr "예상 API 비용: 가변적입니다. 저장한 앨범 및 곡 페이지, 좋아요 확인과 플레이리스트 일괄 추가가 포함됩니다."
+msgstr ""
+"예상 API 비용: 가변적입니다. 저장한 앨범 및 곡 페이지, 좋아요 확인과 플레이리"
+"스트 일괄 추가가 포함됩니다."
 
-#: src/ui/playlist_generation.rs:122
+#: src/ui/playlist_generation.rs:127
 msgid ""
 "Estimated API cost: medium; about one request per 50 library entries, plus "
 "playlist batches. Exact size is not known yet."
@@ -4206,11 +4206,11 @@ msgstr ""
 "예상 API 사용량: 중간입니다. 라이브러리 항목 50개당 약 한 번의 요청과 재생목"
 "록 일괄 추가가 필요합니다. 정확한 크기는 아직 알 수 없습니다."
 
-#: src/ui/playlist_generation.rs:127
+#: src/ui/playlist_generation.rs:132
 msgid "Start generation"
 msgstr "생성 시작"
 
-#: src/ui/playlist_generation.rs:142
+#: src/ui/playlist_generation.rs:147
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
@@ -4218,119 +4218,133 @@ msgstr ""
 "각 묶음이 끝날 때 진행 상황이 저장됩니다. 앱을 종료하면 다음 실행 때까지 처리"
 "가 일시 중지됩니다."
 
-#: src/ui/playlist_generation.rs:157
+#: src/ui/playlist_generation.rs:168
+msgid "Filter by"
+msgstr "필터 기준"
+
+#: src/ui/playlist_generation.rs:173 src/ui/playlist_generation.rs:180
+#: src/ui/playlist_generation.rs:668
+msgid "Date added to library"
+msgstr "라이브러리에 추가한 날짜"
+
+#: src/ui/playlist_generation.rs:174 src/ui/playlist_generation.rs:185
+#: src/ui/playlist_generation.rs:669
+msgid "Release date"
+msgstr "발매일"
+
+#: src/ui/playlist_generation.rs:200
 msgid "Include compilations"
 msgstr "컴필레이션 포함"
 
-#: src/ui/playlist_generation.rs:231
+#: src/ui/playlist_generation.rs:274
 msgid "Year"
 msgstr "연도"
 
-#: src/ui/playlist_generation.rs:241
+#: src/ui/playlist_generation.rs:284
 msgid "Month"
 msgstr "월"
 
-#: src/ui/playlist_generation.rs:253
+#: src/ui/playlist_generation.rs:296
 msgid "Day"
 msgstr "일"
 
-#: src/ui/playlist_generation.rs:281
+#: src/ui/playlist_generation.rs:324
 msgid "Any"
 msgstr "전체"
 
-#: src/ui/playlist_generation.rs:321
+#: src/ui/playlist_generation.rs:364
 msgid "Playlist generations"
 msgstr "재생목록 생성 기록"
 
-#: src/ui/playlist_generation.rs:326
+#: src/ui/playlist_generation.rs:369
 msgid "Reading followed artists"
 msgstr "팔로우한 아티스트 읽는 중"
 
-#: src/ui/playlist_generation.rs:327
+#: src/ui/playlist_generation.rs:370
 msgid "Finding releases for the period"
 msgstr "기간 내 발매 검색 중"
 
-#: src/ui/playlist_generation.rs:328
+#: src/ui/playlist_generation.rs:371
 msgid "Checking release tracks and likes"
 msgstr "수록곡과 좋아요 확인 중"
 
-#: src/ui/playlist_generation.rs:329
+#: src/ui/playlist_generation.rs:372
 msgid "Checking saved album tracks and likes"
 msgstr "저장한 앨범의 곡과 좋아요 확인 중"
 
-#: src/ui/playlist_generation.rs:330
+#: src/ui/playlist_generation.rs:373
 msgid "Reading saved albums"
 msgstr "저장된 앨범 읽는 중"
 
-#: src/ui/playlist_generation.rs:331
+#: src/ui/playlist_generation.rs:374
 msgid "Reading liked songs"
 msgstr "좋아요 표시한 곡 읽는 중"
 
-#: src/ui/playlist_generation.rs:332
+#: src/ui/playlist_generation.rs:375
 msgid "Creating playlist"
 msgstr "재생목록 만드는 중"
 
-#: src/ui/playlist_generation.rs:333
+#: src/ui/playlist_generation.rs:376
 msgid "Adding songs"
 msgstr "곡 추가 중"
 
-#: src/ui/playlist_generation.rs:334
+#: src/ui/playlist_generation.rs:377
 msgid "Finished"
 msgstr "종료됨"
 
-#: src/ui/playlist_generation.rs:337
+#: src/ui/playlist_generation.rs:380
 msgid "Pending"
 msgstr "대기 중"
 
-#: src/ui/playlist_generation.rs:337
+#: src/ui/playlist_generation.rs:380
 msgid "Running"
 msgstr "실행 중"
 
-#: src/ui/playlist_generation.rs:338
+#: src/ui/playlist_generation.rs:381
 msgid "Paused"
 msgstr "일시 중지됨"
 
-#: src/ui/playlist_generation.rs:338
+#: src/ui/playlist_generation.rs:381
 msgid "Paused: Spotify quota"
 msgstr "일시 중지: Spotify 할당량"
 
-#: src/ui/playlist_generation.rs:338
+#: src/ui/playlist_generation.rs:381
 msgid "Retrying"
 msgstr "재시도 대기 중"
 
-#: src/ui/playlist_generation.rs:339
+#: src/ui/playlist_generation.rs:382
 msgid "Completed"
 msgstr "완료됨"
 
-#: src/ui/playlist_generation.rs:339
+#: src/ui/playlist_generation.rs:382
 msgid "Failed"
 msgstr "실패함"
 
-#: src/ui/playlist_generation.rs:340
+#: src/ui/playlist_generation.rs:383
 msgid "Cancelled"
 msgstr "취소됨"
 
-#: src/ui/playlist_generation.rs:344
+#: src/ui/playlist_generation.rs:387
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "아티스트: {artists}/{total}"
 
-#: src/ui/playlist_generation.rs:350
+#: src/ui/playlist_generation.rs:393
 msgid "Discovering total work…"
 msgstr "전체 작업량 확인 중…"
 
-#: src/ui/playlist_generation.rs:353
+#: src/ui/playlist_generation.rs:396
 #, rust-format
 msgid "Unique releases checked: {checked} · Within period: {matched}"
 msgstr "확인한 고유 발매: {checked} · 기간 내: {matched}"
 
-#: src/ui/playlist_generation.rs:356
+#: src/ui/playlist_generation.rs:399
 #, rust-format
 msgid ""
 "Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
 msgstr "분석한 곡: {analyzed}/{total} · 선택: {selected} · 추가: {added}"
 
-#: src/ui/playlist_generation.rs:361
+#: src/ui/playlist_generation.rs:404
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -4338,48 +4352,48 @@ msgid ""
 msgstr ""
 "분석: {analyzed}/{total} · 앨범: {albums} · 선택: {selected} · 추가: {added}"
 
-#: src/ui/playlist_generation.rs:367
+#: src/ui/playlist_generation.rs:410
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "경과 시간: {elapsed} · 예상 남은 시간: {remaining}"
 
-#: src/ui/playlist_generation.rs:374
+#: src/ui/playlist_generation.rs:417
 msgid "Resume"
 msgstr "계속"
 
-#: src/ui/playlist_generation.rs:394
+#: src/ui/playlist_generation.rs:437
 msgid "API cost manager"
 msgstr "API 사용량 관리자"
 
-#: src/ui/playlist_generation.rs:396
+#: src/ui/playlist_generation.rs:439
 msgid "Official remaining quota: not provided by Spotify"
 msgstr "공식 남은 할당량: Spotify가 제공하지 않음"
 
-#: src/ui/playlist_generation.rs:397
+#: src/ui/playlist_generation.rs:440
 msgid "Requests in the last 30 seconds / local budget"
 msgstr "최근 30초의 요청 / 로컬 예산"
 
-#: src/ui/playlist_generation.rs:398
+#: src/ui/playlist_generation.rs:441
 msgid "Effective dispatch rate (last 30 seconds)"
 msgstr "실제 전송 속도 (최근 30초)"
 
-#: src/ui/playlist_generation.rs:399
+#: src/ui/playlist_generation.rs:442
 msgid "Queued (high / medium / low)"
 msgstr "대기열 (높음 / 중간 / 낮음)"
 
-#: src/ui/playlist_generation.rs:400
+#: src/ui/playlist_generation.rs:443
 msgid "In flight"
 msgstr "실행 중"
 
-#: src/ui/playlist_generation.rs:401
+#: src/ui/playlist_generation.rs:444
 msgid "Global cooldown remaining"
 msgstr "남은 전체 대기 시간"
 
-#: src/ui/playlist_generation.rs:403
+#: src/ui/playlist_generation.rs:446
 msgid "Catalog cache hits / reads"
 msgstr "캐시 적중 / 카탈로그 조회"
 
-#: src/ui/playlist_generation.rs:412
+#: src/ui/playlist_generation.rs:455
 msgid ""
 "Limits and cost are local estimates. Other applications and devices can "
 "consume Spotify quota too."
@@ -4387,7 +4401,7 @@ msgstr ""
 "제한과 사용량은 로컬 추정치입니다. 다른 앱과 기기도 Spotify 할당량을 사용할 "
 "수 있습니다."
 
-#: src/ui/playlist_generation.rs:430
+#: src/ui/playlist_generation.rs:473
 msgid ""
 "Spotify quota exhausted. Jobs remain checkpointed. No reset time is known. "
 "Check the developer dashboard before trying again."
@@ -4395,20 +4409,27 @@ msgstr ""
 "Spotify 할당량을 소진했습니다. 진행 상황은 저장되어 있습니다. 갱신 시각은 알 "
 "수 없습니다. 다시 시도하기 전에 개발자 대시보드를 확인하세요."
 
-#: src/ui/playlist_generation.rs:432
+#: src/ui/playlist_generation.rs:475
 msgid "Spotify developer dashboard"
 msgstr "Spotify 개발자 대시보드"
 
-#: src/ui/playlist_generation.rs:435
+#: src/ui/playlist_generation.rs:478
 msgid "Allow quota recheck"
 msgstr "할당량 재확인 허용"
 
-#: src/ui/playlist_generation.rs:440
+#: src/ui/playlist_generation.rs:483
 msgid ""
 "Then resume paused jobs. A new quota rejection will pause requests again."
 msgstr ""
 "그런 다음 일시 중지된 작업을 재개하세요. 할당량으로 다시 거부되면 요청이 다"
 "시 중지됩니다."
+
+#~ msgid ""
+#~ "Includes unliked songs from saved albums. Dates refer to when albums were "
+#~ "saved."
+#~ msgstr ""
+#~ "저장한 앨범에서 좋아요를 표시하지 않은 곡을 포함합니다. 날짜는 앨범을 저장"
+#~ "한 날짜를 기준으로 합니다."
 
 #~ msgctxt "column"
 #~ msgid "Title"

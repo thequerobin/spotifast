@@ -135,6 +135,120 @@ fn default_names_preserve_precision() {
 }
 
 #[test]
+fn liked_tracks_filter_by_the_selected_date_and_keep_it_after_restart() {
+    let mut job = job();
+    job.period = period("03/2025", "");
+    job.set_start_parameters([(DATE_BASIS.into(), "release".into())].into())
+        .unwrap();
+    let mut released = song("released", "unsaved", "2026-01-01T00:00:00Z");
+    released.track.album.as_mut().unwrap().release_date = Some("2025-03".into());
+    let mut recently_liked = song("recentlyliked", "other", "2025-03-15T00:00:00Z");
+    recently_liked.track.album.as_mut().unwrap().release_date = Some("2000-01-01".into());
+    let unknown = song("unknown", "unknownalbum", "2025-03-15T00:00:00Z");
+    let mut saved_album = released.clone();
+    saved_album.track.id = Some("saved".into());
+    saved_album.track.uri = "spotify:track:saved".into();
+    saved_album.track.album.as_mut().unwrap().id = "savedalbum".into();
+    job.albums.insert("savedalbum".into());
+    job.stage = Stage::Tracks;
+    apply(
+        &mut job,
+        Outcome::Tracks(page(
+            vec![released.clone(), recently_liked.clone()],
+            0,
+            4,
+            true,
+        )),
+    )
+    .unwrap();
+    let mut job = crash(&job);
+    assert_eq!(job.parameters[DATE_BASIS], "release");
+    assert_eq!(job.tracks_offset, 2);
+    apply(
+        &mut job,
+        Outcome::Tracks(page(vec![unknown, saved_album], 2, 4, false)),
+    )
+    .unwrap();
+    assert_eq!(job.candidates.len(), 1);
+    assert_eq!(job.candidates[0].uri, "spotify:track:released");
+    assert!(eligible(
+        &recently_liked,
+        kind("mcans").unwrap(),
+        &job.period,
+        &job.albums,
+        &Parameters::new(),
+    ));
+    assert!(!eligible(
+        &released,
+        kind("mcans").unwrap(),
+        &job.period,
+        &job.albums,
+        &Parameters::new(),
+    ));
+}
+
+#[test]
+fn date_basis_defaults_preserve_legacy_jobs_and_reject_unsupported_choices() {
+    for strategy in KINDS {
+        let mut job = Job::new(
+            "listener".into(),
+            strategy.id.into(),
+            Period::default(),
+            "Test".into(),
+            false,
+        )
+        .unwrap();
+        let expected = if strategy.source == Source::FollowedReleases {
+            DateBasis::Release
+        } else {
+            DateBasis::Added
+        };
+        assert_eq!(job.parameters[DATE_BASIS], expected.value());
+        job.parameters.remove(DATE_BASIS);
+        assert_eq!(
+            DateBasis::for_source(strategy.source, &crash(&job).parameters),
+            expected
+        );
+        assert!(
+            job.set_start_parameters([(DATE_BASIS.into(), "unknown".into())].into())
+                .is_err()
+        );
+        let result = job.set_start_parameters([(DATE_BASIS.into(), "added".into())].into());
+        assert_eq!(result.is_err(), strategy.source == Source::FollowedReleases);
+        job.set_start_parameters([(DATE_BASIS.into(), "release".into())].into())
+            .unwrap();
+        assert_eq!(
+            DateBasis::for_source(strategy.source, &crash(&job).parameters),
+            DateBasis::Release
+        );
+    }
+}
+
+#[test]
+fn release_date_filter_respects_precision_bounds_and_missing_dates() {
+    for (date, inside) in [
+        (Some("2025"), true),
+        (Some("2025-03"), true),
+        (Some("2025-03-15"), true),
+        (Some("2025-03-14"), false),
+        (Some("2025-03-16"), false),
+        (Some("2025-02-29"), false),
+        (Some("bad"), false),
+        (None, false),
+    ] {
+        assert_eq!(
+            DateBasis::Release.matches(&period("15/03/2025", ""), None, date),
+            inside,
+            "{date:?}"
+        );
+        assert!(DateBasis::Release.matches(&Period::default(), None, date));
+    }
+    assert!(DateBasis::Release.matches(&period("", "03/2025"), None, Some("2025-03-31")));
+    assert!(!DateBasis::Release.matches(&period("", "03/2025"), None, Some("2025-04-01")));
+    assert!(!DateBasis::Release.matches(&period("invalid", ""), None, Some("2025")));
+}
+
+#[test]
 fn excludes_only_actually_saved_album_ids() {
     let albums = BTreeSet::from(["saved".to_owned()]);
     let strategy = kind("mcans").unwrap();

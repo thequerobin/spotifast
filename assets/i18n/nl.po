@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-11-03 14:32-0300\n"
+"POT-Creation-Date: 2026-11-04 08:43-0300\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Dutch\n"
@@ -49,7 +49,7 @@ msgid "Recently played"
 msgstr "Onlangs afgespeeld"
 
 #: src/ui/sidebar.rs:358 src/ui/dialogs.rs:383 src/ui/dialogs.rs:540
-#: src/ui/playlist_generation.rs:105
+#: src/ui/playlist_generation.rs:110
 msgid "Name"
 msgstr "Naam"
 
@@ -265,7 +265,7 @@ msgid "Loading…"
 msgstr "Laden…"
 
 #: src/ui/player_bar.rs:800 src/ui/friends.rs:208 src/ui/collection.rs:371
-#: src/ui/playlist_generation.rs:373
+#: src/ui/playlist_generation.rs:416
 msgid "Pause"
 msgstr "Pauzeren"
 
@@ -336,7 +336,7 @@ msgstr "Recent"
 
 #: src/ui/queue.rs:92 src/ui/queue.rs:241 src/ui/lyrics.rs:81
 #: src/ui/friends.rs:65 src/ui/mod.rs:685 src/window.rs:35
-#: src/ui/playlist_generation.rs:144
+#: src/ui/playlist_generation.rs:149
 msgid "Close"
 msgstr "Sluiten"
 
@@ -556,7 +556,7 @@ msgid "Artist and song title"
 msgstr "Artiest en titel van het nummer"
 
 #: src/ui/widgets.rs:1234 src/ui/widgets.rs:1346 src/ui/prerelease.rs:271
-#: src/ui/playlist_generation.rs:382
+#: src/ui/playlist_generation.rs:425
 msgid "Open in Spotify"
 msgstr "Openen in Spotify"
 
@@ -3027,7 +3027,7 @@ msgid "“{name}” will no longer appear in Your Library."
 msgstr "“{name}” verschijnt niet meer in Jouw bibliotheek."
 
 #: src/ui/dialogs.rs:114 src/ui/dialogs.rs:157 src/ui/dialogs.rs:442
-#: src/ui/dialogs.rs:623 src/ui/login.rs:266 src/ui/playlist_generation.rs:375
+#: src/ui/dialogs.rs:623 src/ui/login.rs:266 src/ui/playlist_generation.rs:418
 msgid "Cancel"
 msgstr "Annuleren"
 
@@ -3110,7 +3110,7 @@ msgid "My playlist"
 msgstr "Mijn playlist"
 
 #: src/ui/dialogs.rs:398 src/ui/dialogs.rs:401 src/ui/dialogs.rs:588
-#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:108
+#: src/ui/dialogs.rs:597 src/ui/playlist_generation.rs:113
 msgid "Public playlist"
 msgstr "Openbare playlist"
 
@@ -4210,11 +4210,11 @@ msgstr ""
 "stuurprogramma of zet GPU-versnelling aan voor de virtuele machine. {url} "
 "openen voor meer informatie?"
 
-#: src/ui/playlist_generation.rs:27 src/ui/playlist_generation.rs:34
+#: src/ui/playlist_generation.rs:30 src/ui/playlist_generation.rs:37
 msgid "Manual playlist"
 msgstr "Handmatige afspeellijst"
 
-#: src/ui/playlist_generation.rs:49
+#: src/ui/playlist_generation.rs:57
 msgid ""
 "Uses album/single release dates and excludes liked songs. Only tracks by "
 "followed artists are included."
@@ -4222,25 +4222,23 @@ msgstr ""
 "Gebruikt de releasedatums van albums en singles en sluit gelikete nummers "
 "uit. Alleen nummers van gevolgde artiesten worden opgenomen."
 
-#: src/ui/playlist_generation.rs:59
-msgid ""
-"Includes unliked songs from saved albums. Dates refer to when albums were "
-"saved."
-msgstr "Bevat nummers zonder vind-ik-leuk uit opgeslagen albums. De datums verwijzen naar wanneer de albums zijn opgeslagen."
-
 #: src/ui/playlist_generation.rs:63
+msgid "Includes unliked songs from saved albums."
+msgstr "Bevat nummers uit opgeslagen albums die je niet leuk vindt."
+
+#: src/ui/playlist_generation.rs:67
 msgid "Release period"
 msgstr "Uitgaveperiode"
 
-#: src/ui/playlist_generation.rs:65
+#: src/ui/playlist_generation.rs:69
 msgid "Saved albums period (UTC)"
 msgstr "Periode van opgeslagen albums (UTC)"
 
-#: src/ui/playlist_generation.rs:67
+#: src/ui/playlist_generation.rs:71
 msgid "Liked songs period (UTC)"
 msgstr "Periode van gelikete nummers (UTC)"
 
-#: src/ui/playlist_generation.rs:71
+#: src/ui/playlist_generation.rs:75
 msgid ""
 "Select a year, then optionally a month and day. Leave both years as Any for "
 "all dates. A start alone selects that whole period."
@@ -4248,15 +4246,15 @@ msgstr ""
 "Kies een jaar en eventueel maand en dag. Laat beide jaren op Alle staan voor "
 "alle datums. Alleen een begindatum selecteert die hele periode."
 
-#: src/ui/playlist_generation.rs:78
+#: src/ui/playlist_generation.rs:82
 msgid "From"
 msgstr "Van"
 
-#: src/ui/playlist_generation.rs:86
+#: src/ui/playlist_generation.rs:90
 msgid "To"
 msgstr "Tot"
 
-#: src/ui/playlist_generation.rs:118
+#: src/ui/playlist_generation.rs:123
 msgid ""
 "Estimated API cost: high and variable (artists, releases and track pages). "
 "Cached discoveries reduce repeated work."
@@ -4264,13 +4262,15 @@ msgstr ""
 "Geschat API-verbruik: hoog en wisselend (artiesten, uitgaven en "
 "nummerpagina’s). De cache vermindert herhaalde aanvragen."
 
-#: src/ui/playlist_generation.rs:120
+#: src/ui/playlist_generation.rs:125
 msgid ""
 "Estimated API cost: variable; saved album pages, track pages and liked-song "
 "checks, plus playlist batches."
-msgstr "Geschatte API-kosten: variabel; pagina's met opgeslagen albums en nummers, controles op vind-ik-leuks en playlistbatches."
+msgstr ""
+"Geschatte API-kosten: variabel; pagina's met opgeslagen albums en nummers, "
+"controles op vind-ik-leuks en playlistbatches."
 
-#: src/ui/playlist_generation.rs:122
+#: src/ui/playlist_generation.rs:127
 msgid ""
 "Estimated API cost: medium; about one request per 50 library entries, plus "
 "playlist batches. Exact size is not known yet."
@@ -4278,11 +4278,11 @@ msgstr ""
 "Geschat API-verbruik: gemiddeld; ongeveer één aanvraag per 50 "
 "bibliotheekitems plus playlistbatches. De precieze omvang is nog onbekend."
 
-#: src/ui/playlist_generation.rs:127
+#: src/ui/playlist_generation.rs:132
 msgid "Start generation"
 msgstr "Generatie starten"
 
-#: src/ui/playlist_generation.rs:142
+#: src/ui/playlist_generation.rs:147
 msgid ""
 "Progress is saved after every batch. Quitting pauses processing until the "
 "next launch."
@@ -4290,113 +4290,127 @@ msgstr ""
 "De voortgang wordt na elke batch opgeslagen. Afsluiten pauzeert de "
 "verwerking tot de volgende start."
 
-#: src/ui/playlist_generation.rs:157
+#: src/ui/playlist_generation.rs:168
+msgid "Filter by"
+msgstr "Filteren op"
+
+#: src/ui/playlist_generation.rs:173 src/ui/playlist_generation.rs:180
+#: src/ui/playlist_generation.rs:668
+msgid "Date added to library"
+msgstr "Datum toegevoegd aan bibliotheek"
+
+#: src/ui/playlist_generation.rs:174 src/ui/playlist_generation.rs:185
+#: src/ui/playlist_generation.rs:669
+msgid "Release date"
+msgstr "Releasedatum"
+
+#: src/ui/playlist_generation.rs:200
 msgid "Include compilations"
 msgstr "Compilaties opnemen"
 
-#: src/ui/playlist_generation.rs:231
+#: src/ui/playlist_generation.rs:274
 msgid "Year"
 msgstr "Jaar"
 
-#: src/ui/playlist_generation.rs:241
+#: src/ui/playlist_generation.rs:284
 msgid "Month"
 msgstr "Maand"
 
-#: src/ui/playlist_generation.rs:253
+#: src/ui/playlist_generation.rs:296
 msgid "Day"
 msgstr "Dag"
 
-#: src/ui/playlist_generation.rs:281
+#: src/ui/playlist_generation.rs:324
 msgid "Any"
 msgstr "Alle"
 
-#: src/ui/playlist_generation.rs:321
+#: src/ui/playlist_generation.rs:364
 msgid "Playlist generations"
 msgstr "Afspeellijstgeneraties"
 
-#: src/ui/playlist_generation.rs:326
+#: src/ui/playlist_generation.rs:369
 msgid "Reading followed artists"
 msgstr "Gevolgde artiesten lezen"
 
-#: src/ui/playlist_generation.rs:327
+#: src/ui/playlist_generation.rs:370
 msgid "Finding releases for the period"
 msgstr "Uitgaven voor de periode zoeken"
 
-#: src/ui/playlist_generation.rs:328
+#: src/ui/playlist_generation.rs:371
 msgid "Checking release tracks and likes"
 msgstr "Nummers en likes controleren"
 
-#: src/ui/playlist_generation.rs:329
+#: src/ui/playlist_generation.rs:372
 msgid "Checking saved album tracks and likes"
 msgstr "Nummers uit opgeslagen albums en vind-ik-leuks controleren"
 
-#: src/ui/playlist_generation.rs:330
+#: src/ui/playlist_generation.rs:373
 msgid "Reading saved albums"
 msgstr "Opgeslagen albums lezen"
 
-#: src/ui/playlist_generation.rs:331
+#: src/ui/playlist_generation.rs:374
 msgid "Reading liked songs"
 msgstr "Gelikete nummers lezen"
 
-#: src/ui/playlist_generation.rs:332
+#: src/ui/playlist_generation.rs:375
 msgid "Creating playlist"
 msgstr "Afspeellijst maken"
 
-#: src/ui/playlist_generation.rs:333
+#: src/ui/playlist_generation.rs:376
 msgid "Adding songs"
 msgstr "Nummers toevoegen"
 
-#: src/ui/playlist_generation.rs:334
+#: src/ui/playlist_generation.rs:377
 msgid "Finished"
 msgstr "Klaar"
 
-#: src/ui/playlist_generation.rs:337
+#: src/ui/playlist_generation.rs:380
 msgid "Pending"
 msgstr "In afwachting"
 
-#: src/ui/playlist_generation.rs:337
+#: src/ui/playlist_generation.rs:380
 msgid "Running"
 msgstr "Bezig"
 
-#: src/ui/playlist_generation.rs:338
+#: src/ui/playlist_generation.rs:381
 msgid "Paused"
 msgstr "Gepauzeerd"
 
-#: src/ui/playlist_generation.rs:338
+#: src/ui/playlist_generation.rs:381
 msgid "Paused: Spotify quota"
 msgstr "Gepauzeerd: Spotify-quotum"
 
-#: src/ui/playlist_generation.rs:338
+#: src/ui/playlist_generation.rs:381
 msgid "Retrying"
 msgstr "Opnieuw proberen"
 
-#: src/ui/playlist_generation.rs:339
+#: src/ui/playlist_generation.rs:382
 msgid "Completed"
 msgstr "Voltooid"
 
-#: src/ui/playlist_generation.rs:339
+#: src/ui/playlist_generation.rs:382
 msgid "Failed"
 msgstr "Mislukt"
 
-#: src/ui/playlist_generation.rs:340
+#: src/ui/playlist_generation.rs:383
 msgid "Cancelled"
 msgstr "Geannuleerd"
 
-#: src/ui/playlist_generation.rs:344
+#: src/ui/playlist_generation.rs:387
 #, rust-format
 msgid "Artists: {artists}/{total}"
 msgstr "Artiesten: {artists}/{total}"
 
-#: src/ui/playlist_generation.rs:350
+#: src/ui/playlist_generation.rs:393
 msgid "Discovering total work…"
 msgstr "Totale hoeveelheid werk bepalen…"
 
-#: src/ui/playlist_generation.rs:353
+#: src/ui/playlist_generation.rs:396
 #, rust-format
 msgid "Unique releases checked: {checked} · Within period: {matched}"
 msgstr "Unieke uitgaven gecontroleerd: {checked} · Binnen periode: {matched}"
 
-#: src/ui/playlist_generation.rs:356
+#: src/ui/playlist_generation.rs:399
 #, rust-format
 msgid ""
 "Songs analyzed: {analyzed}/{total} · Selected: {selected} · Added: {added}"
@@ -4404,7 +4418,7 @@ msgstr ""
 "Nummers geanalyseerd: {analyzed}/{total} · Geselecteerd: {selected} · "
 "Toegevoegd: {added}"
 
-#: src/ui/playlist_generation.rs:361
+#: src/ui/playlist_generation.rs:404
 #, rust-format
 msgid ""
 "Analyzed: {analyzed}/{total} · Albums: {albums} · Selected: {selected} · "
@@ -4413,48 +4427,48 @@ msgstr ""
 "Geanalyseerd: {analyzed}/{total} · Albums: {albums} · Geselecteerd: "
 "{selected} · Toegevoegd: {added}"
 
-#: src/ui/playlist_generation.rs:367
+#: src/ui/playlist_generation.rs:410
 #, rust-format
 msgid "Elapsed: {elapsed} · Estimated remaining: {remaining}"
 msgstr "Verstreken: {elapsed} · Geschatte resterende tijd: {remaining}"
 
-#: src/ui/playlist_generation.rs:374
+#: src/ui/playlist_generation.rs:417
 msgid "Resume"
 msgstr "Hervatten"
 
-#: src/ui/playlist_generation.rs:394
+#: src/ui/playlist_generation.rs:437
 msgid "API cost manager"
 msgstr "API-verbruiksbeheer"
 
-#: src/ui/playlist_generation.rs:396
+#: src/ui/playlist_generation.rs:439
 msgid "Official remaining quota: not provided by Spotify"
 msgstr "Officieel resterend quotum: niet verstrekt door Spotify"
 
-#: src/ui/playlist_generation.rs:397
+#: src/ui/playlist_generation.rs:440
 msgid "Requests in the last 30 seconds / local budget"
 msgstr "Aanvragen in de laatste 30 seconden / lokaal budget"
 
-#: src/ui/playlist_generation.rs:398
+#: src/ui/playlist_generation.rs:441
 msgid "Effective dispatch rate (last 30 seconds)"
 msgstr "Effectieve verzendsnelheid (laatste 30 seconden)"
 
-#: src/ui/playlist_generation.rs:399
+#: src/ui/playlist_generation.rs:442
 msgid "Queued (high / medium / low)"
 msgstr "Wachtrij (hoog / gemiddeld / laag)"
 
-#: src/ui/playlist_generation.rs:400
+#: src/ui/playlist_generation.rs:443
 msgid "In flight"
 msgstr "In uitvoering"
 
-#: src/ui/playlist_generation.rs:401
+#: src/ui/playlist_generation.rs:444
 msgid "Global cooldown remaining"
 msgstr "Resterende algemene wachttijd"
 
-#: src/ui/playlist_generation.rs:403
+#: src/ui/playlist_generation.rs:446
 msgid "Catalog cache hits / reads"
 msgstr "Cachetreffers / catalogusaanvragen"
 
-#: src/ui/playlist_generation.rs:412
+#: src/ui/playlist_generation.rs:455
 msgid ""
 "Limits and cost are local estimates. Other applications and devices can "
 "consume Spotify quota too."
@@ -4462,7 +4476,7 @@ msgstr ""
 "Limieten en verbruik zijn lokale schattingen. Andere apps en apparaten "
 "kunnen ook Spotify-quotum verbruiken."
 
-#: src/ui/playlist_generation.rs:430
+#: src/ui/playlist_generation.rs:473
 msgid ""
 "Spotify quota exhausted. Jobs remain checkpointed. No reset time is known. "
 "Check the developer dashboard before trying again."
@@ -4471,20 +4485,27 @@ msgstr ""
 "vernieuwingsmoment is onbekend. Bekijk het ontwikkelaarsdashboard voordat je "
 "opnieuw probeert."
 
-#: src/ui/playlist_generation.rs:432
+#: src/ui/playlist_generation.rs:475
 msgid "Spotify developer dashboard"
 msgstr "Spotify-ontwikkelaarsdashboard"
 
-#: src/ui/playlist_generation.rs:435
+#: src/ui/playlist_generation.rs:478
 msgid "Allow quota recheck"
 msgstr "Nieuwe quotumcontrole toestaan"
 
-#: src/ui/playlist_generation.rs:440
+#: src/ui/playlist_generation.rs:483
 msgid ""
 "Then resume paused jobs. A new quota rejection will pause requests again."
 msgstr ""
 "Hervat daarna gepauzeerde taken. Een nieuwe quotumweigering pauzeert de "
 "aanvragen opnieuw."
+
+#~ msgid ""
+#~ "Includes unliked songs from saved albums. Dates refer to when albums were "
+#~ "saved."
+#~ msgstr ""
+#~ "Bevat nummers zonder vind-ik-leuk uit opgeslagen albums. De datums "
+#~ "verwijzen naar wanneer de albums zijn opgeslagen."
 
 #~ msgctxt "column"
 #~ msgid "Title"

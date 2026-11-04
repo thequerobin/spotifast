@@ -208,8 +208,12 @@ Licensed under the [MIT License](LICENSE).
 **Liked Songs from Unsaved Albums (LSUA)** selects liked songs whose albums
 are not saved, with optional calendar periods, editable names and resumable jobs.
 **Unliked Songs from Saved Albums (USSA)** reads the songs of your saved albums
-and includes only those you have not liked. Optional periods use the album's
-saved date in UTC. Duplicates and unavailable tracks are skipped.
+and includes only those you have not liked. Duplicates and unavailable tracks
+are skipped.
+LSUA and USSA offer **Filter by**: **Date added to library** (the default)
+or **Release date**. Addition means when the song was liked for LSUA or the
+album was saved for USSA. Release dates come from the song's album edition.
+The selected basis is saved with each job for pause and restart recovery.
 **Unliked Songs from Followed Artists (USFA)** selects unliked songs from
 followed artists by album/single release date, with the same persistent progress
 and recovery. **Include compilations**

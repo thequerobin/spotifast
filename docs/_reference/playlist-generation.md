@@ -11,8 +11,9 @@ With both years set to **Any**, this mode reads all saved albums and includes
 their playable songs that are not individually liked. It does not depend on
 followed artists. A saved album does not mean every song on it is liked.
 
-An optional period filters the album's **saved date in UTC**, not its release
-date. Albums outside the period are discarded before any track or membership
+Under **Filter by**, choose **Date added to library** (the default, the album's
+**saved date in UTC**) or **Release date** (the saved album edition's release).
+Albums outside the period are discarded before any track or membership
 requests. With no period, albums without a saved timestamp remain eligible.
 The suggested name is **USSA - {period}** and is editable.
 
@@ -151,8 +152,24 @@ restored merely because their generation remains in history.
 
 ## Periods and names
 
-LSUA uses **UTC** for like timestamps. USSA uses **UTC** for
-album-save timestamps. USFA uses release calendar dates.
+LSUA and USSA offer **Filter by** before the period selectors:
+
+| Mode | Date added to library (default) | Release date |
+| --- | --- | --- |
+| LSUA | When the song was liked, in UTC | Release of that song's album edition |
+| USSA | When the album was saved, in UTC | Release of the saved album edition |
+| USFA | Unavailable: these songs are not saved in the library | Always uses release dates |
+
+The release date is the date Spotify reports for that edition; a reissue can
+have a different date from the original recording. Year-only and month-only
+release dates match periods they overlap, without inventing a precise day.
+With a period, entries missing its chosen date are skipped. With no period,
+missing dates do not exclude an entry. No extra metadata requests are needed:
+the date comes from the existing saved-song or saved-album response.
+The choice persists with each job and survives pauses and restarts. Existing
+jobs without a saved choice retain their original basis. Ordering remains by
+newest library addition for LSUA/USSA; changing the filter does not reorder it.
+
 Use the **Year**, **Month**, **Day** selectors, in that order, for each
 endpoint. **Any** year removes that endpoint; selecting a year enables the
 optional month, and selecting a month enables the optional day. Clearing a

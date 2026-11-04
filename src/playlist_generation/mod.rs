@@ -20,6 +20,55 @@ use std::collections::{BTreeMap, BTreeSet};
 pub type Parameters = BTreeMap<String, String>;
 
 pub const INCLUDE_COMPILATIONS: &str = "include_compilations";
+pub const DATE_BASIS: &str = "date_basis";
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum DateBasis {
+    Added,
+    Release,
+}
+
+impl DateBasis {
+    /// Missing parameters retain the meaning of existing saved jobs.
+    pub fn for_source(source: Source, parameters: &Parameters) -> Self {
+        match parameters.get(DATE_BASIS).map(String::as_str) {
+            Some("release") => Self::Release,
+            Some("added") => Self::Added,
+            _ if source == Source::FollowedReleases => Self::Release,
+            _ => Self::Added,
+        }
+    }
+
+    pub fn value(self) -> &'static str {
+        match self {
+            Self::Added => "added",
+            Self::Release => "release",
+        }
+    }
+
+    pub fn matches(self, period: &Period, added_at: Option<&str>, release: Option<&str>) -> bool {
+        match self {
+            Self::Added => period.contains(added_at),
+            Self::Release if period.bounds() == Ok((None, None)) => true,
+            Self::Release => release.is_some_and(|date| period.overlaps_release(date)),
+        }
+    }
+}
+
+pub fn validate_date_basis(source: Source, parameters: &Parameters) -> Result<(), String> {
+    if parameters
+        .get(DATE_BASIS)
+        .is_some_and(|value| !matches!(value.as_str(), "added" | "release"))
+    {
+        return Err("Invalid date basis".into());
+    }
+    if source == Source::FollowedReleases
+        && DateBasis::for_source(source, parameters) == DateBasis::Added
+    {
+        return Err("Unliked songs from followed artists have no library addition date".into());
+    }
+    Ok(())
+}
 
 pub struct Field {
     pub key: &'static str,
@@ -116,7 +165,15 @@ pub fn eligible(
     parameters: &Parameters,
 ) -> bool {
     playable(&saved.track)
-        && period.contains(saved.added_at.as_deref())
+        && DateBasis::for_source(kind.source, parameters).matches(
+            period,
+            saved.added_at.as_deref(),
+            saved
+                .track
+                .album
+                .as_ref()
+                .and_then(|album| album.release_date.as_deref()),
+        )
         && (kind.select)(&saved.track, albums, parameters)
 }
 

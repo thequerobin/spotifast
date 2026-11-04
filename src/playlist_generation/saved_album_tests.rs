@@ -107,6 +107,59 @@ fn saved_album_period_uses_saved_time_in_utc_and_survives_paginated_restart() {
 }
 
 #[test]
+fn release_filter_excludes_saved_albums_before_tracks_and_resumes_selection() {
+    let mut job = job();
+    job.period.start = "03/2025".into();
+    job.set_start_parameters([(super::DATE_BASIS.into(), "release".into())].into())
+        .unwrap();
+    let mut released = album("released", Some("2026-01-01T00:00:00Z"), 2);
+    released.album.release_date = Some("2025-03".into());
+    let mut saved_recently = album("savedrecently", Some("2025-03-15T00:00:00Z"), 100);
+    saved_recently.album.release_date = Some("1990-01-01".into());
+    jobs::apply(
+        &mut job,
+        jobs::Outcome::Albums(page(vec![released, saved_recently], 0, 3, true)),
+    )
+    .unwrap();
+    let mut job = crash(&job);
+    jobs::apply(
+        &mut job,
+        jobs::Outcome::Albums(page(
+            vec![album("unknown", Some("2025-03-01T00:00:00Z"), 100)],
+            2,
+            3,
+            false,
+        )),
+    )
+    .unwrap();
+    assert_eq!(job.parameters[super::DATE_BASIS], "release");
+    assert_eq!(job.saved_album_tracks.albums.len(), 1);
+    assert_eq!(job.saved_album_tracks.albums[0].id, "released");
+    assert_eq!(job.tracks_total, Some(2));
+    saved_albums::apply(
+        &mut job,
+        Outcome {
+            page: page(vec![track("liked")], 0, 2, true),
+            liked: ["spotify:track:liked".into()].into(),
+        },
+    )
+    .unwrap();
+    let mut job = crash(&job);
+    assert_eq!(job.saved_album_tracks.track_offset, 1);
+    saved_albums::apply(
+        &mut job,
+        Outcome {
+            page: page(vec![track("unliked")], 1, 2, false),
+            liked: Default::default(),
+        },
+    )
+    .unwrap();
+    assert_eq!(job.stage, Stage::Create);
+    assert_eq!(job.candidates.len(), 1);
+    assert_eq!(job.candidates[0].uri, "spotify:track:unliked");
+}
+
+#[test]
 fn selects_only_unliked_playable_tracks_deduplicates_and_resumes_each_album_page() {
     let mut job = job();
     jobs::apply(
