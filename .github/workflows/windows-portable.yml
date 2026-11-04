@@ -30,7 +30,7 @@ jobs:
           arch: x64
       - name: Formatting
         run: cargo fmt --all --check
-      - name: Playlist generation regression tests
+      - name: Playlist generation and date filter regression tests
         run: cargo test --locked --lib 'playlist_generation::'
       - name: API cost manager regression tests
         run: cargo test --locked --lib 'api::cost::'
