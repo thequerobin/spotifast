@@ -338,6 +338,7 @@ async fn expired_and_legacy_embedded_tracks_use_normal_pagination() {
                     .unwrap();
                 album.remove("prefetched");
                 album.remove("prefetched_at");
+                album.remove("release_date");
                 job = serde_json::from_value(legacy).unwrap();
             }
         }
@@ -686,4 +687,133 @@ async fn http_flow_reads_saved_albums_and_likes_then_creates_and_fills_playlist(
     assert_eq!(job.candidates[0].uri, "spotify:track:new");
     assert_eq!(job.candidates[0].added_at, "2025-03-01T00:00:00Z");
     server.await.unwrap();
+}
+
+#[tokio::test]
+async fn new_jobs_reuse_both_album_pages_from_disk_but_refresh_likes() {
+    let root = std::env::current_dir()
+        .unwrap()
+        .join("target")
+        .join(format!("saved-catalog-{:x}", rand::random::<u64>()));
+    let pages: Vec<_> = [(0, 40, true), (40, 15, false)]
+        .into_iter()
+        .map(|(offset, count, next)| Page {
+            items: (offset..offset + count)
+                .map(|i| Track {
+                    artists: vec![crate::api::models::ArtistRef {
+                        id: Some("followed".into()),
+                        ..Default::default()
+                    }],
+                    ..track(&format!("t{i}"))
+                })
+                .collect::<Vec<_>>(),
+            total: 55,
+            limit: 40,
+            offset,
+            next: next.then(|| "next".into()),
+        })
+        .collect();
+    let flags = |n| serde_json::to_string(&vec![false; n]).unwrap();
+    let (client, server) = super::tests::server(vec![
+        (
+            "GET /albums/shared/tracks?limit=40&offset=0",
+            "200 OK",
+            serde_json::to_string(&pages[0]).unwrap(),
+        ),
+        ("GET /me/library/contains?", "200 OK", flags(40)),
+        (
+            "GET /albums/shared/tracks?limit=40&offset=40",
+            "200 OK",
+            serde_json::to_string(&pages[1]).unwrap(),
+        ),
+        ("GET /me/library/contains?", "200 OK", flags(15)),
+    ])
+    .await;
+    let mut saved = album("shared", Some("2026-01-01T00:00:00Z"), 55);
+    saved.album.release_date = Some("2020-01-01".into());
+    let mut first = job();
+    jobs::apply(
+        &mut first,
+        jobs::Outcome::Albums(Page::whole(vec![saved.clone()])),
+    )
+    .unwrap();
+    for _ in 0..2 {
+        let step = jobs::prepare(&mut first);
+        let outcome = jobs::execute_cached(&client, &first, &step, Some(&root))
+            .await
+            .unwrap();
+        jobs::apply(&mut first, outcome).unwrap();
+    }
+    server.await.unwrap();
+    assert_eq!(first.candidates.len(), 55);
+
+    // A fresh transport has no memory cache. Any catalogue GET would fail this
+    // server's request assertions. Membership changed since the previous job.
+    let mut changed = vec![false; 40];
+    changed[0] = true;
+    let (client, server) = super::tests::server(vec![
+        (
+            "GET /me/library/contains?",
+            "200 OK",
+            serde_json::to_string(&changed).unwrap(),
+        ),
+        ("GET /me/library/contains?", "200 OK", flags(15)),
+    ])
+    .await;
+    let mut second = job();
+    jobs::apply(&mut second, jobs::Outcome::Albums(Page::whole(vec![saved]))).unwrap();
+    let mut second = crash(&second);
+    for _ in 0..2 {
+        let step = jobs::prepare(&mut second);
+        let outcome = jobs::execute_cached(&client, &second, &step, Some(&root))
+            .await
+            .unwrap();
+        jobs::apply(&mut second, outcome).unwrap();
+    }
+    server.await.unwrap();
+    assert_eq!(second.analyzed, 55);
+    assert_eq!(second.candidates.len(), 54);
+    assert!(
+        !second
+            .candidates
+            .iter()
+            .any(|c| c.uri == "spotify:track:t0")
+    );
+    assert_eq!(client.cost_manager().snapshot().cache_hits, 2);
+    // A different generator uses the same disk pages, with live membership.
+    let (client, server) = super::tests::server(vec![
+        ("GET /me/library/contains?", "200 OK", flags(40)),
+        ("GET /me/library/contains?", "200 OK", flags(15)),
+    ])
+    .await;
+    let mut followed = Job::new(
+        "listener".into(),
+        "unliked-followed-releases".into(),
+        Period::default(),
+        "USFA".into(),
+        false,
+    )
+    .unwrap();
+    followed.stage = Stage::ReleaseTracks;
+    followed.releases.artist_ids.insert("followed".into());
+    followed
+        .releases
+        .albums
+        .push_back(super::releases::Release {
+            id: "shared".into(),
+            date: "2020-01-01".into(),
+            tracks: Some(55),
+            compilation: false,
+        });
+    for _ in 0..2 {
+        let step = jobs::prepare(&mut followed);
+        let outcome = jobs::execute_cached(&client, &followed, &step, Some(&root))
+            .await
+            .unwrap();
+        jobs::apply(&mut followed, outcome).unwrap();
+    }
+    server.await.unwrap();
+    assert_eq!(followed.candidates.len(), 55);
+    assert_eq!(client.cost_manager().snapshot().cache_hits, 2);
+    tokio::fs::remove_dir_all(root).await.unwrap();
 }

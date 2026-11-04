@@ -209,6 +209,15 @@ fn invalid(message: &str) -> ApiError {
 }
 
 pub async fn execute(client: &ApiClient, job: &Job, step: &Step) -> Result<Outcome, ApiError> {
+    execute_cached(client, job, step, None).await
+}
+
+pub(super) async fn execute_cached(
+    client: &ApiClient,
+    job: &Job,
+    step: &Step,
+    cache_root: Option<&std::path::Path>,
+) -> Result<Outcome, ApiError> {
     let scan = &job.releases;
     match step {
         Step::Artists => Ok(Outcome::Artists(
@@ -260,9 +269,19 @@ pub async fn execute(client: &ApiClient, job: &Job, step: &Step) -> Result<Outco
                 .ok_or_else(|| invalid("Missing release checkpoint"))?;
             // The membership endpoint takes at most 40 URIs. Each page and its
             // membership answer are committed together, including after retry.
-            let page = client
-                .album_tracks(&album.id, scan.track_offset, 40)
-                .await?;
+            let page = super::catalog_cache::load(
+                client,
+                cache_root,
+                &super::catalog_cache::Request {
+                    account: &job.account,
+                    album: &album.id,
+                    release_date: Some(&album.date),
+                    offset: scan.track_offset,
+                    total: scan.album_track_total.or(album.tracks),
+                },
+                None,
+            )
+            .await?;
             checked_next(&page, scan.track_offset)?;
             let uris: Vec<_> = page
                 .items

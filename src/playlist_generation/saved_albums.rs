@@ -9,13 +9,14 @@ use std::collections::{BTreeSet, VecDeque};
 const TRACK_PAGE_SIZE: u32 = 40;
 const MAX_PREFETCHED_ALBUMS: usize = 50;
 const MAX_PREFETCH_BYTES: usize = 128 * 1024;
-const PREFETCH_MAX_AGE: u64 = 24 * 60 * 60;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Album {
     pub id: String,
     pub saved_at: String,
     pub tracks: Option<u32>,
+    #[serde(default)]
+    pub release_date: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prefetched: Option<Page<Track>>,
     #[serde(default)]
@@ -120,6 +121,7 @@ pub(super) fn collect(job: &mut Job, albums: &[SavedAlbum]) {
                     .map(|stamp| stamp.to_string())
                     .unwrap_or_default(),
                 tracks: saved.album.total_tracks,
+                release_date: saved.album.release_date.clone(),
                 prefetched,
                 prefetched_at: now(),
             });
@@ -150,7 +152,11 @@ pub(super) fn finish_discovery(job: &mut Job) {
     };
 }
 
-pub(super) async fn execute(client: &ApiClient, job: &Job) -> Result<Outcome, ApiError> {
+pub(super) async fn execute_cached(
+    client: &ApiClient,
+    job: &Job,
+    cache_root: Option<&std::path::Path>,
+) -> Result<Outcome, ApiError> {
     let scan = &job.saved_album_tracks;
     let album = scan
         .albums
@@ -160,19 +166,29 @@ pub(super) async fn execute(client: &ApiClient, job: &Job) -> Result<Outcome, Ap
     // Commit a page only together with its complete liked-membership answer.
     let prefetched = album.prefetched.as_ref().filter(|page| {
         page.offset == scan.track_offset
-            && now()
-                .checked_sub(album.prefetched_at)
-                .is_some_and(|age| age < PREFETCH_MAX_AGE)
+            && super::cache_policy::fresh(
+                album.prefetched_at,
+                album
+                    .release_date
+                    .as_deref()
+                    .and_then(super::cache_policy::month),
+                now(),
+            )
             && checked_page(scan, page).is_ok()
     });
-    let page = match prefetched {
-        Some(page) => page.clone(),
-        None => {
-            client
-                .album_tracks(&album.id, scan.track_offset, TRACK_PAGE_SIZE)
-                .await?
-        }
-    };
+    let page = super::catalog_cache::load(
+        client,
+        cache_root,
+        &super::catalog_cache::Request {
+            account: &job.account,
+            album: &album.id,
+            release_date: album.release_date.as_deref(),
+            offset: scan.track_offset,
+            total: scan.track_total.or(album.tracks),
+        },
+        prefetched.map(|page| (page, album.prefetched_at)),
+    )
+    .await?;
     checked_page(scan, &page)?;
     let uris: Vec<_> = page
         .items

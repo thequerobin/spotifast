@@ -216,6 +216,11 @@ album was saved for USSA. Release dates come from the song's album edition.
 The selected basis is saved with each job for pause and restart recovery.
 USSA reuses eligible track batches already returned with saved albums and
 fetches the remaining pages, reducing catalog calls without truncating albums.
+USSA and USFA share album-track pages saved on disk between jobs and restarts.
+Catalogue metadata from before the previous calendar month has no expiry;
+previous-month data is reused for seven days, and current/future or undated
+metadata for one day. Membership checks remain fresh. Historical catalogue
+archives are retained rather than removed by age or entry-count limits.
 **Unliked Songs from Followed Artists (USFA)** selects unliked songs from
 followed artists by album/single release date, with the same persistent progress
 and recovery. **Include compilations**

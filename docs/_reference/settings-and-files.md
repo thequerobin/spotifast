@@ -724,8 +724,14 @@ existing user files are preserved. Selecting Dark or Light is sufficient to stop
 
 `playlist-generations/release-catalog-cache/` is a disposable, account-scoped
 cache of completed artist/year searches and complete artist catalogs. It
-contains release metadata only. Recent results expire after 15 minutes and
-historical years after 24 hours; job checkpoints are stored separately.
+contains release metadata only. `playlist-generations/album-track-cache/`
+stores complete album-track pages shared by USSA and USFA. Both are isolated
+by Spotify account. Metadata before the previous UTC calendar month has no
+expiry, the previous month's data lasts seven days, and current/future or
+undated data lasts one day. Historical discoveries must first cover the end of
+their month. Valid archives are retained on disk, independently of job
+checkpoints. Likes and current saved-album membership remain live checks.
+See [catalogue retention](api-cost-manager.md#request-savings-and-diagnostics).
 
 ## Spotify Soloist
 

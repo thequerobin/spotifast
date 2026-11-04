@@ -439,16 +439,26 @@ fn invalid(message: &str) -> ApiError {
     ApiError::Decode(message.into())
 }
 
+#[cfg(test)]
 pub(super) async fn execute(
     client: &ApiClient,
     job: &Job,
     step: &Step,
 ) -> Result<Outcome, ApiError> {
+    execute_cached(client, job, step, None).await
+}
+
+pub(super) async fn execute_cached(
+    client: &ApiClient,
+    job: &Job,
+    step: &Step,
+    cache_root: Option<&Path>,
+) -> Result<Outcome, ApiError> {
     match step {
-        Step::Release(step) => releases::execute(client, job, step)
+        Step::Release(step) => releases::execute_cached(client, job, step, cache_root)
             .await
             .map(|outcome| Outcome::Release(Box::new(outcome))),
-        Step::SavedAlbumTracks => saved_albums::execute(client, job)
+        Step::SavedAlbumTracks => saved_albums::execute_cached(client, job, cache_root)
             .await
             .map(Outcome::SavedAlbumTracks),
         Step::Albums => Ok(Outcome::Albums(
@@ -911,7 +921,7 @@ pub async fn run(
                 }
                 let client = api.client_for(Operation::PlaylistCreation).await?;
                 crate::api::client::generation_job_request(
-                    execute(&client, job, &step),
+                    execute_cached(&client, job, &step, Some(&root)),
                     dispatched.clone(),
                 )
                 .await

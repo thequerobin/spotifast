@@ -34,8 +34,9 @@ Membership reflects the time of the check; keep albums and likes stable
 during generation for consistent results.
 
 Embedded batches are checkpointed for restart and quota recovery, with at most
-50 batches of at most 128 KiB and 40 tracks each. They expire after 24 hours;
-expired or missing batches use fresh catalog reads. Liked-song membership is
+50 batches of at most 128 KiB and 40 tracks each. They follow the calendar
+retention policy below; expired or missing batches first try the shared disk
+cache, then fresh catalog reads. Liked-song membership is
 always checked at processing time and is never taken from this metadata cache.
 While more album pages remain, the track total is unknown. The final playlist
 still includes all matching albums and keeps the same ordering and deduplication.
@@ -96,15 +97,32 @@ mode). They store only release IDs, dates, track counts and compilation
 classification, never credentials or liked-song membership. The requested
 month/day filter is reapplied when reusing them.
 The cache format was versioned so older entries without release types cannot
-bypass the compilation filter. The current/future year and full catalogs expire
-after 15 minutes; previous years expire after 24 hours. Only fully paginated
-results are cached, including
-empty results. Mid-query progress remains in the durable job checkpoint.
-Corrupt, oversized or expired cache files are ignored. Startup removes expired
-files and retains at most 4,096 existing cache entries; individual entries are
+bypass the compilation filter. Retention follows the latest month covered by
+the requested period (bounded by the indexed year): before the previous month,
+no expiry; the previous month, seven days; the current month, one day. Future,
+undated and open-ended results use one day too. A historical discovery made
+before that month ended must refresh once so it cannot omit later releases.
+Only fully paginated results are cached, including empty results. Mid-query
+progress remains in the durable job checkpoint. Corrupt, oversized or stale
+entries are ignored. Startup removes invalid files but preserves valid
+archives without an age or entry-count eviction. Individual entries remain
 limited to 8 MiB. Cache-write failures do not fail a job. Checkpoint-write
-failures still stop processing. Removing this disposable cache does not remove
-jobs or playlists.
+failures still stop processing.
+
+USSA and USFA additionally share complete album-track pages on disk under
+`playlist-generations/album-track-cache/`, scoped to the account, album and
+page offset, with at most 256 KiB per entry. These use the album release month
+for the same retention policy, even when the playlist filters by addition
+date. Year-only release dates use December; missing dates refresh daily.
+All month boundaries use UTC, matching the period filters. Track counts and
+pagination are checked before reuse. Disk hits count in the API diagnostics.
+Likes, follows and saved-album membership are still checked live. A new USSA
+job therefore rereads the saved-album list, but can skip repeated album-track
+requests. An older job can fill the cache as its remaining pages are processed;
+already consumed pages cannot be reconstructed from its checkpoint.
+Deleting these caches does not remove jobs or playlists. Historical metadata
+can retain old availability or edition details; it is not automatically
+revalidated after its month has become archival.
 
 The history separates **unique releases checked**, **releases within the
 period**, and **songs analyzed/selected/added**. A compilation shared by several

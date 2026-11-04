@@ -98,7 +98,7 @@ closed app or powered-off computer does no processing.
 ## Request savings and diagnostics
 
 Concurrent identical catalog reads share one per-key lock and reuse successful
-JSON for 15 seconds, within a per-client cache of at most 64 entries of at most
+JSON for 15 seconds in memory, within a per-client cache of at most 64 entries of at most
 256 KiB each. This in-memory cache is discarded on authorization replacement
 and cannot be read after sign-out. Player, library and mutable playlist reads
 remain fresh. An aborted first caller releases the lock so another caller can
@@ -110,11 +110,44 @@ unavailable batch endpoint. Existing ID deduplication stays in the job layer.
 USSA also reuses a complete first processing batch from each saved album's
 embedded track page when available. It processes the current saved-album page
 before requesting the next, bounding checkpointed metadata to 50 batches of
-40 tracks and 128 KiB each. Metadata expires after 24 hours and does not cache
-liked-song membership. Partial embedded pages retain normal pagination, so
+40 tracks and 128 KiB each. Embedded metadata follows the calendar retention
+below and never caches liked-song membership. Partial embedded pages retain normal pagination, so
 large albums are fully scanned. This saves up to one album-track request per
 eligible album while keeping the same membership batch sizes. It reduces
 consumption without claiming that Spotify's undisclosed quota cannot run out.
+
+
+Album-track pages are also stored in `playlist-generations/album-track-cache/`
+and shared between USSA and USFA jobs, including after restarting the app.
+Keys include the verified Spotify account, album and page offset. Complete
+pages of 40 tracks (or the final smaller page) are validated against the known
+track count before reuse. Entries are limited to 256 KiB, written atomically
+on a blocking worker, and contain no credentials. Failed cache writes do not
+fail the job; corrupt or mismatched pages are fetched again. Fresh disk hits
+are included in the diagnostic cache-hit counter.
+
+Catalogue retention uses UTC calendar months, independently of the playlist's
+addition-date or release-date filter. Album pages use the album's release month:
+
+| Metadata month relative to now | Reuse |
+| --- | --- |
+| Before the previous month | No expiry |
+| Previous month | Seven days from the fetch |
+| Current month, future or unknown | One day from the fetch |
+
+Year-only dates use December conservatively. Artist discovery applies the same
+policy to the latest month covered by the requested period, bounded by the
+indexed year. Broad, open-ended discovery refreshes daily. A discovery made
+before a historical month ended must be refreshed once after that month ended,
+so an incomplete month's empty result cannot be archived forever. Only complete
+artist queries are reusable. Startup no longer deletes valid historical entries
+by age or by a maximum entry count. Old caches remain readable; legacy album
+checkpoints without release dates use the one-day fallback. Expiry triggers
+refresh when needed, not periodic background requests. Historical metadata may
+therefore retain an old edition or availability flag until replaced by a fresh
+response. Library membership and playlist writes are never served by this cache.
+New USSA jobs still read the current saved-album library and current likes;
+the historical cache saves repeated album-track reads, not those live checks.
 
 Expand **API cost manager** in playlist creation for recent sends, effective
 rate, current local ceiling, queue by priority, active work, global cooldown,
@@ -123,7 +156,7 @@ quota status, catalog cache hits/reads and per-endpoint 429 rate/quota,
 read counters advance only when an album or artist GET is dispatched,
 including each transport retry. Calls rejected locally by the quota circuit,
 waiting for a cooldown or cancelled before dispatch do not count as network
-reads. Cache hits are counted separately and remain available during a quota
+reads. Memory and disk cache hits are counted separately from network reads and remain available during a quota
 pause while their cached response is fresh. A cache lookup is not itself a
 Spotify request. Counters are process-local and endpoint IDs and query
 parameters are removed. No remote
